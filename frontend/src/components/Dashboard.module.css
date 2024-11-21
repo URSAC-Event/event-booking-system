@@ -1,15 +1,16 @@
 /* General container styles */
 .container {
     background-color: #f9f9f9;
-    padding: 48px 96px;
+    padding: 24px 48px;
 }
 
 /* Navbar styles */
 .navbar {
-    display: flex;
+     display: flex;
+    flex-wrap: wrap; /* Ensure items wrap on smaller screens */
     justify-content: space-between;
     align-items: center;
-    padding: 24px 96px;
+    padding: 16px 24px; /* Adjusted padding */
     background-color: #063970;
     color: #fff;
 }
@@ -22,18 +23,18 @@
 .titleflex {
     display: flex;
     flex-direction: column;
-    margin-left: 12px;
+    margin-left: 8px;
 }
 
 .title {
     font-family: "Bebas Neue", sans-serif;
     font-weight: 300;
-    font-size: 24px;
+    font-size: 18px;
 }
 
 .subtitle {
-    margin-top: -8px;
-    font-size: 16px;
+    margin-top: -4px;
+    font-size: 14px;
     font-weight: 400;
 }
 
@@ -145,41 +146,6 @@
   .editButton:hover {
     background-color: #0c387d; /* Darken the button on hover */
   }
-
-
-/* Slideshow styles */
-/* .slideshow {
-    width: 60%;
-    text-align: center;
-}
-
-.slideshowContainer {
-    position: relative;
-}
-
-.navButton {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: transparent;
-    border: none;
-    color: #fff;
-    font-size: 2em;
-    cursor: pointer;
-}
-
-.slideshowImage {
-    width: 100%;
-    height: auto;
-} */
-
-/* Calendar styles */
-/* .calendar {
-    width: 35%;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-} */
 
 /* Venue booklist container */
 .venueBooklistContainer {
@@ -483,4 +449,88 @@
   .cancelButton:hover {
     background-color: #c1c1c1;
   }
-  
+  @media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: column; /* Stack items vertically */
+        padding: 12px 16px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .logoutButton {
+        font-size: 12px;
+    }
+
+    .content {
+        flex-direction: column; /* Stack content vertically */
+        gap: 12px;
+    }
+
+    .firstContainer {
+        flex-direction: column; /* Stack items */
+        gap: 16px;
+    }
+
+    .upcomingEventsCard {
+        max-width: 100%; /* Full width */
+        min-width: 100%; /* Prevent shrinking */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .navbar {
+        padding: 8px 12px;
+    }
+
+    .title {
+        font-size: 14px;
+    }
+
+    .subtitle {
+        font-size: 10px;
+    }
+
+    .logoutButton {
+        font-size: 10px;
+    }
+
+    .content {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .upcomingEventsCard {
+        max-width: 100%;
+        min-width: 100%;
+    }
+
+    .sidebarr, .sidebar {
+        max-height: 300px;
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+        margin: 0 auto; /* Center content */
+    }
+
+    .navbar {
+        padding: 24px 96px; /* Larger padding */
+    }
+
+    .content {
+        gap: 36px;
+        padding: 24px 96px;
+    }
+
+    .firstContainer {
+        gap: 36px;
+    }
+}

@@ -1,33 +1,60 @@
 /* General container styles */
-.container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
 
+*{
+    padding: 0;
+    margin: 0;
+}
+.container {
+    background-color: #F4F4F9;
+   
+}
 /* Navbar styles */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #0e4296;
+    background-color: #10346e;
     color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.title {
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 300;
+    font-size: 24px;
 }
 
 .navTitle {
     font-size: 1.5rem;
 }
 
+.logoContainer {
+    display: flex;
+    align-items: center;
+}
+
 .logo {
     width: 48px;
     height: 48px;
-  }
-  
-  .loginIcon {
-    width: 24px;
-    height: 24px;
-  }
+}
+
+.subtitle {
+    margin-top: -8px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.titleflex {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+}
 
 .logoutButton {
     padding: 10px 20px;
@@ -36,46 +63,79 @@
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+    background-color: #ebebeb;
 }
 
 /* Main area styles */
 .main {
     display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    padding: 20px;
-    background-color: #f4f4f9;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+    margin-top: 60px; /* Account for fixed navbar */
 }
 
+/* Sidebar styles */
 .sidebar {
-    width: 200px;
-    background-color: #0e4296;
-    color: #fff;
-    padding: 20px;
+    background-color: #063970;
+    width: 250px;
+    min-width: 200px;
+    height: auto;
+    padding-top: 60px;
+    position: sticky;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .sidebarList {
+    margin-top: 20px;
     list-style: none;
     padding: 0;
-    margin: 0;
 }
 
 .sidebarItem {
-    padding: 10px 20px;
+    padding: 16px 24px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    border-left: 4px solid transparent;
+    transition: background-color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
     cursor: pointer;
-    margin-bottom: 10px;
+    display: flex;
+    align-items: center; /* Align the icon and text */
+}
+
+.sidebarItem span {
+    margin-left: 10px; /* Space between the icon and the text */
+}
+
+/* Hover effect */
+.sidebarItem:hover {
+    background-color: #0b5296;
+    transform: scale(1.05);
+    border-left: 4px solid #FFD700;
+}
+
+/* Active state */
+.activeSidebarItem {
+    background-color: #0b5296;
+    color: #FFD700;
+    border-left: 4px solid #FFD700;
 }
 
 .activeSidebarItem {
-    background-color: #8ba4cc;
+    background-color: #0b5296;
+    color: #FFD700;
+    border-left: 4px solid #FFD700;
 }
 
 /* Content styles */
 .content {
-    flex-grow: 1; 
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    padding: 20px;
 }
 
 /* Table styles */
@@ -133,12 +193,15 @@
 
 .sectionBox {
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 }
 
+.eventtablecontainer {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Modal styles */
 .modalBackdrop {
     position: fixed;
     top: 0;
@@ -170,4 +233,103 @@
     cursor: pointer;
     border-radius: 5px;
     margin-top: 10px;
+}
+@media (max-width: 768px) {
+    .sidebar {
+        width: 50px !important; /* Shrink to just icons */
+    }
+
+    .sidebarItem span {
+        display: none !important; /* Hide text */
+    }
+
+    .sidebarItem {
+        justify-content: center; /* Center the icon */
+        padding: 10px !important; /* Adjust padding for icons */
+        font-size: 14px !important; /* Reduce font size for small screens */
+    }
+
+    .sidebarItem:hover {
+        font-size: 14px !important; /* Ensure hover state text also shrinks */
+    }
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .logo {
+        width: 36px;
+        height: 36px;
+    }
+
+    
+
+
+    .logoutButton {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .content {
+        padding: 10px;
+    }
+
+    .tableCell {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 5px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+
+    .title {
+        font-size: 16px;
+    }
+
+    .logo {
+        width: 30px;
+        height: 30px;
+    }
+
+  
+    .sidebar {
+        width: 45px !important; /* Even smaller on very small screens */
+    }
+
+    .sidebarItem {
+        padding: 8px !important; /* Reduce padding */
+        font-size: 12px !important; /* Further reduce font size */
+    }
+
+    .sidebarItem:hover {
+        font-size: 12px !important; /* Ensure hover state text shrinks */
+    }
+    .content {
+        padding: 8px;
+    }
+
+    .tableCell {
+        font-size: 10px;
+    }
+
+    .logoutButton {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .content {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 }

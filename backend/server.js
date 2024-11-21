@@ -11,8 +11,59 @@ const fs = require('fs');
 // Middleware
 app.use(cors());
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
+
+
+app.use("/uploads", express.static("uploads"));
+
+
+//report 
+
+// Route to submit a report (User side)
+app.post('/submitReport', (req, res) => {
+  const { userId, message } = req.body;
+
+  // Insert the report into the database
+  const query = 'INSERT INTO reports (user_id, message, status) VALUES (?, ?, "pending")';
+  connection.query(query, [userId, message], (err, result) => {
+    if (err) {
+      console.error('Error inserting report:', err);
+      return res.status(500).json({ error: 'Failed to submit report' });
+    }
+
+    console.log('Report submitted:', result);
+    res.status(200).json({ message: 'Report submitted successfully', reportId: result.insertId });
+  });
+});
+
+// Route to fetch all reports (Admin side)
+app.get('/api/reports', (req, res) => {
+  const query = 'SELECT * FROM reports WHERE status = "pending"';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching reports:', err);
+      return res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+// Route to delete a report (Admin side)
+app.delete('/api/reports/:id', (req, res) => {
+  const reportId = req.params.id;
+
+  const query = 'DELETE FROM reports WHERE id = ?';
+  connection.query(query, [reportId], (err, result) => {
+    if (err) {
+      console.error('Error deleting report:', err);
+      return res.status(500).json({ error: 'Failed to delete report' });
+    }
+
+    res.status(200).json({ message: 'Report deleted successfully' });
+  });
+});
+
 
 
 
@@ -107,6 +158,10 @@ app.get('/api/events', (req, res) => {
   });
 });
 
+
+
+
+
 // GET route to fetch all councils
 app.get('/api/councils', (req, res) => {
   const query = 'SELECT * FROM councils';
@@ -119,7 +174,39 @@ app.get('/api/councils', (req, res) => {
   });
 });
 
+// GET route to fetch all user
+app.get('/api/users', (req, res) => {
+  const query = 'SELECT name, username, password, organizationz FROM users';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      return res.status(500).json({ message: 'Error fetching users' });
+    }
+    res.status(200).json(results);
+  });
+});
 
+//Adding user for council 
+
+app.post('/api/users', (req, res) => {
+    const { name, username, password, organizationz } = req.body;
+
+    // Simple validation
+    if (!name || !username || !password || !organizationz) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Hash the password before inserting into the database
+    // You can use bcrypt.js for password hashing, for now we are storing it as plain text (but it's not recommended for production)
+    const query = 'INSERT INTO users (name, username, password, organizationz) VALUES (?, ?, ?, ?)';
+    connection.query(query, [name, username, password, organizationz], (err, results) => {
+        if (err) {
+            console.error('Error inserting user:', err);
+            return res.status(500).json({ message: 'Error adding user' });
+        }
+        res.status(201).json({ id: results.insertId, name, username, organizationz });
+    });
+});
 
 
 

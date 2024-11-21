@@ -80,7 +80,7 @@ const CustomCalendar = () => {
   };
 
   return (
-    <div>
+    <div className={styles.calendarContainer}>
       <div>
         <button onClick={() => changeMonth(-1)}>
           <FontAwesomeIcon icon={faCaretLeft} />

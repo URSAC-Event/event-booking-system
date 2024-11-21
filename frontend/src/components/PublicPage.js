@@ -1,9 +1,6 @@
 // src/components/PublicPage.js
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import PHImage from "../assets/PH.JPG";
-import SteestImage from "../assets/steest.PNG";
-import SttImage from "../assets/stt.jpg";
 import { Building2 } from "lucide-react";
 import styles from "./PublicPage.module.css";
 import logo from "../assets/urslogo.png";
@@ -13,6 +10,7 @@ import axios from "axios";
 import CustomCalendar from "./CustomCalendar";
 import Slideshow from "./Slideshow";
 import CouncilDisplay from './CouncilDisplay';
+import NewsAndInformation from './NewsAndInformation';
 
 
 
@@ -58,25 +56,28 @@ const PublicPage = () => {
         {/* Main Content */}
 
         <div className={styles.firstContainer}>
-          {/* Upcoming Events Section */}
-          <Slideshow />
-          
+  {/* Upcoming Events Section */}
+  <Slideshow />
 
-          <div>
-            <h1>Campus Calendar</h1>
-            <CustomCalendar />
-          </div>
+  <div className={styles.calendarSection}>
+    <h1>Campus Calendar</h1>
+    <CustomCalendar />
+  </div>
 
-          
-        </div>
+  <div className={styles.horizontalLine}></div> {/* Horizontal line */}
+</div>
+
+
+       
 
         {/* News and Information Section (on the right) */}
         <div className={styles.layoutContainer}>
+          
         <CouncilDisplay />
+        <div className={styles.rightSection}>
+          <NewsAndInformation /> {/* Use your NewsAndInformation component here */}
         </div>
-
-        {/* Merged Vision and Mission Section */}
-        <div className={styles.mergedSection}>
+          <div className={styles.mergedSection}>
           <h3 className={styles.vgmoHeader}>VISION</h3>
           <p className={styles.vgmo}>
             The leading University in human resource development, knowledge and
@@ -104,6 +105,16 @@ const PublicPage = () => {
             Management System processes to satisfy all applicable requirements.
           </p>
         </div>
+<div><div className={styles.calendarSection}>
+    <h1>Campus Calendar</h1>
+    <CustomCalendar />
+  </div></div>
+
+        </div>
+       
+
+        {/* Merged Vision and Mission Section */}
+       
       </div>
 
       <div className={styles.members}>

@@ -13,8 +13,10 @@ import logout from "../assets/logout.svg";
 import EventModal from './EventModal';
 import Slideshow from "./Slideshow";
 import CouncilDisplayedit from './CouncilDisplayedit';
+import ReportForm from "./ReportForm";
 
 const Dashboard = () => {
+  const loggedInUser = { id: 1 };
   const navigate = useNavigate();
   const userDetails = {
     username: "exampleUser",
@@ -63,7 +65,10 @@ const Dashboard = () => {
           </div>
         );
       case "Report":
-        return <p>Report generation and analysis.</p>;
+        return <div>
+    >
+        <ReportForm userId={loggedInUser.id} /> {/* Pass userId to the ReportForm */}
+      </div>
       default:
         return null;
     }
@@ -169,72 +174,91 @@ const Dashboard = () => {
             <CustomCalendar />
           </div>
         </div>
+        <div className={styles.SecondContainer}>
+  <div className={styles.venueBooklistContainer}>
+    <h2 className={styles.header}>
+      <CalendarPlus size={20} color="#063970" /> Venue Booklist
+    </h2>
+    <div className={styles.sidebarLayout}>
+      <div className={styles.sidebarContainer}>
+        <div className={styles.sidebarr}>
+          {["Events", "Report"].map((item) => (
+            <button
+              key={item}
+              onClick={() => setSelectedSidebar(item)}
+              className={{
+                ...styles.sidebarButton,
+                backgroundColor:
+                  selectedSidebar === item ? "#0e4296" : "transparent",
+                color: selectedSidebar === item ? "#fff" : "#0e4296",
+              }}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+        <div className={styles.sidebarContent}>
+          <h3>{selectedSidebar}</h3>
+          {renderSidebarContent()}
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <div className={styles.venueBooklistContainer}>
-          <h2 className={styles.header}>
-            <CalendarPlus size={20} color="#063970" /> Venue Booklist
-          </h2>
-          <div className={styles.sidebarrContainer}>
-            <div className={styles.sidebarr}>
-              {[
-                "Events",
-                "Report",
-              ].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => setSelectedSidebar(item)}
-                  className={{
-                    ...styles.sidebarButton,
-                    backgroundColor:
-                      selectedSidebar === item ? "#0e4296" : "transparent",
-                    color: selectedSidebar === item ? "#fff" : "#0e4296",
-                  }}
-                >
-                  {item}
-                </button>
-              ))}
+  {/* News and Information Section (on the right) */}
+  <div className={styles.layoutContainer}>
+    <CouncilDisplayedit />
+  </div>
+
+
+  <div>
+      <h2>Reportform</h2>
+      <ReportForm userId={loggedInUser.id} /> {/* Pass userId to the ReportForm */}
+    </div>
+
+
+  {/* Merged Vision and Mission Section */}
+  <div className={styles.mergedSection}>
+    <h3 className={styles.vgmoHeader}>VISION</h3>
+    <p className={styles.vgmo}>
+      The leading University in human resource development, knowledge and
+      technology generation, and environmental stewardship.
+    </p>
+    <h3 className={styles.vgmoHeader}>MISSION</h3>
+    <p className={styles.vgmo}>
+      The University of Rizal System is committed to nurture and produce
+      upright and competent graduates and empowered community through
+      relevant and sustainable higher professional and technical
+      instruction, research, extension, and production services.
+    </p>
+    <h3 className={styles.vgmoHeader}>CORE VALUES</h3>
+    <p>R – Responsiveness</p>
+    <p>I – Integrity</p>
+    <p>S – Service</p>
+    <p>E – Excellence</p>
+    <p className={styles.vgmo}>S – Social Responsibility</p>
+    <h3 className={styles.vgmoHeader}>QUALITY POLICY</h3>
+    <p className={styles.vgmo}>
+      The University of Rizal System commits to deliver excellent products
+      and services to ensure total stakeholders’ satisfaction in
+      instruction, research, extension, production and dynamic
+      administrative support and to continuously improve its Quality
+      Management System processes to satisfy all applicable requirements.
+    </p>
+  </div>
+
+<div className={styles.rightSection}>
+            <h3 className={styles.header}>News and Information</h3>
+            {/* Add news and info content here */}
+            <div className={styles.newsItem}>
+              <h4>Upcoming Event: CoEng Week</h4>
+              <p>Join us for CoEng Week from November 11-15, 2024!</p>
             </div>
-            <div className={styles.sidebarContent}>
-              <h3>{selectedSidebar}</h3>
-              {renderSidebarContent()}
-            </div>
+            {/* Add more news items as necessary */}
           </div>
-        </div>
 
-        {/* News and Information Section (on the right) */}
-        <div className={styles.layoutContainer}>
-        <CouncilDisplayedit />
-        </div>
 
-        {/* Merged Vision and Mission Section */}
-        <div className={styles.mergedSection}>
-          <h3 className={styles.vgmoHeader}>VISION</h3>
-          <p className={styles.vgmo}>
-            The leading University in human resource development, knowledge and
-            technology generation, and environmental stewardship.
-          </p>
-          <h3 className={styles.vgmoHeader}>MISSION</h3>
-          <p className={styles.vgmo}>
-            The University of Rizal System is committed to nurture and produce
-            upright and competent graduates and empowered community through
-            relevant and sustainable higher professional and technical
-            instruction, research, extension, and production services.
-          </p>
-          <h3 className={styles.vgmoHeader}>CORE VALUES</h3>
-          <p>R – Responsiveness</p>
-          <p>I – Integrity</p>
-          <p>S – Service</p>
-          <p>E – Excellence</p>
-          <p className={styles.vgmo}>S – Social Responsibility</p>
-          <h3 className={styles.vgmoHeader}>QUALITY POLICY</h3>
-          <p className={styles.vgmo}>
-            The University of Rizal System commits to deliver excellent products
-            and services to ensure total stakeholders’ satisfaction in
-            instruction, research, extension, production and dynamic
-            administrative support and to continuously improve its Quality
-            Management System processes to satisfy all applicable requirements.
-          </p>
-        </div>
+</div>
 
         {/* Event Modal */}
       <EventModal 

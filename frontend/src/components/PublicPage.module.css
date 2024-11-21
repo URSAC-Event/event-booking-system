@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 96px;
+  padding: 30px 0px;
   background-color: #f5f5f5;
 }
 
@@ -37,9 +37,23 @@
   color: #fff;
 }
 
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 20px;
+}
+
 .logoContainer {
   display: flex;
   align-items: center;
+}
+
+.publicPageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f4f4f4;
 }
 
 .titleflex {
@@ -87,6 +101,12 @@
   flex-wrap: wrap; /* Allow wrapping for smaller screens */
   gap: 36px; /* Reduced gap for smaller screens */
   justify-content: space-between; /* Space out items */
+  height: 550px;
+}
+
+.calendarSection {
+  flex: 1; /* Allow this section to take up remaining space */
+  max-width: 400px;
 }
 
 /* Upcoming Events Card */
@@ -196,21 +216,23 @@
   font-weight: bold;
 }
 
-/* Divider styles */
-.divider {
-  margin: 20px 0;
-  border: none;
-  border-top: 2px solid black;
+
+.horizontalLine {
+  border-top: 2px solid #0e4296; /* Horizontal line with color */
+  width: 100%; /* Make the line span the full width */
+  margin-top: 20px; /* Add space above the line */
 }
 
 /* Merged section styles */
 .mergedSection {
   background-color: white;
-  margin-top: 48px;
+  margin-top: 10px;
+  margin-right: auto; /* Pushes the element to the right */
   display: flex;
   flex-direction: column;
   text-align: center;
   border-radius: 16px;
+  width: 760px;
   padding: 64px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -287,6 +309,66 @@
   border-radius: 8px;
 }
 
+.rightSection {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  max-height: 600px;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.header {
+  font-size: 1.5em;
+  color: #0e4296;
+  margin-bottom: 15px;
+}
+
+.newsItem {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.newsImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.documentLink {
+  display: inline-block;
+  margin-top: 10px;
+  color: #0e4296;
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  background-color: #0e4296;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+
 
 .header {
   margin-bottom: 16px;
@@ -295,18 +377,14 @@
 .layoutContainer {
   margin-top: 48px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr; /* Two columns */
   gap: 36px;
   width: 100%;
+  position: relative; /* Set the parent container to relative positioning */
 }
 
-.rightSection {
-  background-color: white;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: 100%;
-}
+
+
 
 .sidebarContainer {
   display: grid;
@@ -374,118 +452,207 @@
 
 /* Media query for small screens */
 @media (max-width: 1400px) {
-  .calendarContainer {
-    flex: 0 0 auto; /* Fixed width of 300px */
-    max-width: 300px;
-    min-width: 300px;
-    padding: 24px;
-    border-radius: 16px;
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  .navbar {
+    padding: 24px 48px;
   }
-}
+  
+  .mainContent {
+    grid-template-columns: 1fr; /* Stack columns for smaller screens */
+    gap: 36px;
+  }
 
-@media (max-width: 1250px) {
-  .firstContainer {
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items */
+  .calendarContainer {
+    max-width: 300px;
+    padding: 24px;
   }
 
   .upcomingEventsCard {
-    max-width: 100%; /* Full width on smaller screens */
-    margin: 0; /* Remove side margin */
-  }
-
-  .calendarContainer {
-    flex: 0 0 auto; /* Fixed width of 300px */
-    max-width: none;
-    min-width: auto;
-    gap: 24px;
-    width: 100%;
-    padding: 48px;
-    border-radius: 16px;
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    box-sizing: border-box;
-  }
-  .eventsList {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    max-width: 100%;
+    height: auto; /* Adjust height to content */
   }
 
   .layoutContainer {
-    margin-top: 48px;
     display: flex;
     flex-direction: column;
     gap: 36px;
+  }
+}
+
+
+@media (max-width: 1250px) {
+  .firstContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .calendarContainer {
     width: 100%;
+    padding: 24px;
+    max-width: 100%;
+  }
+
+  .eventsList {
+    justify-content: center;
+    align-items: stretch; /* Ensure alignment works well */
   }
 }
 
 @media (max-width: 930px) {
-    .container {
-      padding: 24px 16px;
-    }
-
-    .firstContainer {
-      flex-direction: column; /* Stack items vertically */
-      align-items: center; /* Center items */
-    }
-  
-    .upcomingEventsCard {
-      max-width: 100%; /* Full width on smaller screens */
-      margin: 0; /* Remove side margin */
-    }
-
-    .calendar {
-        width: 100%;
-        height: auto;
-    }
-  
-    .calendarContainer {
-      flex: 0 0 auto; /* Fixed width of 300px */
-      max-width: none;
-      min-width: auto;
-      gap: 24px;
-      width: 100%;
-      padding: 48px;
-      border-radius: 16px;
-      background-color: white;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      display: block;
-      box-sizing: border-box;
-    }
-    .eventsList {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-  }
-
-@media (max-width: 426px) {
   .navbar {
     padding: 24px 16px;
   }
 
+  .firstContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .calendarContainer {
+    padding: 16px;
+    max-width: 100%;
+    box-shadow: none; /* Simplify styles for smaller screens */
+  }
+
+  .upcomingEventsCard {
+    height: auto; /* Fit content dynamically */
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 426px) {
+  .navbar {
+    padding: 16px;
+    flex-direction: column;
+  }
+
   .title {
-    font-size: 1em;
-    margin-bottom: 8px;
+    font-size: 16px;
+    text-align: center;
   }
 
   .subtitle {
-    font-size: 0.75em;
-  }
-  
-  .loginButton {
-    display: flex;
-    align-items: center;
-    color: white;
-    background-color: #063970;
-    border: none;
-    gap: 4px;
     font-size: 12px;
-    cursor: pointer;
+  }
+
+  .calendarContainer,
+  .upcomingEventsCard {
+    width: 100%;
+    padding: 12px;
+    box-shadow: none;
+    border-radius: 8px;
+  }
+
+  .loginButton {
+    font-size: 12px;
+  }
+}
+/* General styles for small screens */
+@media (max-width: 400px) {
+  .container {
+    padding: 16px 8px;
+  }
+
+  /* Navbar adjustments */
+  .navbar {
+    flex-direction: column;
+    padding: 16px 8px;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .loginButton {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  /* Sidebar adjustments */
+  .sidebar {
+    max-height: auto;
+    overflow-y: visible;
+  }
+
+  .sidebar button {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* Layout adjustments */
+  .firstContainer {
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .calendarContainer {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .upcomingEventsCard {
+    width: 100%;
+    min-width: auto;
+    max-height: none;
+    margin-bottom: 20px;
+  }
+
+  .upcomingEventImage {
+    height: auto; /* Ensure the image maintains aspect ratio */
+  }
+
+  /* Merged section adjustments */
+  .mergedSection {
+    width: 100%;
+    padding: 16px;
+  }
+
+  /* Officer items */
+  .officerItem {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .officerImage {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* News and Information section */
+  .rightSection {
+    padding: 16px;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .newsItem {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .newsImage {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Pagination adjustments */
+  .pagination button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  /* Footer adjustments */
+  .footer {
+    font-size: 10px;
+    padding: 8px;
   }
 }

@@ -30,7 +30,7 @@ const Slideshow = () => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
         setIsFading(false);
       }, 900); // Duration of fade-out matches CSS
-    }, 4000); // Change slides every 7 seconds
+    }, 6000); // Change slides every 7 seconds
 
     return () => clearInterval(interval);
   }, [images.length]); // Only reset the interval when images change

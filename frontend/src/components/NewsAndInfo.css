@@ -1,0 +1,36 @@
+.rightSection {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .header {
+    font-size: 1.5em;
+    color: #0e4296;
+    margin-bottom: 15px;
+  }
+  
+  .newsItem {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  
+  .newsImage {
+    width: 300px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .documentLink {
+    display: inline-block;
+    margin-top: 10px;
+    color: #0e4296;
+    text-decoration: underline;
+    font-size: 0.9em;
+  }
+  
