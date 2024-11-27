@@ -303,7 +303,7 @@
 
 /* Form group styles */
 .formGroup {
-    margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 
 .input {
@@ -314,27 +314,62 @@
     border-radius: 5px;
 }
 
+/* Modal overlay */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal */
+.modal {
+    background-color: #fff;
+    padding: 10px; /* Reduced padding */
+    border-radius: 8px;
+    width: 400px; /* Reduced width */
+}
+
+/* Form group styles */
+.formGroup {
+    margin-bottom: 5px; /* Reduced margin to remove excess space */
+}
+
+.input {
+    width: 100%;
+    padding: 8px; /* Reduced padding */
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px; /* Slightly smaller radius */
+}
+
 /* Modal footer */
 .modalFooter {
     display: flex;
     justify-content: space-between;
 }
 
+.submitButton, .cancelButton {
+    padding: 8px 15px; /* Reduced padding */
+    border: none;
+    cursor: pointer;
+}
+
 .submitButton {
     background-color: #0e4296;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
 }
 
 .cancelButton {
     background-color: #ccc;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
 }
+
 
 .footer {
     text-align: center;
@@ -394,8 +429,8 @@
     padding: 15px;
     border-radius: 10px;
     width: 350px; /* Reduced width */
-    max-width: 90%;
-    height: 100%;
+    max-width: 80%;
+    height: 90%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
   

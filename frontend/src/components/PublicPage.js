@@ -77,7 +77,10 @@ const PublicPage = () => {
         <div className={styles.rightSection}>
           <NewsAndInformation /> {/* Use your NewsAndInformation component here */}
         </div>
-          <div className={styles.mergedSection}>
+         
+
+        </div>
+        <div className={styles.mergedSection}>
           <h3 className={styles.vgmoHeader}>VISION</h3>
           <p className={styles.vgmo}>
             The leading University in human resource development, knowledge and
@@ -105,25 +108,25 @@ const PublicPage = () => {
             Management System processes to satisfy all applicable requirements.
           </p>
         </div>
-<div><div className={styles.calendarSection}>
-    <h1>Campus Calendar</h1>
-    <CustomCalendar />
-  </div></div>
 
-        </div>
-       
 
         {/* Merged Vision and Mission Section */}
        
       </div>
 
-      <div className={styles.members}>
-        <h4>Members:</h4>
-        Abion,Wendy <br></br>
-        Arevalo, Patricia <br></br>
-        Dañas, Shaina Rose <br></br>
-        Echave, Ron-Ron <br></br>
+      <div className={styles.subFooter}>
+        <div className={styles.about}>
+          <h4 className={styles.aboutTitle}>About Us</h4>
+          <p className={styles.aboutSubtitle}>
+            This Event Booking System was created by the undergraduate students
+            of BS-CpE 4 as their thesis project.
+          </p>
+        </div>
+        <h5 className={styles.connectTitle}>Connect</h5>
+          
       </div>
+
+
       {/* Footer */}
       <footer className={styles.footer}>
         <p>

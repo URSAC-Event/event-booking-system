@@ -211,10 +211,7 @@ const Dashboard = () => {
   </div>
 
 
-  <div>
-      <h2>Reportform</h2>
-      <ReportForm userId={loggedInUser.id} /> {/* Pass userId to the ReportForm */}
-    </div>
+  
 
 
   {/* Merged Vision and Mission Section */}
@@ -247,15 +244,7 @@ const Dashboard = () => {
     </p>
   </div>
 
-<div className={styles.rightSection}>
-            <h3 className={styles.header}>News and Information</h3>
-            {/* Add news and info content here */}
-            <div className={styles.newsItem}>
-              <h4>Upcoming Event: CoEng Week</h4>
-              <p>Join us for CoEng Week from November 11-15, 2024!</p>
-            </div>
-            {/* Add more news items as necessary */}
-          </div>
+
 
 
 </div>
