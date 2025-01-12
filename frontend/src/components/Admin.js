@@ -276,6 +276,7 @@ const handleConfirm = async (eventId) => {
             <th className={styles.tableCell}>Name</th>
             <th className={styles.tableCell}>Organization</th>
             <th className={styles.tableCell}>Username</th>
+            <th className={styles.tableCell}>Email</th>
             <th className={styles.tableCell}>Password</th>
             
             
@@ -289,6 +290,7 @@ const handleConfirm = async (eventId) => {
                     <td className={styles.tableCell}>{users.name}</td>
                     <td className={styles.tableCell}>{users.organizationz}</td>
                     <td className={styles.tableCell}>{users.username}</td>
+                    <td className={styles.tableCell}>{users.email}</td>
                     <td className={styles.tableCell}>{users.password}</td>
                 </tr>
             ))

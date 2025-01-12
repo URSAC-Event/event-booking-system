@@ -11,6 +11,8 @@ import CustomCalendar from "./CustomCalendar";
 import Slideshow from "./Slideshow";
 import CouncilDisplay from './CouncilDisplay';
 import NewsAndInformation from './NewsAndInformation';
+import UpcomingEvents from "./UpcomingEvents";
+import EventHistory from "./EventHistory";
 
 
 
@@ -64,7 +66,7 @@ const PublicPage = () => {
     <CustomCalendar />
   </div>
 
-  <div className={styles.horizontalLine}></div> {/* Horizontal line */}
+
 </div>
 
 
@@ -75,10 +77,19 @@ const PublicPage = () => {
           
         <CouncilDisplay />
         <div className={styles.rightSection}>
-          <NewsAndInformation /> {/* Use your NewsAndInformation component here */}
+    <UpcomingEvents />
+  
+        </div>
+  <div className={styles.rightSection}>
+   
+    <EventHistory />{/* Use your NewsAndInformation component here */}
         </div>
          
+        
 
+        </div>
+        <div className={styles.layoutContainer}>
+          
         </div>
         <div className={styles.mergedSection}>
           <h3 className={styles.vgmoHeader}>VISION</h3>

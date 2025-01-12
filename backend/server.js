@@ -6,11 +6,15 @@ const path = require('path');
 const connection = require('./connection/db');
 const councilRoutes = require('./routes/route'); // Using your existing DB connection file
 const app = express();
+const verificationRoutes = require('./routes/route');
 const PORT = 5000;
+const routes = require('./routes/route');
 const fs = require('fs');
 // Middleware
 app.use(cors());
+app.use('/api', routes);
 app.use(express.json());
+app.use(verificationRoutes);
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -18,6 +22,69 @@ app.use("/uploads", express.static("uploads"));
 
 
 //report 
+
+
+//reset password
+// Reset password route
+app.post('/api/reset-password', (req, res) => {
+  const { email, newPassword } = req.body;
+
+  // Check if the email exists in the users table
+  const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
+  connection.query(checkEmailQuery, [email], (err, results) => {
+    if (err) {
+      console.log('Error checking email:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    if (results.length === 0) {
+      // If no user is found with that email
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Email exists, now update the password
+    const updatePasswordQuery = 'UPDATE users SET password = ? WHERE email = ?';
+    connection.query(updatePasswordQuery, [newPassword, email], (err, result) => {
+      if (err) {
+        console.log('Error updating password:', err);
+        return res.status(500).json({ message: 'Failed to update password' });
+      }
+
+      // Password successfully updated
+      res.status(200).json({ message: 'Password successfully updated!' });
+    });
+  });
+});
+
+
+
+
+
+// check email 
+// Route to check if email exists in the database
+app.post('/check-email', (req, res) => {
+  const { email } = req.body;
+
+  // Query to check if email exists in the users table
+  connection.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
+    if (err) {
+      res.status(500).send('Server error');
+      return;
+    }
+
+    if (result.length > 0) {
+      // Email exists
+      res.status(200).send({ exists: true, message: 'Email exists' });
+    } else {
+      // Email does not exist
+      res.status(404).send({ exists: false, message: 'No email found' });
+    }
+  });
+});
+
+
+
+
 
 // Route to submit a report (User side)
 app.post('/submitReport', (req, res) => {
@@ -110,38 +177,81 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 
 
+
+app.get('/api/organizations', (req, res) => {
+  const query = 'SELECT organization FROM councils';  // Select only the "organization" column
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching organizations:', err);
+      return res.status(500).json({ message: 'Error fetching organizations' });
+    }
+    res.status(200).json(results);  // Send only the organization data
+  });
+});
+
 // POST route to add an event
 app.post('/api/events', upload.fields([{ name: 'document' }, { name: 'poster' }]), (req, res) => {
+  if (req.files && (!req.files.document || !req.files.poster)) {
+    return res.status(400).json({ message: 'Missing required files.' });
+  }
+
   const { venue, name, organization, date, datefrom, duration } = req.body;
   const document = req.files.document ? req.files.document[0].filename : null;
   const poster = req.files.poster ? req.files.poster[0].filename : null;
 
-  const query = 'INSERT INTO events (name, organization, date, datefrom, duration, documents, photo, venue) VALUES (?, ?, ?, ?, ?, ?, ?,?)';
+  const query = 'INSERT INTO events (name, organization, date, datefrom, duration, documents, photo, venue) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [name, organization, date, datefrom, duration, document, poster, venue], (err, results) => {
     if (err) {
       console.error('Error inserting data:', err);
-      return res.status(500).json({ message: 'Error inserting event data' });
+      return res.status(500).json({ message: 'Error inserting event data', error: err.message });
     }
     res.status(200).json({ message: 'Event added successfully', eventId: results.insertId });
   });
 });
 
 
-// POST route to add councils
-app.post('/api/councils', (req, res) => {
-  const { organization, adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
 
+
+
+
+
+// POST route to add councils
+app.post('/api/councils', upload.single('adviserPicture'), (req, res) => {
+  const { organization, adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
+  const adviserPicture = req.file ? req.file.filename : null;
+
+  // SQL query to insert council data into the `councils` table
   const query = `
-    INSERT INTO councils (organization, adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO councils (organization, adviser, adviserPIC, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  connection.query(query, [organization, adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative], (err, results) => {
+  const values = [
+    organization,
+    adviser,
+    adviserPicture, // Save the filename of the uploaded picture into adviserPIC column
+    president,
+    vicePresident,
+    secretary,
+    treasurer,
+    auditor,
+    pro,
+    rep,
+    representative,
+  ];
+
+  // Execute the query to save the data in the database
+  connection.query(query, values, (err, results) => {
     if (err) {
-      console.error('Error inserting council data:', err);
-      return res.status(500).json({ message: 'Error saving council data' });
+      console.error('Error saving data to the database: ', err);
+      return res.status(500).json({ message: 'Error saving data to the database', error: err });
     }
-    res.status(200).json({ message: 'Council data saved successfully', councilId: results.insertId });
+
+    // Return a success response
+    res.status(200).json({
+      message: 'Council data saved successfully!',
+      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative },
+    });
   });
 });
 
@@ -176,7 +286,7 @@ app.get('/api/councils', (req, res) => {
 
 // GET route to fetch all user
 app.get('/api/users', (req, res) => {
-  const query = 'SELECT name, username, password, organizationz FROM users';
+  const query = 'SELECT name, username, email, password, organizationz FROM users';
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -189,22 +299,22 @@ app.get('/api/users', (req, res) => {
 //Adding user for council 
 
 app.post('/api/users', (req, res) => {
-    const { name, username, password, organizationz } = req.body;
+    const { name, username, email, password, organizationz } = req.body;
 
     // Simple validation
-    if (!name || !username || !password || !organizationz) {
+    if (!name || !username || !email || !password || !organizationz) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Hash the password before inserting into the database
     // You can use bcrypt.js for password hashing, for now we are storing it as plain text (but it's not recommended for production)
-    const query = 'INSERT INTO users (name, username, password, organizationz) VALUES (?, ?, ?, ?)';
-    connection.query(query, [name, username, password, organizationz], (err, results) => {
+    const query = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?,?)';
+    connection.query(query, [name, username, email, password, organizationz], (err, results) => {
         if (err) {
             console.error('Error inserting user:', err);
             return res.status(500).json({ message: 'Error adding user' });
         }
-        res.status(201).json({ id: results.insertId, name, username, organizationz });
+        res.status(201).json({ id: results.insertId, name, email, username, organizationz });
     });
 });
 
@@ -252,14 +362,7 @@ app.post('/adminlogin', (req, res) => {
 });
 
 
-// Check database connection
-connection.connect(err => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-    process.exit(1);
-  }
-  console.log('Connected to the database');
-});
+
 
 
 
@@ -307,9 +410,6 @@ app.get('/api/approved', (req, res) => {
 
 
 
-
-
-//deleteee
 
 
 

@@ -1,8 +1,6 @@
 // src/components/Dashboard.js
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import SteestImage from "../assets/steest.PNG";
-import SttImage from "../assets/stt.jpg";
 import "react-calendar/dist/Calendar.css";
 import { Building2, CalendarPlus } from "lucide-react";
 import axios from "axios";
@@ -46,7 +44,14 @@ const Dashboard = () => {
     poster: null,
   });
 
- 
+  const handleLogout = () => {
+    // Clear session data
+    sessionStorage.clear(); // or localStorage.clear() if you are using local storage
+    
+    // Redirect to login page
+    navigate("/login");
+  };
+  
 
   const renderSidebarContent = () => {
     switch (selectedSidebar) {
@@ -66,7 +71,7 @@ const Dashboard = () => {
         );
       case "Report":
         return <div>
-    >
+    
         <ReportForm userId={loggedInUser.id} /> {/* Pass userId to the ReportForm */}
       </div>
       default:
@@ -158,10 +163,11 @@ const Dashboard = () => {
             <h1 className={styles.subtitle}>Event Booking System</h1>
           </div>
         </div>
-        <button className={styles.logoutButton} onClick={() => navigate("/")}>
-            <img src={logout} className={styles.loginIcon} />
-            Log Out
-        </button>
+        <button className={styles.logoutButton} onClick={handleLogout}>
+  <img src={logout} className={styles.loginIcon} />
+  Log Out
+</button>
+
       </nav>
       <div className={styles.container}>
         <div className={styles.firstContainer}>

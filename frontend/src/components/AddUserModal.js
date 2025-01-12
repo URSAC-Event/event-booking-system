@@ -4,9 +4,11 @@ import styles from './Addusermodal.css';  // Assuming you have styles for the mo
 const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [organizationz, setOrganizationz] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [emailError, setEmailError] = useState('');
 
     const handlePasswordChange = (e) => {
         const value = e.target.value;
@@ -21,12 +23,25 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
         }
     };
 
+    const handleEmailChange = (e) => {
+        const value = e.target.value;
+        setEmail(value);
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            setEmailError('Please enter a valid email address.');
+        } else {
+            setEmailError('');
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // If password is valid
         if (!passwordError) {
-            const user = { name, username, password, organizationz };
+            const user = { name, username, email, password, organizationz };
 
             try {
                 const response = await fetch('http://localhost:5000/api/users', {
@@ -64,6 +79,11 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                         <div className={styles.inputGroup}>
                             <label>Username</label>
                             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                        </div>
+                        <div className={styles.inputGroup}>
+                            <label>Email</label>
+                            <input type="email" value={email} onChange={handleEmailChange} required />
+                            {emailError && <span className={styles.error}>{emailError}</span>}
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Password</label>

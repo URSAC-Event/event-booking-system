@@ -79,6 +79,14 @@ const Login = () => {
                     {errorMessage && <p className={styles.error}>{errorMessage}</p>}
                     <button type="submit" className={styles.button}>Login</button>
                 </form>
+                <div className={styles.linksContainer}>
+                    <p
+                        className={styles.forgotPassword}
+                        onClick={() => navigate('/forgotpassword')} // Navigate to Forgot Password
+                    >
+                        Forgot Password?
+                    </p>
+                </div>
                 <div className={styles.adminCont}>
                     <p className={styles.ask}>Are you an admin?</p>
                     <p

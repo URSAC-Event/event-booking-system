@@ -1,0 +1,51 @@
+/* VerifyEmail.module.css */
+.verifyEmailContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    padding: 20px;
+  }
+  
+  .verifyEmailContainer h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .verifyEmailContainer .email {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 30px;
+  }
+  
+  .verifyEmailContainer .buttonsContainer {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .verifyEmailContainer button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .verifyEmailContainer .backButton {
+    background-color: #ccc;
+    border: none;
+  }
+  
+  .verifyEmailContainer .continueButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }
+  
+  .verifyEmailContainer .continueButton:hover {
+    background-color: #0056b3;
+  }
+  

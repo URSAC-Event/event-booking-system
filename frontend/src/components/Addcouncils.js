@@ -5,6 +5,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
   const [councilFormData, setCouncilFormData] = useState({
     organization: "",
     adviser: "",
+    adviserPicture: null, // Added adviser picture state
     president: "",
     vicePresident: "",
     secretary: "",
@@ -12,21 +13,28 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
     auditor: "",
     pro: "",
     rep: "",
-    representative: ""
+    representative: "",
   });
 
   // Function to handle form submission and send data to the backend
   const handleAddCouncil = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    // Append form data for all fields
+    Object.keys(councilFormData).forEach((key) => {
+      if (key === 'adviserPicture' && councilFormData[key]) {
+        formData.append(key, councilFormData[key]);
+      } else {
+        formData.append(key, councilFormData[key]);
+      }
+    });
+
     try {
-      // Send POST request with council form data to the backend
+      // Send POST request with form data to the backend
       const response = await fetch('http://localhost:5000/api/councils', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(councilFormData), // Sending form data as JSON
+        body: formData,
       });
 
       const data = await response.json();
@@ -58,14 +66,26 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Adviser:</label>
-              <input
-                type="text"
-                value={councilFormData.adviser}
-                onChange={(e) => setCouncilFormData({ ...councilFormData, adviser: e.target.value })}
-                className={styles.input}
-              />
-            </div>
+  <label>Adviser:</label>
+  <div className={styles.adviserGroup}>
+    <input
+      type="text"
+      value={councilFormData.adviser}
+      onChange={(e) => setCouncilFormData({ ...councilFormData, adviser: e.target.value })}
+      className={styles.input}
+      placeholder="Adviser Name"
+    />
+    <input
+      type="file"
+      accept="image/png, image/jpeg, image/jpg"
+      onChange={(e) =>
+        setCouncilFormData({ ...councilFormData, adviserPicture: e.target.files[0] })
+      }
+      className={styles.fileInput} // Add styling for alignment
+    />
+  </div>
+</div>
+
             <div className={styles.formGroup}>
               <label>President:</label>
               <input
