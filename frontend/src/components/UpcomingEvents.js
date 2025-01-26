@@ -31,8 +31,9 @@ const UpcomingEvents = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
+    <div><h3 className={styles.header}>Upcoming Events</h3>
     <div>
-      <h3 className={styles.header}>Upcoming Events</h3>
+      
       {currentUpcomingEvents.length > 0 ? (
         currentUpcomingEvents.map((item) => (
           <div key={item.id} className={styles.newsItem}>
@@ -77,6 +78,7 @@ const UpcomingEvents = () => {
           Next
         </button>
       </div>
+    </div>
     </div>
   );
 };

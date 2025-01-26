@@ -484,6 +484,24 @@
   .cancelButton:hover {
     background-color: #c1c1c1;
   }
+
+   /* LOGO council display  */
+   .adviserImage {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* This will crop the image to maintain aspect ratio */
+    border-radius: 8px; /* Optional: to give the image rounded corners */
+  }
+  .rightSection {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+
+
   @media screen and (max-width: 768px) {
     .navbar {
         flex-direction: column; /* Stack items vertically */

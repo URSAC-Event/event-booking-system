@@ -17,15 +17,15 @@ const VerifyEmail = () => {
         },
         body: JSON.stringify({ email }),
       });
-
+  
       const result = await response.json();
-
+  
       if (response.ok) {
         const verificationCode = result.verificationCode; // Extract the code from the response
         console.log('Verification code received from backend:', verificationCode); // Debug log
-
-        // Navigate to EnterCode with email and code
-        navigate('/enter-code', { state: { email, verificationCode } });
+  
+        // Navigate to EnterCode with email and code, and replace the current history entry
+        navigate('/enter-code', { state: { email, verificationCode }, replace: true });
       } else {
         console.error('Failed to send verification code:', result.message);
         alert(result.message || 'Failed to send the verification code. Please try again.');
@@ -35,6 +35,7 @@ const VerifyEmail = () => {
       alert('Failed to send the verification code. Please try again.');
     }
   };
+  
 
   return (
     <div className={styles.verifyEmailContainer}>

@@ -22,7 +22,7 @@ const Dashboard = () => {
   };
 
  
- 
+ const [error, setError] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedSidebar, setSelectedSidebar] = useState("New Booking");
   const [newSidebarSelection, setNewSidebarSelection] =
@@ -45,12 +45,13 @@ const Dashboard = () => {
   });
 
   const handleLogout = () => {
-    // Clear session data
-    sessionStorage.clear(); // or localStorage.clear() if you are using local storage
     
-    // Redirect to login page
-    navigate("/login");
+    sessionStorage.clear(); 
+  
+    
+    navigate("/login", { replace: true });
   };
+  
   
 
   const renderSidebarContent = () => {
@@ -97,6 +98,30 @@ const Dashboard = () => {
     }));
   };
 
+
+  const convertTo24Hour = (time, ampm) => {
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    minutes = parseInt(minutes);
+  
+    if (ampm === "PM" && hours !== 12) {
+      hours += 12;
+    } else if (ampm === "AM" && hours === 12) {
+      hours = 0;
+    }
+  
+    return { hours, minutes };
+  };
+
+  const convertDatabaseDateToFormattedDate = (date) => {
+    const newDate = new Date(date);  // Convert to JavaScript Date object
+    const day = String(newDate.getDate()).padStart(2, '0');
+    const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = newDate.getFullYear();
+    return `${year}/${month}/${day}`;
+  };
+  
+
   const handleModalSubmit = async (e) => {
     e.preventDefault();
   
@@ -105,46 +130,99 @@ const Dashboard = () => {
       eventData.fromHour && eventData.fromMinute && eventData.fromAmPm &&
       eventData.toHour && eventData.toMinute && eventData.toAmPm
     ) {
-      // Format the start and end times into a string like "12:00 AM to 1:00 PM"
-      const fromTime = eventData.fromHour && eventData.fromMinute && eventData.fromAmPm
-        ? `${String(eventData.fromHour).padStart(2, '0')}:${String(eventData.fromMinute).padStart(2, '0')} ${eventData.fromAmPm || 'AM'}`
-        : '00:00 AM'; // Default to 00:00 AM if no value for hour/minute/AM/PM
+      // Convert user's from and to times to 24-hour format
+      const userFrom = convertTo24Hour(eventData.fromHour + ":" + eventData.fromMinute, eventData.fromAmPm);
+      const userTo = convertTo24Hour(eventData.toHour + ":" + eventData.toMinute, eventData.toAmPm);
   
-      const toTime = eventData.toHour && eventData.toMinute && eventData.toAmPm
-        ? `${String(eventData.toHour).padStart(2, '0')}:${String(eventData.toMinute).padStart(2, '0')} ${eventData.toAmPm || 'AM'}`
-        : '00:00 AM'; // Default to 00:00 AM if no value for hour/minute/AM/PM
+      // Format the start and end times into a readable string
+      const fromTime = `${String(eventData.fromHour).padStart(2, '0')}:${String(eventData.fromMinute).padStart(2, '0')} ${eventData.fromAmPm || 'AM'}`;
+      const toTime = `${String(eventData.toHour).padStart(2, '0')}:${String(eventData.toMinute).padStart(2, '0')} ${eventData.toAmPm || 'AM'}`;
   
-      const duration = `${fromTime} to ${toTime}`; // Combine them into a duration string
-  
-      // Now append the formatted duration to the formData
-      const formData = new FormData();
-      formData.append("venue", eventData.venue);
-      formData.append("name", eventData.name);
-      formData.append("organization", eventData.organization);
-      formData.append("date", eventData.fromDate);  // Store fromDate in 'date'
-      formData.append("datefrom", eventData.toDate);  // Store toDate in 'datefrom'
-      formData.append("duration", duration); // Use the formatted duration string
-      formData.append("document", eventData.document);
-      formData.append("poster", eventData.poster);
+      const duration = `${fromTime} to ${toTime}`;
+      console.log("Event Duration:", duration);
   
       try {
-        const response = await axios.post("http://localhost:5000/api/events", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        if (response.status === 200) {
-          alert("Event added successfully!");
-          setModalOpen(false); // Close the modal after successful submission
+        const userFromDate = eventData.fromDate.replace(/-/g, '/');
+        const userToDate = eventData.toDate ? eventData.toDate.replace(/-/g, '/') : userFromDate;
+  
+        console.log("Checking for overlapping events...");
+  
+        // Fetch all approved events from the server
+        const response = await axios.get('http://localhost:5000/api/approved');
+        const approvedEvents = response.data;
+  
+        // Validate for conflicts
+        for (let event of approvedEvents) {
+          const savedStartDate = convertDatabaseDateToFormattedDate(event.date);
+          const savedEndDate = convertDatabaseDateToFormattedDate(event.datefrom);
+  
+          // Check if the event is in the same venue and dates overlap
+          if (event.venue === eventData.venue) {
+            if (userFromDate <= savedEndDate && userToDate >= savedStartDate) {
+              console.log("Date conflict found with event:", event);
+  
+              // Check for time conflict within the same venue and overlapping dates
+              const [savedFrom, savedTo] = event.duration.split(' to ');
+              const savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[1]);
+              const savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[1]);
+  
+              // Time overlap check
+              if (
+                (userFrom.hours < savedToTime.hours || (userFrom.hours === savedToTime.hours && userFrom.minutes < savedToTime.minutes)) &&
+                (userTo.hours > savedFromTime.hours || (userTo.hours === savedFromTime.hours && userTo.minutes > savedFromTime.minutes))
+              ) {
+                const errorMessage = 'The selected time overlaps with an existing event at the same venue.';
+                console.error(errorMessage, event);
+                setError(errorMessage); // Update the error state
+                return; // Prevent submission
+              }
+            }
+          }
         }
-      } catch (error) {
-        console.error("Error uploading the event:", error);
-        alert("Failed to add event!");
+  
+        console.log("No conflicts found. Proceeding to save event...");
+  
+        // If no conflicts found, proceed with form submission
+        const formData = new FormData();
+        formData.append("venue", eventData.venue);
+        formData.append("name", eventData.name);
+        formData.append("organization", eventData.organization);
+        formData.append("date", eventData.fromDate); // Store fromDate in 'date'
+        formData.append("datefrom", eventData.toDate); // Store toDate in 'datefrom'
+        formData.append("duration", duration); // Use the formatted duration string
+        formData.append("document", eventData.document);
+        formData.append("poster", eventData.poster);
+  
+        try {
+          const postResponse = await axios.post("http://localhost:5000/api/events", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+  
+          if (postResponse.status === 200) {
+            console.log("Event successfully saved to the database:", postResponse.data);
+            alert("Event added successfully!");
+            setError(null); // Clear the error state
+            setModalOpen(false); // Close the modal after successful submission
+          }
+        } catch (postError) {
+          console.error("Error saving event to database:", postError);
+          setError("Failed to add the event.");
+        }
+      } catch (fetchError) {
+        console.error("Error during validation:", fetchError);
+        setError("Failed to validate the event details.");
       }
     } else {
-      alert("Please fill in all time fields correctly.");
+      console.warn("Incomplete time fields provided by the user.");
+      setError("Please fill in all time fields correctly.");
     }
   };
+  
+  
+  
+  
   
   
   

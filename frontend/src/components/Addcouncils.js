@@ -6,6 +6,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
     organization: "",
     adviser: "",
     adviserPicture: null, // Added adviser picture state
+    link: "",
     president: "",
     vicePresident: "",
     secretary: "",
@@ -32,7 +33,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
 
     try {
       // Send POST request with form data to the backend
-      const response = await fetch('http://localhost:5000/api/councils', {
+      const response = await fetch('http://localhost:5000/api/councilsadd', {
         method: 'POST',
         body: formData,
       });
@@ -85,6 +86,15 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
     />
   </div>
 </div>
+<div className={styles.formGroup}>
+              <label>Link"</label>
+              <input
+                type="text"
+                value={councilFormData.link}
+                onChange={(e) => setCouncilFormData({ ...councilFormData, link: e.target.value })}
+                className={styles.input}
+              />
+            </div>
 
             <div className={styles.formGroup}>
               <label>President:</label>

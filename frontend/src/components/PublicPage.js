@@ -80,10 +80,7 @@ const PublicPage = () => {
     <UpcomingEvents />
   
         </div>
-  <div className={styles.rightSection}>
-   
-    <EventHistory />{/* Use your NewsAndInformation component here */}
-        </div>
+ 
          
         
 

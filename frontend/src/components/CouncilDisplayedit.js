@@ -43,7 +43,7 @@ const CouncilDisplay = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.put(`http://localhost:5000/api/councils/${formData.id}`, formData); // formData shouldn't include 'created_at'
+      const response = await axios.put(`http://localhost:5000/api/councilsedit/${formData.id}`, formData); // formData shouldn't include 'created_at'
       if (response.status === 200) {
         alert('Council details updated successfully!');
         setIsEditModalOpen(false);

@@ -25,19 +25,21 @@ const EnterCode = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true); // Disable the submit button during submission
+  
     if (code === verificationCode) {
       setMessage('Code verified successfully!');
-
+  
       // Show the waveform for 2.5 seconds before redirecting
       setTimeout(() => {
-        // Redirect to the ResetPassword page
-        navigate('/reset-password', { state: { email } });
+        // Redirect to the ResetPassword page and replace the current entry in the history stack
+        navigate('/reset-password', { state: { email }, replace: true });
       }, 2500); // 2.5 seconds delay
     } else {
       setMessage('Invalid code. Please try again.');
       setIsSubmitting(false); // Re-enable button on failure
     }
   };
+  
 
   return (
     <div className={styles.enterCodeContainer}>

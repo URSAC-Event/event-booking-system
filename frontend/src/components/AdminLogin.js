@@ -90,10 +90,14 @@ const AdminLogin = () => {
                     }`}
                     >
                         {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-                        <p className={styles.forgot}>Forgot Password?</p>
+                        <p className={styles.forgot}
+                        onClick={() => navigate('/forgotpasswordadmin')}
+                        >
+                            Forgot Password?</p>
                     </div>
                     <button type="submit" className={styles.button}>Login</button>
                 </form>
+                
                 <div className={styles.adminCont}>
                     <p className={styles.ask}>Not an admin?</p>
                     <p

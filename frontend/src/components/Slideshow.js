@@ -1,26 +1,24 @@
-import React, { useState, useEffect,  useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styles from "./PublicPage.module.css";
 
-
 const Slideshow = () => {
- 
   const [imageFiles, setImageFiles] = useState([]); // State to hold image filenames
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFading, setIsFading] = useState(false);
 
-   // Fetch the image filenames from the backend on component mount
-   useEffect(() => {
-    fetch('http://localhost:5000/api/slideshow-images') // Replace with your actual API endpoint
-      .then(response => response.json())
-      .then(data => {
+  // Fetch the image filenames from the backend on component mount
+  useEffect(() => {
+    fetch("http://localhost:5000/api/slideshow-images") // Replace with your actual API endpoint
+      .then((response) => response.json())
+      .then((data) => {
         setImageFiles(data); // Set the filenames from backend
       })
-      .catch(error => console.error('Error fetching images:', error));
+      .catch((error) => console.error("Error fetching images:", error));
   }, []);
 
   // Memoize the image URLs based on the filenames fetched
   const images = useMemo(() => {
-    return imageFiles.map(image => `http://localhost:5000/uploads/${image}`);
+    return imageFiles.map((image) => `http://localhost:5000/uploads/${image}`);
   }, [imageFiles]); // Recalculate when imageFiles changes
 
   useEffect(() => {
@@ -39,7 +37,7 @@ const Slideshow = () => {
     <div className={styles.upcomingEventsCard}>
       <div
         className={`${styles.upcomingEventsImageContainer} ${
-          isFading ? styles.fade : ''
+          isFading ? styles.fade : ""
         }`}
       >
         {images.length > 0 ? (
@@ -54,7 +52,7 @@ const Slideshow = () => {
         <div className={styles.gradientOverlay}>
           <h2 className={styles.upcomingEventsText}>Upcoming Events</h2>
           <p className={styles.eventDetails}>
-            <span className={styles.eventName}>CoEng Week 2024</span> ||{' '}
+            <span className={styles.eventName}>CoEng Week 2024</span> ||{" "}
             <span className={styles.eventDate}>November 11-15, 2024</span>
           </p>
         </div>

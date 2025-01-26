@@ -120,7 +120,7 @@
 
 /* Upcoming Events Card */
 .upcomingEventsCard {
-  position: relative;
+  position: flex;
   height: auto;
   max-height: 500px;  /* Adjust this if needed */
   border-radius: 16px;
@@ -147,8 +147,8 @@
 
 /* Image in Upcoming Events: Ensure it fills the container */
 .upcomingEventImage {
-  width: 100%; /* Full width of container */
-  height: 100%; /* Full height of container */
+  width: 1200px; /* Full width of container */
+  height: 630px; /* Full height of container */
   object-fit: cover; /* Ensure the image fills the container and maintains aspect ratio */
   object-position: center; /* Center the image in the container */
   display: block; /* Avoid inline gaps */

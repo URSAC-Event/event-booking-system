@@ -28,6 +28,9 @@ const sendVerificationCode = (email, code) => {
   });
 };
 
+
+
+
 // Temporary test function
 const testEmail = () => {
   const testEmail = 'victordelossantos179@gmail.com'; // Test email address

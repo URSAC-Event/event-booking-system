@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import styles from './Admin.module.css'; // Make sure the CSS file is correctly imported
+import styles from './Admin.module.css';
 
 const EventTableApproved = () => {
   const [events, setEvents] = useState([]);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [selectedDocumentName, setSelectedDocumentName] = useState(null);
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
 
-  // Fetch events data from your database on component mount
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/approved"); // Adjust the endpoint accordingly
+        const response = await axios.get("http://localhost:5000/api/approved");
         setEvents(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -20,17 +22,29 @@ const EventTableApproved = () => {
 
   const formatDate = (date) => {
     if (!date) return "";
-  
-    // Parse the date and convert it to the correct format
     const parsedDate = new Date(date);
-    // Check if parsedDate is a valid date object
-    if (!isNaN(parsedDate)) {
-      return parsedDate.toLocaleDateString('en-GB'); // Format to "dd/mm/yyyy" or "yyyy-mm-dd"
-    } else {
-      return "";
-    }
+    return !isNaN(parsedDate) ? parsedDate.toLocaleDateString('en-GB') : "";
   };
-  
+
+  const handleViewDocument = (documentName) => {
+    const fullDocumentUrl = `http://localhost:5000/uploads/${documentName}`;
+    setSelectedDocument(fullDocumentUrl);
+    setSelectedDocumentName(documentName);
+    setShowDocumentModal(true);
+  };
+
+  const handleCloseDocumentModal = () => {
+    setShowDocumentModal(false);
+    setSelectedDocument(null);
+    setSelectedDocumentName(null);
+  };
+
+  const handleViewImage = (imageName) => {
+    const fullImageUrl = `http://localhost:5000/uploads/${imageName}`;
+    setSelectedDocument(fullImageUrl);
+    setSelectedDocumentName(imageName);
+    setShowDocumentModal(true);
+  };
 
   return (
     <div>
@@ -54,15 +68,14 @@ const EventTableApproved = () => {
                 <td className={styles.tableCell}>{event.name}</td>
                 <td className={styles.tableCell}>{event.organization}</td>
                 <td className={styles.tableCell}>
-                {formatDate(event.date)} to {formatDate(event.datefrom)}
+                  {formatDate(event.date)} to {formatDate(event.datefrom)}
                 </td>
                 <td className={styles.tableCell}>{event.duration}</td>
-
                 <td className={styles.tableCell}>
                   {event.documents && (
                     <button
                       className={styles.button}
-                      onClick={() => console.log("View Document:", event.documents)}
+                      onClick={() => handleViewDocument(event.documents)}
                     >
                       View Document
                     </button>
@@ -72,7 +85,7 @@ const EventTableApproved = () => {
                   {event.photo && (
                     <button
                       className={styles.button}
-                      onClick={() => console.log("View Image:", event.photo)}
+                      onClick={() => handleViewImage(event.photo)}
                     >
                       View Image
                     </button>
@@ -88,6 +101,16 @@ const EventTableApproved = () => {
           )}
         </tbody>
       </table>
+
+      {showDocumentModal && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <span className={styles.close} onClick={handleCloseDocumentModal}>&times;</span>
+            <h2>{selectedDocumentName}</h2>
+            <iframe src={selectedDocument} title={selectedDocumentName} className={styles.modalIframe}></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

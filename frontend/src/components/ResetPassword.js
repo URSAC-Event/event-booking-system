@@ -23,11 +23,12 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    // Updated password pattern to include special characters
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
     // Check if the password meets the criteria
     if (!passwordPattern.test(password)) {
-      setMessage('Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, and a number.');
+      setMessage('Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.');
       return;
     }
 
@@ -60,7 +61,7 @@ const ResetPassword = () => {
   };
 
   const handleGoBackToLogin = () => {
-    navigate('/login'); // Redirect to the Login page
+    navigate('/login', { replace: true }); // Redirect to the Login page and replace the current history entry
   };
 
   return (

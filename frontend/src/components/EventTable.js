@@ -1,5 +1,6 @@
 // src/components/EventTable.js
 import React from 'react';
+import axios from 'axios';
 import styles from './Admin.module.css'; // Make sure the CSS file is correctly imported
 
 const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm, handleDelete, handleButtonHover }) => {
@@ -16,6 +17,8 @@ const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm
           return "";
         }
       };
+      
+      
   return (
     <div>
       <h2>Event requests</h2>
@@ -81,14 +84,15 @@ const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm
                   </button>
 
                   <button
-                    className={styles.button}
-                    onClick={() => {
-                      console.log('Delete button clicked for event ID:', event.id);
-                      handleDelete(event.id);
-                    }}
-                  >
-                    ❌
-                  </button>
+  className={styles.button}
+  onClick={() => {
+    console.log('Delete button clicked for event ID:', event.id);
+    handleDelete(event.id, event.organization); // Call delete and notify organization
+  }}
+>
+  ❌
+</button>
+
                 </td>
               </tr>
             ))

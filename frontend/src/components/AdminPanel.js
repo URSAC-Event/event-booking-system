@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./AdminPanel.module.css"; // Adjust the path if necessary
-
+import ReportFormadmin from "./ReportFormadmin";
 const AdminPanel = () => {
   const [reports, setReports] = useState([]);
 
@@ -44,11 +44,14 @@ const AdminPanel = () => {
                 Delete Report
               </button>
             </li>
+            
           ))}
         </ul>
       ) : (
         <p className={styles.noReports}>No pending reports</p>
       )}
+
+      <ReportFormadmin/>
     </div>
   );
 };

@@ -24,6 +24,15 @@ app.use("/uploads", express.static("uploads"));
 //report 
 
 
+
+
+//delete event send email for reason 
+
+
+
+
+
+
 //reset password
 // Reset password route
 app.post('/api/reset-password', (req, res) => {
@@ -58,6 +67,87 @@ app.post('/api/reset-password', (req, res) => {
 
 
 
+app.post('/api/reset-passwordadmin', (req, res) => {
+  const { email, newPassword } = req.body;
+
+  // Check if the email exists in the users table
+  const checkEmailQuery = 'SELECT * FROM admin WHERE adminemail = ?';
+  connection.query(checkEmailQuery, [email], (err, results) => {
+    if (err) {
+      console.log('Error checking email:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    if (results.length === 0) {
+      // If no user is found with that email
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Email exists, now update the password
+    const updatePasswordQuery = 'UPDATE admin SET adminpassword = ? WHERE adminemail = ?';
+    connection.query(updatePasswordQuery, [newPassword, email], (err, result) => {
+      if (err) {
+        console.log('Error updating password:', err);
+        return res.status(500).json({ message: 'Failed to update password' });
+      }
+
+      // Password successfully updated
+      res.status(200).json({ message: 'Password successfully updated!' });
+    });
+  });
+});
+
+
+
+//admin email check
+
+
+app.post('/check-email-admin', (req, res) => {
+  const { email } = req.body;
+
+  // Query to check if email exists in the users table
+  connection.query('SELECT * FROM admin WHERE adminemail = ?', [email], (err, result) => {
+    if (err) {
+      res.status(500).send('Server error');
+      return;
+    }
+
+    if (result.length > 0) {
+      // Email exists
+      res.status(200).send({ exists: true, message: 'Email exists' });
+    } else {
+      // Email does not exist
+      res.status(404).send({ exists: false, message: 'No email found' });
+    }
+  });
+});
+
+
+
+// Route to check if the email exists in the database
+app.post('/check-email', (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  // Query to check if the email exists
+  const query = 'SELECT * FROM users WHERE email = ?';
+  connection.query(query, [email], (err, results) => {
+    if (err) {
+      console.error('Error checking email:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    if (results.length > 0) {
+      // Email exists in the database
+      res.status(200).json({ message: 'Email exists' });
+    } else {
+      // Email does not exist
+      res.status(404).json({ message: 'Email not found' });
+    }
+  });
+});
 
 
 // check email 
@@ -83,7 +173,22 @@ app.post('/check-email', (req, res) => {
 });
 
 
+// Route to submit a report (User side)
+app.post('/submitReportadmin', (req, res) => {
+  const { userId, message } = req.body;
 
+  // Insert the report into the database
+  const query = 'INSERT INTO reports (user_id, messageadmin, status) VALUES (?, ?, "pending")';
+  connection.query(query, [userId, message], (err, result) => {
+    if (err) {
+      console.error('Error inserting report:', err);
+      return res.status(500).json({ error: 'Failed to submit report' });
+    }
+
+    console.log('Report submitted:', result);
+    res.status(200).json({ message: 'Report submitted successfully', reportId: result.insertId });
+  });
+});
 
 
 // Route to submit a report (User side)
@@ -137,7 +242,7 @@ app.delete('/api/reports/:id', (req, res) => {
 
 
 // Serve files from the 'documents' and 'uploads' folders
-app.use('/documents', express.static(path.join(__dirname, 'documents')));
+app.use('/adviserpic', express.static(path.join(__dirname, 'adviserpic')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //FOR SLIDESHOW
@@ -215,45 +320,7 @@ app.post('/api/events', upload.fields([{ name: 'document' }, { name: 'poster' }]
 
 
 
-// POST route to add councils
-app.post('/api/councils', upload.single('adviserPicture'), (req, res) => {
-  const { organization, adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
-  const adviserPicture = req.file ? req.file.filename : null;
 
-  // SQL query to insert council data into the `councils` table
-  const query = `
-    INSERT INTO councils (organization, adviser, adviserPIC, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    organization,
-    adviser,
-    adviserPicture, // Save the filename of the uploaded picture into adviserPIC column
-    president,
-    vicePresident,
-    secretary,
-    treasurer,
-    auditor,
-    pro,
-    rep,
-    representative,
-  ];
-
-  // Execute the query to save the data in the database
-  connection.query(query, values, (err, results) => {
-    if (err) {
-      console.error('Error saving data to the database: ', err);
-      return res.status(500).json({ message: 'Error saving data to the database', error: err });
-    }
-
-    // Return a success response
-    res.status(200).json({
-      message: 'Council data saved successfully!',
-      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative },
-    });
-  });
-});
 
 
 // GET route to fetch all events
@@ -375,6 +442,44 @@ app.post('/adminlogin', (req, res) => {
 app.get('/api/approved', (req, res) => {
   const { date } = req.query;
 
+  // Get the current date in YYYY/MM/DD format
+  const currentDate = new Date().toISOString().split("T")[0].replace(/-/g, "/");
+
+  if (!date) {
+    // Fetch approved events with dates today or in the future
+    connection.query(
+      'SELECT * FROM approved WHERE DATE_FORMAT(date, "%Y/%m/%d") >= ?',
+      [currentDate],
+      (err, results) => {
+        if (err) {
+          console.error("Error querying database:", err);
+          return res.status(500).json({ message: 'Database query error' });
+        }
+        res.json(results); // Return filtered events
+      }
+    );
+  } else {
+    // Convert the provided date to YYYY/MM/DD format for comparison
+    const formattedDate = new Date(date).toISOString().split("T")[0].replace(/-/g, "/");
+    
+    // Fetch events for the specific date range
+    connection.query(
+      'SELECT * FROM approved WHERE DATE_FORMAT(date, "%Y/%m/%d") <= ? AND DATE_FORMAT(datefrom, "%Y/%m/%d") >= ?',
+      [formattedDate, formattedDate],
+      (err, results) => {
+        if (err) {
+          console.error("Error querying database:", err);
+          return res.status(500).json({ message: 'Database query error' });
+        }
+        res.json(results); // Return filtered events
+      }
+    );
+  }
+});
+
+app.get('/api/approvedhistory', (req, res) => {
+  const { date } = req.query;
+
   if (!date) {
     // Fetch all approved events if no date is provided
     connection.query('SELECT * FROM approved', (err, results) => {
@@ -402,7 +507,6 @@ app.get('/api/approved', (req, res) => {
     );
   }
 });
-
 
 
 
@@ -533,7 +637,7 @@ app.post('/api/events/approve/:id', (req, res) => {
 
 
 //COUNCILSS SLIDEBAR SELECTION and display
-app.get('/api/councils', (req, res) => {
+app.get('/api/councilsdisplay', (req, res) => {
   connection.query('SELECT * FROM councils', (err, results) => {
     if (err) {
       console.error('Error querying database:', err);
@@ -546,14 +650,15 @@ app.get('/api/councils', (req, res) => {
 
 //edit council on council display 
 // Update council details endpoint
-app.put('/api/councils/:id', (req, res) => {
+app.put('/api/councilsedit/:id', (req, res) => {
   const councilId = req.params.id; // ID from the URL
-  const { adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
+  const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
 
   // Ensure created_at is never included
   const updateQuery = `
     UPDATE councils
     SET adviser = ?, 
+        link = ?,
         president = ?, 
         vicePresident = ?, 
         secretary = ?, 
@@ -565,7 +670,7 @@ app.put('/api/councils/:id', (req, res) => {
     WHERE id = ?
   `;
 
-  const values = [adviser, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, councilId];
+  const values = [adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, councilId];
 
   connection.query(updateQuery, values, (err, result) => {
     if (err) {
@@ -580,6 +685,78 @@ app.put('/api/councils/:id', (req, res) => {
 });
 
   
+
+
+const storageForAdviserPic = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'adviserpic')); // Store files in 'adviserpic' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename with timestamp
+  },
+});
+
+const uploadForAdviserPic = multer({ storage: storageForAdviserPic }).single('adviserPicture');
+
+
+
+
+// POST route to add councils
+app.post('/api/councilsadd', uploadForAdviserPic, (req, res) => {
+  const { organization, adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
+  const adviserPicture = req.file ? req.file.filename : null;
+
+  console.log('Request body:', req.body);
+  console.log('Uploaded file:', req.file);
+
+  // Validate required fields
+  if (!organization || !adviser || !link) {
+    return res.status(400).json({ message: 'Organization, Link, and Adviser are required fields.' });
+  }
+
+  const query = `
+    INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    organization,
+    adviser,
+    adviserPicture,
+    link,
+    president,
+    vicePresident,
+    secretary,
+    treasurer,
+    auditor,
+    pro,
+    rep,
+    representative,
+  ];
+
+  console.log('SQL Query:', query);
+  console.log('Values:', values);
+
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('Error saving data to the database:', err.sqlMessage || err.message);
+      return res.status(500).json({ message: 'Error saving data to the database', error: err.sqlMessage || err.message });
+    }
+
+    res.status(200).json({
+      message: 'Council data saved successfully!',
+      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative },
+    });
+  });
+});
+
+
+
+
+
+
+
+
 
 
 // Start server

@@ -12,6 +12,8 @@ import EventTableapproved from './EventTableapproved';
 import logo from "../assets/urslogo.png";
 import { House,Building2, CalendarPlus,CalendarCheck, Users, User, FilePenLine } from "lucide-react";
 import AdminPanel from "./AdminPanel"; 
+import EventHistory from './EventHistory';
+import ReportForm from "./ReportForm";
 const Admin = () => {
 
     const [showAddCouncilForm, setShowAddCouncilForm] = useState(false);
@@ -95,37 +97,73 @@ const Admin = () => {
             })
             .catch(error => console.error('Error fetching events:', error));
     }, []);
+
+
+
     // para sa delete button
-    const handleDelete = async (eventId) => {
-        console.log('Attempting to delete event with ID:', eventId);
-        
-        const confirmed = window.confirm('Are you sure you want to delete this event?');
-        if (!confirmed) return;
-    
-        try {
-            const response = await fetch(`http://localhost:5000/api/events/${eventId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            const responseBody = await response.json();  // Get the response body
-            console.log('Response body:', responseBody);  // Log the response body
-    
-            if (response.ok) {
-                console.log('Delete response:', responseBody);
-                alert('Event deleted successfully');
-                setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
-            } else {
-                console.error('Delete failed:', responseBody);
-                alert(`Failed to delete event: ${responseBody.message || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            alert('Error deleting event');
+   const handleDelete = async (eventId, organization) => {
+    console.log('Attempting to delete event with ID:', eventId);
+
+    const confirmed = window.confirm('Are you sure you want to delete this event?');
+    if (!confirmed) return;
+
+    try {
+        // Step 1: Delete the event
+        const response = await fetch(`http://localhost:5000/api/events/${eventId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const responseBody = await response.json();
+        console.log('Response body:', responseBody);
+
+        if (response.ok) {
+            // Step 2: Notify the organization about the deletion
+            console.log(`Notifying organization: ${organization}`);
+            await sendEventNotification(organization, eventId); // Send email notification
+
+            alert('Event deleted successfully');
+            setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId)); // Remove event from the UI
+        } else {
+            console.error('Delete failed:', responseBody);
+            alert(`Failed to delete event: ${responseBody.message || 'Unknown error'}`);
         }
-    };
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Error deleting event');
+    }
+};
+
+// Function to send notification to the organization
+const sendEventNotification = async (organization, eventId) => {
+    try {
+        const response = await fetch('http://localhost:5000/api/send-event-notification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ organization, eventId }),
+        });
+
+        const responseBody = await response.json();
+        console.log('Notification Response:', responseBody);
+        if (response.ok) {
+            console.log('Notification sent to organization email');
+        } else {
+            console.error('Failed to send notification:', responseBody.message);
+        }
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+};
+
+    
+    
+
+
+    
 // para sa approve button
 const handleConfirm = async (eventId) => {
     console.log('Attempting to approve event with ID:', eventId);
@@ -157,10 +195,13 @@ const handleConfirm = async (eventId) => {
         alert('Error approving event');
     }
 };
-    const handleLogout = () => {
-        localStorage.removeItem('user');  // Clear session
-        navigate('/login');
-    };
+const handleLogout = () => {
+    
+    sessionStorage.clear(); 
+  
+    
+    navigate("/login", { replace: true });
+  };
     const handleViewDocument = (documentName) => {
         // Construct the URL for the document in the 'uploads' folder
         const fullDocumentUrl = `http://localhost:5000/uploads/${documentName}`;
@@ -311,7 +352,14 @@ const handleConfirm = async (eventId) => {
       <h1>Admin Dashboard</h1>
       <AdminPanel />
     </div>
-      </div>This is the Reports section</div>;
+      </div>
+    </div>;
+       case 'History':
+        return <div className={styles.sectionBox}><div>
+         <div>
+      <EventHistory />
+    </div>
+      </div></div>;
          default:
      return <div className={styles.sectionBox}>This is the Dashboard section</div>;
         }
@@ -381,6 +429,13 @@ const handleConfirm = async (eventId) => {
     >
         <FilePenLine size={20} color="#f2f8ff" />
         <span>Reports</span>
+    </li>
+    <li
+        className={`${styles.sidebarItem} ${activeComponent === 'History' ? styles.activeSidebarItem : ''}`}
+        onClick={() => setActiveComponent('History')}
+    >
+        <FilePenLine size={20} color="#f2f8ff" />
+        <span>History</span>
     </li>
 </ul>
 
