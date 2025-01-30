@@ -88,7 +88,7 @@ const ResetPassword = () => {
             placeholder="Confirm password"
             required
           />
-          <button type="submit">Reset Password</button>
+          <button type="submit" className={styles.submit}>Reset Password</button>
         </form>
       ) : (
         <div>

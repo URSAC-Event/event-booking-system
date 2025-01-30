@@ -110,26 +110,21 @@
   flex-wrap: wrap; /* Allow wrapping for smaller screens */
   gap: 36px; /* Reduced gap for smaller screens */
   justify-content: space-between; /* Space out items */
-  height: 550px;
 }
 
-.calendarSection {
-  flex: 1; /* Allow this section to take up remaining space */
-  max-width: 400px;
-}
 
 /* Upcoming Events Card */
 .upcomingEventsCard {
-  position: flex;
-  height: auto;
-  max-height: 500px;  /* Adjust this if needed */
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  max-height: 500px;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  flex: 1; /* Allow it to take remaining space */
+  flex: 1 1 45%; /* Allow it to take remaining space */
   max-width: 100%; /* Full width on small screens */
   min-width: 300px; /* Ensure it doesn’t shrink too much */
-  display: block;
 }
 
 .upcomingEventsImageContainer {
@@ -206,14 +201,23 @@
   margin-bottom: 16px;
 }
 
-.calendarContainer {
-  flex: 0 0 auto; /* Fixed width of 300px */
-  max-width: 500px;
+.calendarSection {
+  flex: 1 1 45%; /* Allow it to take remaining space */
+  max-width: 400px;
   min-width: 300px;
+  max-height: 500px;
   padding: 48px;
   border-radius: 16px;
   background-color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: scroll ;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.calendarSection h1{
+  font-size: 24px;
+  color: #0e4296;
 }
 
 .calendarTitle {
@@ -349,7 +353,7 @@
   background-color: #f9f9f9;
   border: 1px solid #ccc;
   border-radius: 12px;
-  max-height: 600px;
+  max-height: 640px;
   overflow-y: auto; /* Allow scrolling if content overflows */
 }
 
