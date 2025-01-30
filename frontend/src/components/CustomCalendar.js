@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./Customcal.css";
+import styles from "./Customcal.module.css";
+
 
 const CustomCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(null); // Store selected date
@@ -81,16 +82,16 @@ const CustomCalendar = () => {
 
   return (
     <div className={styles.calendarContainer}>
-      <div>
-        <button onClick={() => changeMonth(-1)}>
-          <FontAwesomeIcon icon={faCaretLeft} />
+      <div className={styles.MonthSelection}>
+        <button className={styles.arrows} onClick={() => changeMonth(-1)}>
+          <FontAwesomeIcon icon={faCaretLeft} className={styles.icon}/>
         </button>
         <h3>
           {calendarDate.toLocaleString("default", { month: "long" })}{" "}
           {calendarDate.getFullYear()}
         </h3>
-        <button onClick={() => changeMonth(1)}>
-          <FontAwesomeIcon icon={faCaretRight} />
+        <button className={styles.arrows} onClick={() => changeMonth(1)}>
+          <FontAwesomeIcon icon={faCaretRight} className={styles.icon}/>
         </button>
       </div>
 
@@ -146,8 +147,8 @@ const CustomCalendar = () => {
         ))}
       </div>
 
-      <div>
-        <h4>Events on {selectedDate ? selectedDate.toLocaleDateString() : ""}</h4>
+      <div className={styles.listOfEvents}>
+        <h3>Scheduled Events</h3>
         <ul>
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (

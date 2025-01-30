@@ -122,17 +122,7 @@ const PublicPage = () => {
        
       </div>
 
-      <div className={styles.subFooter}>
-        <div className={styles.about}>
-          <h4 className={styles.aboutTitle}>About Us</h4>
-          <p className={styles.aboutSubtitle}>
-            This Event Booking System was created by the undergraduate students
-            of BS-CpE 4 as their thesis project.
-          </p>
-        </div>
-        <h5 className={styles.connectTitle}>Connect</h5>
-          
-      </div>
+      
 
 
       {/* Footer */}
