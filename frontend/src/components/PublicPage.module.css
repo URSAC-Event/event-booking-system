@@ -476,7 +476,7 @@
   font-size: 100px;
 }
 .members{
-  padding: 12pxz;
+  padding: 12px;
   font-size: 12px;
   background-color: #dcdbdb;
 }
@@ -547,7 +547,7 @@
 
 @media (max-width: 930px) {
   .navbar {
-    padding: 24px 16px;
+    padding: 16px 12px;
   }
 
   .firstContainer {
@@ -596,9 +596,9 @@
   }
 }
 /* General styles for small screens */
-@media (max-width: 400px) {
+@media (max-width: 426px) {
   .container {
-    padding: 16px 8px;
+    padding: 8px 4px;
   }
 
   /* Navbar adjustments */
