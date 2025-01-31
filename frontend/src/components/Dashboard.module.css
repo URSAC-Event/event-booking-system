@@ -294,6 +294,10 @@
     width: 100%;
 }
 
+.position {
+    text-transform: capitalize;
+}
+
 .vgmo:not(:last-child) {
     margin-bottom: 32px;
 }

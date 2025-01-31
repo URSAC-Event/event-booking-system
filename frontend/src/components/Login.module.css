@@ -69,7 +69,17 @@
     border-radius: 8px;
     box-sizing: border-box;
 }
-
+.forgotPassword{
+    margin-top: 0;
+    font-size: 14px;
+    margin-bottom: 0px;
+    color: #063970;
+    cursor: pointer;
+    text-align: right;
+}
+.forgotPassword:hover{
+    text-decoration: underline;
+}
 /* Button styles */
 .button {
     padding: 12px 20px;

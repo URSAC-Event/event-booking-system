@@ -71,7 +71,7 @@
 }
 
 .forgot {
-    margin-top: 0;
+    margin-top: 4px;
     font-size: 14px;
     margin-bottom: 0px;
     color: #063970;
@@ -86,7 +86,6 @@
 .button {
     padding: 12px 20px;
     width: 100%; /* Full-width button */
-    margin-top: 12px;
     margin-bottom: 24px;
     border: none;
     border-radius: 8px;
@@ -200,7 +199,7 @@
 /* Eye Icon Positioned Inside the Input Field */
 .eyeButton {
     position: absolute;
-    top: 60%;
+    top: 56%;
     right: 10px; /* Aligns the button to the right inside the input */
     transform: translateY(-50%); /* Centers the icon vertically */
     background: none;

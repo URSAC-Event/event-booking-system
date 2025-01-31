@@ -14,10 +14,6 @@ const Login = () => {
     const navigate = useNavigate(); // Initialize navigate function
     const [showPassword, setShowPassword] = useState(false);
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -75,18 +71,22 @@ const Login = () => {
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
+        
+
+             
             </button> </div>
-                    {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-                    <button type="submit" className={styles.button}>Login</button>
-                </form>
-                <div className={styles.linksContainer}>
+            <div className={styles.linksContainer}>
                     <p
                         className={styles.forgotPassword}
                         onClick={() => navigate('/forgotpassword')} // Navigate to Forgot Password
                     >
                         Forgot Password?
                     </p>
-                </div>
+            </div>
+                    {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+                    <button type="submit" className={styles.button}>Login</button>
+                </form>
+ 
                 <div className={styles.adminCont}>
                     <p className={styles.ask}>Are you an admin?</p>
                     <p

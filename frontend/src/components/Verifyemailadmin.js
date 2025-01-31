@@ -39,7 +39,8 @@ const Verifyemailadmin = () => {
 
   return (
     <div className={styles.verifyEmailContainer}>
-      <h2>We can send a login code to:</h2>
+      <div className={styles.verifyCont}>
+      <h2>We sent a verification code to:</h2>
       <p className={styles.email}>{email}</p>
       <div className={styles.buttonsContainer}>
         <button
@@ -51,6 +52,7 @@ const Verifyemailadmin = () => {
         <button className={styles.continueButton} onClick={handleContinue}>
           Continue
         </button>
+        </div>
       </div>
     </div>
   );

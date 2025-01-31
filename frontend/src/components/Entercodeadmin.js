@@ -43,9 +43,10 @@ const EnterCodeadmin = () => {
 
   return (
     <div className={styles.enterCodeContainer}>
-      <h2>Enter security code</h2>
-      <p>Please check your email for a message with your code. Your code is 6 digits long.</p>
-      <p className={styles.emailSent}>We sent your code to: {email}</p>
+      <div className={styles.codeCont}>
+      <h2>Enter Verification Code</h2>
+      <p className={styles.emailSent}>We sent your code to:</p>
+      <p className={styles.email}> {email}</p>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -55,7 +56,16 @@ const EnterCodeadmin = () => {
           placeholder="Enter code"
           required
         />
-        <button type="submit" disabled={isSubmitting}>Submit</button>
+         <p className={styles.subtext}>Please check your email for a message with your code. Your code is 6 digits long.</p>
+        <div className={styles.buttons}>
+        <button
+                           onClick={() => navigate('/forgotpassword')}
+                           className={styles.backButton}
+                         >
+                           Back
+                 </button>
+        <button className={styles.submit} type="submit" disabled={isSubmitting}>Submit</button>
+        </div>
       </form>
 
       {message && <p>{message}</p>}
@@ -69,10 +79,8 @@ const EnterCodeadmin = () => {
           color="blue"
         />
       )}
-
-      {/* Debugging: Show verification code */}
-      <p className={styles.debug}>Verification code (for testing): {verificationCode}</p>
-    </div>
+      </div>
+      </div>
   );
 };
 

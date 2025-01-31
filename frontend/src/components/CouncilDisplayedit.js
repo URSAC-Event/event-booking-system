@@ -85,7 +85,7 @@ const CouncilDisplay = () => {
                   {Object.entries(selectedCouncil).map(([key, value]) => (
                     key !== 'id' && ( // Skip ID field from display
                       <tr key={key}>
-                        <td><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong></td>
+                        <td className={styles.position}><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong></td>
                         <td>{value}</td>
                       </tr>
                     )

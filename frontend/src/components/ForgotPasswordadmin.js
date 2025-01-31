@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Forgotpassword.module.css'; // Import your CSS module
+import back from '../assets/close-outline.svg'
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -32,6 +33,8 @@ const ForgotPassword = () => {
 
     return (
       <div className={styles.forgotPasswordContainer}>
+        <div className={styles.formCont}>
+          <img className={styles.backButton} src={back} onClick={() => navigate('/adminlogin')}/>
         <h2>Forgot Password</h2>
         <input
           type="email"
@@ -48,6 +51,7 @@ const ForgotPassword = () => {
         >
           Submit
         </button>
+        </div>
       </div>
     );
   };
