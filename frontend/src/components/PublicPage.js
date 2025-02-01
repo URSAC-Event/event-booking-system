@@ -26,9 +26,6 @@ const PublicPage = () => {
   ); // New sidebar state
   const navigate = useNavigate();
 
-
-
-
   //login button
 
   const handleLoginClick = () => {
