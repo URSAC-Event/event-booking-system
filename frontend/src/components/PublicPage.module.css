@@ -487,6 +487,7 @@
 }
 ::-webkit-scrollbar-track {
   background-color: rgb(255, 255, 255);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb {
   background-color: #063970;
@@ -525,27 +526,7 @@
   }
 }
 
-
-@media (max-width: 1250px) {
-  .firstContainer {
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-  }
-
-  .calendarContainer {
-    width: 100%;
-    padding: 24px;
-    max-width: 100%;
-  }
-
-  .eventsList {
-    justify-content: center;
-    align-items: stretch; /* Ensure alignment works well */
-  }
-}
-
-@media (max-width: 930px) {
+@media (max-width: 1024px) {
   .navbar {
     padding: 16px 12px;
   }
@@ -568,10 +549,10 @@
   }
 }
 
-@media (max-width: 426px) {
+@media (max-width: 768px) {
   .navbar {
     padding: 16px;
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .title {
@@ -597,28 +578,27 @@
 }
 /* General styles for small screens */
 @media (max-width: 426px) {
+  .navbar{
+    padding: 8px 4px;
+
+  }
   .container {
     padding: 8px 4px;
   }
 
   /* Navbar adjustments */
   .navbar {
-    flex-direction: column;
-    padding: 16px 8px;
-    text-align: center;
-  }
-
-  .title {
-    font-size: 18px;
-  }
-
-  .subtitle {
-    font-size: 14px;
+    flex-direction: row;
+    padding: 18px 16px;
   }
 
   .loginButton {
     font-size: 12px;
     padding: 8px;
+  }
+
+  .loginButton p {
+    display: none;
   }
 
   /* Sidebar adjustments */

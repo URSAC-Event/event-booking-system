@@ -161,12 +161,14 @@
     padding: 24px;
     border-radius: 16px;
     margin-top: 48px;
+   
 }
 
 .sidebarrContainer {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 24px;
+
 }
 
 .sidebarr {
@@ -220,6 +222,10 @@
 
 .addEventButton:hover {
     background-color: #0e4296bc;
+}
+
+.eventVector{
+    height: 200px;
 }
 
 /* VMGO */
@@ -292,6 +298,7 @@
 
 .sidebarContent {
     width: 100%;
+    display: flex;
 }
 
 .position {
@@ -317,9 +324,10 @@
 
 .modal {
     background-color: #fff;
-    padding: 20px;
     border-radius: 10px;
     width: 500px;
+    height: 600px;
+    overflow-y: scroll;
 }
 
 /* Form group styles */
@@ -351,7 +359,7 @@
 /* Modal */
 .modal {
     background-color: #fff;
-    padding: 10px;
+    padding: 20px;
     /* Reduced padding */
     border-radius: 8px;
     width: 400px;
@@ -394,8 +402,7 @@
 }
 
 .cancelButton {
-    background-color: #ccc;
-    color: #fff;
+    color: black;
 }
 
 
@@ -466,10 +473,15 @@ span {
     width: 350px;
     /* Reduced width */
     max-width: 80%;
-    height: 90%;
+    height: 600px;
+    overflow-y: scroll;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
-
+.modalHeader{
+    color: #063970;
+    margin-bottom: 8px;
+    font-size: 24px;
+}
 /* Form styling */
 .form {
     display: flex;
@@ -551,9 +563,32 @@ span {
 
 
 
+
+
+@media screen and (min-width: 1024px) {
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        /* Center content */
+    }
+    
+    .navbar {
+        padding: 24px 96px;
+        
+    }
+
+    .content {
+        gap: 36px;
+        padding: 24px 96px;
+    }
+
+    .firstContainer {
+        gap: 36px;
+    }
+}
 @media screen and (max-width: 768px) {
     .navbar {
-        flex-direction: column;
+        flex-direction: row;
         /* Stack items vertically */
         padding: 12px 16px;
     }
@@ -565,7 +600,7 @@ span {
     .subtitle {
         font-size: 12px;
     }
-
+    
     .logoutButton {
         font-size: 12px;
     }
@@ -575,7 +610,7 @@ span {
         /* Stack content vertically */
         gap: 12px;
     }
-
+    
     .firstContainer {
         flex-direction: column;
         /* Stack items */
@@ -590,21 +625,17 @@ span {
     }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 426px) {
     .navbar {
         padding: 8px 12px;
+        flex-direction: row;
+    }
+    .logo {
+        height: 44px;
     }
 
-    .title {
-        font-size: 14px;
-    }
-
-    .subtitle {
-        font-size: 10px;
-    }
-
-    .logoutButton {
-        font-size: 10px;
+    .logoutButton p{
+        display: none;
     }
 
     .content {
@@ -620,27 +651,5 @@ span {
     .sidebarr,
     .sidebar {
         max-height: 300px;
-    }
-}
-
-@media screen and (min-width: 1400px) {
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        /* Center content */
-    }
-
-    .navbar {
-        padding: 24px 96px;
-        /* Larger padding */
-    }
-
-    .content {
-        gap: 36px;
-        padding: 24px 96px;
-    }
-
-    .firstContainer {
-        gap: 36px;
     }
 }

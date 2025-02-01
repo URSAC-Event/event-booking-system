@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './Dashboard.module.css'; // For dashboard styles
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import styles from "./Dashboard.module.css"; // For dashboard styles
 
 const CouncilDisplay = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
@@ -12,10 +12,10 @@ const CouncilDisplay = () => {
   useEffect(() => {
     const fetchCouncils = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/councils');
+        const response = await axios.get("http://localhost:5000/api/councils");
         setCouncilsAndOrganizations(response.data);
       } catch (error) {
-        console.error('Error fetching councils:', error);
+        console.error("Error fetching councils:", error);
       }
     };
 
@@ -41,21 +41,23 @@ const CouncilDisplay = () => {
   // Handle form submission for editing
   const handleEditCouncil = async (e) => {
     e.preventDefault();
-  
+
     try {
-      const response = await axios.put(`http://localhost:5000/api/councilsedit/${formData.id}`, formData); // formData shouldn't include 'created_at'
+      const response = await axios.put(
+        `http://localhost:5000/api/councilsedit/${formData.id}`,
+        formData
+      ); // formData shouldn't include 'created_at'
       if (response.status === 200) {
-        alert('Council details updated successfully!');
+        alert("Council details updated successfully!");
         setIsEditModalOpen(false);
       } else {
-        alert('Failed to update council details.');
+        alert("Failed to update council details.");
       }
     } catch (error) {
-      console.error('Error updating council:', error);
-      alert('An error occurred while updating council details.');
+      console.error("Error updating council:", error);
+      alert("An error occurred while updating council details.");
     }
   };
-  
 
   return (
     <div className={styles.leftSection}>
@@ -67,7 +69,11 @@ const CouncilDisplay = () => {
             <button
               key={item.organization}
               onClick={() => setSelectedCouncil(item)}
-              className={`${styles.sidebarButton} ${selectedCouncil?.organization === item.organization ? styles.selected : ''}`}
+              className={`${styles.sidebarButton} ${
+                selectedCouncil?.organization === item.organization
+                  ? styles.selected
+                  : ""
+              }`}
             >
               {item.organization}
             </button>
@@ -75,21 +81,30 @@ const CouncilDisplay = () => {
         </div>
 
         <div className={styles.sidebarContent}>
-          <h3>{selectedCouncil ? selectedCouncil.organization : 'Select a Council/Organization'}</h3>
+          <h3>
+            {selectedCouncil
+              ? selectedCouncil.organization
+              : "Select a Council/Organization"}
+          </h3>
 
           {selectedCouncil && (
             <div className={styles.details}>
-              <button className={styles.editButton} onClick={openEditModal}>Edit</button>
+              <button className={styles.editButton} onClick={openEditModal}>
+                Edit
+              </button>
               <table>
                 <tbody>
-                  {Object.entries(selectedCouncil).map(([key, value]) => (
-                    key !== 'id' && ( // Skip ID field from display
-                      <tr key={key}>
-                        <td className={styles.position}><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong></td>
-                        <td>{value}</td>
-                      </tr>
-                    )
-                  ))}
+                  {Object.entries(selectedCouncil).map(
+                    ([key, value]) =>
+                      key !== "id" && ( // Skip ID field from display
+                        <tr key={key}>
+                          <td className={styles.position}>
+                            <strong>{key.replace(/([A-Z])/g, " $1")}:</strong>
+                          </td>
+                          <td>{value}</td>
+                        </tr>
+                      )
+                  )}
                 </tbody>
               </table>
             </div>
@@ -101,32 +116,35 @@ const CouncilDisplay = () => {
       {isEditModalOpen && (
         <div className={styles.modalWrapper}>
           <div className={styles.modalContent}>
-            <h3>Edit Council Details</h3>
+            <h3 className={styles.modalHeader}>Edit Council Details</h3>
             <form onSubmit={handleEditCouncil} className={styles.form}>
-           
-            {Object.keys(formData).map((field) => (
-  field !== 'id' && ( // We already removed 'createdAt' in the previous step
-    <div key={field} className={styles.formGroup}>
-      <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
-      <input
-        type="text"
-        name={field}
-        value={formData[field]}
-        onChange={handleInputChange}
-        className={styles.input}
-      />
-    </div>
-  )
-))}
+              {Object.keys(formData).map(
+                (field) =>
+                  field !== "id" && ( // We already removed 'createdAt' in the previous step
+                    <div key={field} className={styles.formGroup}>
+                      <label>{field.replace(/([A-Z])/g, " $1")}:</label>
+                      <input
+                        type="text"
+                        name={field}
+                        value={formData[field]}
+                        onChange={handleInputChange}
+                        className={styles.input}
+                      />
+                    </div>
+                  )
+              )}
 
               <div className={styles.formButtons}>
-                <button type="submit" className={styles.submitButton}>Save</button>
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
                   className={styles.cancelButton}
                 >
                   Cancel
+                </button>
+
+                <button type="submit" className={styles.submitButton}>
+                  Save
                 </button>
               </div>
             </form>

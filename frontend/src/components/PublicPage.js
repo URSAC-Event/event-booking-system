@@ -50,7 +50,7 @@ const PublicPage = () => {
         </div>
         <button onClick={handleLoginClick} className={styles.loginButton}>
           <img src={login} className={styles.loginIcon} />
-          Login
+          <p>Login</p>
         </button>
       </nav>
 

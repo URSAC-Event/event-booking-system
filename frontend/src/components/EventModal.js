@@ -218,7 +218,7 @@ const eventHandleCheck = async () => {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <h3>Add Event</h3>
+        <h3 className={styles.modalHeader}>Add Event</h3>
         <form onSubmit={handleModalSubmit} encType="multipart/form-data">
           <div className={styles.formGroup}>
             <label>Venue:</label>
@@ -412,15 +412,14 @@ const eventHandleCheck = async () => {
     )}
 
           <div className={styles.modalFooter}>
-              
-             <button type="submit" className={styles.submitButton}>
-        Submit
-      </button>
             <button
               onClick={() => setModalOpen(false)}
               className={styles.cancelButton}
             >
               Cancel
+            </button>
+            <button type="submit" className={styles.submitButton}>
+               Submit
             </button>
           </div>
          
