@@ -69,23 +69,22 @@
     border-radius: 8px;
     box-sizing: border-box;
 }
-
-.forgot {
-    margin-top: 4px;
+.forgotPassword{
+    margin-top: 0;
     font-size: 14px;
     margin-bottom: 0px;
     color: #063970;
     cursor: pointer;
+    text-align: right;
 }
-
-.forgot:hover {
+.forgotPassword:hover{
     text-decoration: underline;
 }
-
 /* Button styles */
 .button {
     padding: 12px 20px;
     width: 100%; /* Full-width button */
+    margin-top: 12px;
     margin-bottom: 24px;
     border: none;
     border-radius: 8px;
@@ -136,59 +135,12 @@
 /* Error message styles */
 .error {
     color: red; /* Style for error messages */
-    margin-top: 0;
+    margin-top: -8px;
+    margin-bottom: 8px;
     text-align: left;
+    font-size: 14px;
 }
 
-.flex {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
-  margin-top: -8px;
-  margin-bottom: 8px;
-}
-.multiChild {
-  justify-content: space-between; /* Space between when there are two children */
-}
-
-.singleChild {
-  justify-content: flex-end !important; /* Align to the right when there's only one child */
-}
-
-
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .formContainer {
-        max-width: 90%; /* Allow form to take 90% of the screen */
-    }
-    .title {
-        font-size: 24px; /* Slightly smaller title */
-    }
-}
-
-@media (max-width: 480px) {
-    .formContainer {
-        padding: 20px; /* Reduce padding for very small screens */
-        max-width: 95%; /* Take almost the full width */
-    }
-    .title {
-        font-size: 22px; /* Adjust title size */
-    }
-    .input {
-        padding: 10px; /* Compact input fields */
-    }
-    .button {
-        padding: 10px; /* Adjust button padding */
-    }
-    .backButton {
-        padding: 8px 12px; /* Smaller back button */
-    }
-    .error, .forgot {
-        font-size: 12px;
-    }
-}
 
 
 .inputContainer {
@@ -199,7 +151,7 @@
 /* Eye Icon Positioned Inside the Input Field */
 .eyeButton {
     position: absolute;
-    top: 56%;
+    top: 40%;
     right: 10px; /* Aligns the button to the right inside the input */
     transform: translateY(-50%); /* Centers the icon vertically */
     background: none;
@@ -211,4 +163,39 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #fff;
+    padding: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .formContainer {
+        max-width: 90%; /* Allow form to take 90% of the screen */
+    }
+    .title {
+        font-size: 24px; /* Slightly smaller title */
+    }
+}
+
+@media (max-width: 426px) {
+    .container {
+        background-color: white;
+        position: relative;
+    }
+
+    .formContainer {
+        position: static;
+        padding: 20px; /* Reduce padding for very small screens */
+        max-width: 100%; /* Take almost the full width */
+        box-shadow: none;
+    }
+    .title {
+        font-size: 22px; /* Adjust title size */
+    }
+    .input {
+        padding: 10px; /* Compact input fields */
+    }
+    .button {
+        padding: 10px; /* Adjust button padding */
+    }
 }
