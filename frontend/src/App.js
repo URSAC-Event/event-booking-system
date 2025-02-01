@@ -14,7 +14,16 @@ import entercodeadmin from './components/Entercodeadmin';
 import ResetPassword from './components/ResetPassword';
 import ResetPasswordadmin from './components/ResetPasswordadmin';
 import EnterCodeadmin from './components/Entercodeadmin';
+import { useEffect } from "react";
+
+
 const App = () => {
+
+    // Title
+    useEffect(() => {
+        document.title = "URSAC Event Booking System"; // Set browser tab title
+    }, []);
+
     return (
         <Router>
             <Routes>

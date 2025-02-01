@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ResetPassword.module.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import back from '../assets/close-outline.svg'
+import back from "../assets/close-outline.svg";
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -11,7 +11,9 @@ const ResetPassword = () => {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [checkPattern, setcheckPattern] = useState("");
+  const [checkMatch, setCheckMatch] = useState("");
+  const [success, setSuccess] = useState("");
   const [isPasswordUpdated, setIsPasswordUpdated] = useState(false); // To track password update status
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
@@ -29,12 +31,13 @@ const ResetPassword = () => {
 
     // Updated password pattern to include special characters
     const passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*-_])[A-Za-z\d!@#$%^&*-_]{8,}$/;
 
     // Check if the password meets the criteria
     if (!passwordPattern.test(password)) {
-      setMessage(
-        "Password must be at least 8 characters long, contain an Uppercase, Lowercase, Number, and a Special Character."
+      setCheckMatch("");
+      setcheckPattern(
+        "Password must be at least 8 characters long, contain an uppercase, lowercase, number, and a special character."
       );
       return;
     }
@@ -56,33 +59,30 @@ const ResetPassword = () => {
         const result = await response.json();
 
         if (response.ok) {
-          setMessage("Password successfully updated!");
+          setSuccess("Password successfully updated!");
           setIsPasswordUpdated(true); // Set flag to indicate successful update
+          navigate("/login", { replace: true });
         } else {
-          setMessage(
+          alert(
             result.message || "Failed to reset password. Please try again."
           );
         }
       } catch (error) {
         console.error("Error resetting password:", error);
-        setMessage("Failed to reset password. Please try again.");
+        alert("Failed to reset password. Please try again.");
       }
     } else {
-      setMessage("Passwords do not match. Please try again.");
+      setcheckPattern("");
+      setCheckMatch("Passwords do not match. Please try again.");
     }
-  };
-
-  const handleGoBackToLogin = () => {
-    navigate("/login", { replace: true }); // Redirect to the Login page and replace the current history entry
   };
 
   return (
     <div className={styles.mainCont}>
       <div className={styles.resetPasswordContainer}>
-        <img className={styles.backButton} src={back} onClick={() => navigate('/login')}/>
         <h2 className={styles.title}>
-          {isPasswordUpdated ? "Congratulations" : "Reset Your Password"}
-        </h2>{" "}
+          {isPasswordUpdated ? "" : "Create New Password"}
+        </h2>
         {/* Conditional heading */}
         {!isPasswordUpdated ? (
           <form onSubmit={handleSubmit}>
@@ -103,6 +103,9 @@ const ResetPassword = () => {
                 {showPassword2 ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+            {checkPattern && !isPasswordUpdated && (
+              <p className={styles.pattern}>{checkPattern}</p>
+            )}
             <div className={styles.passCont}>
               <input
                 type={showPassword1 ? "text" : "password"}
@@ -120,18 +123,23 @@ const ResetPassword = () => {
                 {showPassword1 ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            {message && !isPasswordUpdated && <p className={styles.error}>{message}</p>}
-            <button type="submit" className={styles.submit}>
-              Reset Password
-            </button>
+            {checkMatch && !isPasswordUpdated && (
+              <p className={styles.match}>{checkMatch}</p>
+            )}
+            <div className={styles.btnCont}>
+              <button
+                onClick={() => navigate("/login")}
+                className={styles.cancelbutton}
+              >
+                Cancel
+              </button>
+              <button type="submit" className={styles.button}>
+                Confirm
+              </button>
+            </div>
           </form>
-        ) : (
-          <div className={styles.cont}>
-            <p className={styles.success} >{message}</p>
-            <button  className={styles.return} onClick={handleGoBackToLogin}>Go back to login</button>
-          </div> 
+        ) : (<></>
         )}
-        
       </div>
     </div>
   );
