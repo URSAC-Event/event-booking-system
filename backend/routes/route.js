@@ -69,6 +69,7 @@ router.post('/api/send-verification-code', (req, res) => {
 
 
 
+
 // Get all councils
 router.get('/councils', (req, res) => {
   const query = 'SELECT * FROM councils';
@@ -85,7 +86,23 @@ router.get('/councils', (req, res) => {
 
 
 
+router.delete('/api/usersdel/:id', (req, res) => {
+  const { id } = req.params;
 
+  const query = 'DELETE FROM users WHERE id = ?';
+  connection.query(query, [id], (err, result) => {
+      if (err) {
+          console.error('Error deleting user:', err);
+          return res.status(500).json({ error: 'Failed to delete user' });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({ message: 'User deleted successfully' });
+  });
+});
 
 
 

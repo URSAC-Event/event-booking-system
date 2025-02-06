@@ -127,8 +127,12 @@ const Dashboard = () => {
   
     // Ensure all time values are selected before proceeding
     if (
-      eventData.fromHour && eventData.fromMinute && eventData.fromAmPm &&
-      eventData.toHour && eventData.toMinute && eventData.toAmPm
+      eventData.fromHour &&
+      eventData.fromMinute &&
+      eventData.fromAmPm &&
+      eventData.toHour &&
+      eventData.toMinute &&
+      eventData.toAmPm
     ) {
       // Convert user's from and to times to 24-hour format
       const userFrom = convertTo24Hour(eventData.fromHour + ":" + eventData.fromMinute, eventData.fromAmPm);
@@ -142,8 +146,16 @@ const Dashboard = () => {
       console.log("Event Duration:", duration);
   
       try {
-        const userFromDate = eventData.fromDate.replace(/-/g, '/');
-        const userToDate = eventData.toDate ? eventData.toDate.replace(/-/g, '/') : userFromDate;
+        const userFromDate = new Date(eventData.fromDate); // Convert to Date object
+        const userToDate = eventData.toDate ? new Date(eventData.toDate) : null; // Only set toDate if provided
+  
+        // Validation: Ensure `toDate` is not earlier than `fromDate`
+        if (userToDate && userToDate < userFromDate) {
+          const errorMessage = "`To Date` cannot be earlier than `From Date`.";
+          console.error(errorMessage);
+          setError(errorMessage); // Update the error state
+          return; // Prevent submission
+        }
   
         console.log("Checking for overlapping events...");
   
@@ -153,18 +165,21 @@ const Dashboard = () => {
   
         // Validate for conflicts
         for (let event of approvedEvents) {
-          const savedStartDate = convertDatabaseDateToFormattedDate(event.date);
-          const savedEndDate = convertDatabaseDateToFormattedDate(event.datefrom);
+          const savedStartDate = new Date(event.date); // Assume event.date is the `fromDate`
+          const savedEndDate = event.datefrom ? new Date(event.datefrom) : savedStartDate; // If `toDate` is not provided, use `fromDate`
   
           // Check if the event is in the same venue and dates overlap
           if (event.venue === eventData.venue) {
-            if (userFromDate <= savedEndDate && userToDate >= savedStartDate) {
+            if (
+              userFromDate <= savedEndDate &&
+              (!userToDate || userToDate >= savedStartDate) // Ensure date overlap works even if `toDate` is null
+            ) {
               console.log("Date conflict found with event:", event);
   
               // Check for time conflict within the same venue and overlapping dates
               const [savedFrom, savedTo] = event.duration.split(' to ');
-              const savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[1]);
-              const savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[1]);
+              const savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[2]);
+              const savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[2]);
   
               // Time overlap check
               if (
@@ -188,7 +203,11 @@ const Dashboard = () => {
         formData.append("name", eventData.name);
         formData.append("organization", eventData.organization);
         formData.append("date", eventData.fromDate); // Store fromDate in 'date'
-        formData.append("datefrom", eventData.toDate); // Store toDate in 'datefrom'
+  
+        if (eventData.toDate) {
+          formData.append("datefrom", eventData.toDate); // Store toDate only if provided
+        }
+  
         formData.append("duration", duration); // Use the formatted duration string
         formData.append("document", eventData.document);
         formData.append("poster", eventData.poster);
@@ -219,6 +238,9 @@ const Dashboard = () => {
       setError("Please fill in all time fields correctly.");
     }
   };
+  
+  
+  
   
   
   

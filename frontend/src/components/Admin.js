@@ -14,6 +14,7 @@ import { House,Building2, CalendarPlus,CalendarCheck, Users, User, FilePenLine }
 import AdminPanel from "./AdminPanel"; 
 import EventHistory from './EventHistory';
 import ReportForm from "./ReportForm";
+
 const Admin = () => {
 
     const [showAddCouncilForm, setShowAddCouncilForm] = useState(false);
@@ -25,8 +26,10 @@ const Admin = () => {
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [selectedDocumentName, setSelectedDocumentName] = useState(null); 
     const [showDocumentModal, setShowDocumentModal] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     
     const navigate = useNavigate();
+    
     useEffect(() => {
         if (activeComponent === 'Events') {
             const fetchEvents = async () => {
@@ -88,7 +91,21 @@ const Admin = () => {
         setUsers([...users, newUser]);
     };
 
-    
+
+    const filteredUsers = users.filter((user) =>
+        Object.values(user).some((value) =>
+            value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    );
+
+    const handleEdit = (user) => {
+        // You can implement the logic for opening an edit modal or populating an edit form with user data.
+        console.log("Edit user:", user);
+        // Open your edit modal or perform any necessary actions.
+      };
+
+
+
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/events')  // Update URL to point to the correct port
@@ -97,6 +114,46 @@ const Admin = () => {
             })
             .catch(error => console.error('Error fetching events:', error));
     }, []);
+
+
+
+//user delete button 
+const handleDeleteUser = (user) => {
+    // Show a confirmation dialog before proceeding with the deletion
+    const isConfirmed = window.confirm(`Do you really want to delete the account of user: ${user.username}? This action cannot be undone.`);
+
+    if (isConfirmed) {
+        console.log("User to be deleted:", user.username);
+
+        // Send DELETE request to the backend with the username
+        fetch(`http://localhost:5000/users-delete/${user.username}`, {
+            method: 'DELETE',
+        })
+        .then((response) => {
+            if (response.ok) {
+                console.log(`User ${user.username} deleted successfully`);
+                // Remove the deleted user from the UI by filtering it out from the users array
+                setUsers(prevUsers => prevUsers.filter(u => u.username !== user.username));
+            } else {
+                alert('Failed to delete user');
+            }
+        })
+        .catch((error) => {
+            console.error('Error deleting user:', error);
+            alert('An error occurred while deleting the user');
+        });
+    } else {
+        console.log('User deletion canceled');
+    }
+};
+
+
+
+
+
+
+
+
 
 
 
@@ -287,65 +344,92 @@ const handleLogout = () => {
                         <div>
                         {/* Your other Admin content */}
                         <CouncilsAndOrganizations
-                          councils={councils}
-                          showAddCouncilForm={showAddCouncilForm}
-                          setShowAddCouncilForm={setShowAddCouncilForm}
-                        />
+  councils={councils}
+  setCouncils={setCouncils}
+  showAddCouncilForm={showAddCouncilForm}
+  setShowAddCouncilForm={setShowAddCouncilForm}
+/>
                       </div>
                     );
-            case 'Users':
-                return (
+                    case 'Users':
+    return (
+        <div>
+            <h2>Users</h2>
+            
+            {/* Search Bar */}
+            <div className={styles.searchContainer}>
+                <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className={styles.searchInput}
+                />
+            </div>
+
+            <button className={styles.addButton} onClick={() => setIsModalOpen(true)}>Add User</button>
+
+            <div className={styles.sectionBox}>
+                <table className={styles.table}>
                     <div>
-                        
-                        <h2 >Users</h2>
-                       
-                        <div className={styles.sectionBox}>
-                        <table className={styles.table}>
-                        <div >
-                    
-                    <button className={styles.addButton} onClick={() => setIsModalOpen(true)}>Add User</button>
-                    <AddUserModal 
-                        isOpen={isModalOpen} 
-                        closeModal={() => setIsModalOpen(false)} 
-                        addUser={handleAddUser}
-                    /> 
-                    
+                        <AddUserModal 
+                            isOpen={isModalOpen} 
+                            closeModal={() => setIsModalOpen(false)} 
+                            addUser={handleAddUser}
+                        />
                     </div>
-<table className={styles.table}>
-    <thead>
-        <tr className={styles.tableHeader}>
-            <th className={styles.tableCell}>Name</th>
-            <th className={styles.tableCell}>Organization</th>
-            <th className={styles.tableCell}>Username</th>
-            <th className={styles.tableCell}>Email</th>
-            <th className={styles.tableCell}>Password</th>
-            
-            
-            
-        </tr>
-    </thead>
-    <tbody>
-        {users.length > 0 ? (
-            users.map((users) => (
-                <tr key={users.id} className={styles.tableRow}>
-                    <td className={styles.tableCell}>{users.name}</td>
-                    <td className={styles.tableCell}>{users.organizationz}</td>
-                    <td className={styles.tableCell}>{users.username}</td>
-                    <td className={styles.tableCell}>{users.email}</td>
-                    <td className={styles.tableCell}>{users.password}</td>
-                </tr>
-            ))
-        ) : (
-            <tr>
-                <td colSpan="8" className={styles.noEvents}>No council available</td>
-            </tr>
-        )}
-    </tbody>   
-</table>
-</table>
-    </div>                  
-</div>
-);
+
+                    <thead>
+                        <tr className={styles.tableHeader}>
+                            <th className={styles.tableCell}>Name</th>
+                            <th className={styles.tableCell}>Organization</th>
+                            <th className={styles.tableCell}>Username</th>
+                            <th className={styles.tableCell}>Email</th>
+                            <th className={styles.tableCell}>Password</th>
+                            <th className={styles.tableCell}>Action</th> {/* New Action Column */}
+                            <th className={styles.tableCell}>Edit</th> {/* Edit Column */}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {filteredUsers.length > 0 ? (
+                            filteredUsers.map((user) => (
+                                <tr key={user.id} className={styles.tableRow}>
+                                    <td className={styles.tableCell}>{user.name}</td>
+                                    <td className={styles.tableCell}>{user.organizationz}</td>
+                                    <td className={styles.tableCell}>{user.username}</td>
+                                    <td className={styles.tableCell}>{user.email}</td>
+                                    <td className={styles.tableCell}>{user.password}</td>
+                                    <td className={styles.tableCell}>
+                                        <button 
+                                            className={styles.deleteButton} 
+                                            onClick={() => handleDeleteUser(user)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        <button 
+                                            className={styles.editButton} 
+                                            onClick={() => alert('Edit functionality coming soon!')} // Edit button without function
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="7" className={styles.noEvents}>No users available</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+
+                    
     case 'Reports':
         return <div className={styles.sectionBox}><div>
          <div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './Dashboard.module.css'; // For dashboard styles
 
-const CouncilDisplay = () => {
+const CouncilDisplayedit = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -55,7 +55,6 @@ const CouncilDisplay = () => {
       alert('An error occurred while updating council details.');
     }
   };
-  
 
   return (
     <div className={styles.leftSection}>
@@ -82,14 +81,54 @@ const CouncilDisplay = () => {
               <button className={styles.editButton} onClick={openEditModal}>Edit</button>
               <table>
                 <tbody>
-                  {Object.entries(selectedCouncil).map(([key, value]) => (
-                    key !== 'id' && ( // Skip ID field from display
-                      <tr key={key}>
-                        <td><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong></td>
-                        <td>{value}</td>
-                      </tr>
-                    )
-                  ))}
+                <tr>
+              
+              <td>
+                <a href={selectedCouncil.link} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
+                    alt="Adviser"
+                    className={styles.adviserImage}
+                  />
+                </a>
+              </td>
+            </tr>
+                  <tr>
+                    <td><strong>Adviser:</strong></td>
+                    <td>{selectedCouncil.adviser}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>President:</strong></td>
+                    <td>{selectedCouncil.president}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Vice President:</strong></td>
+                    <td>{selectedCouncil.vicePresident}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Secretary:</strong></td>
+                    <td>{selectedCouncil.secretary}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Treasurer:</strong></td>
+                    <td>{selectedCouncil.treasurer}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Auditor:</strong></td>
+                    <td>{selectedCouncil.auditor}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>PRO:</strong></td>
+                    <td>{selectedCouncil.pro}</td>
+                  </tr>
+                  <tr>
+                    <td><strong> First year representative:</strong></td>
+                    <td>{selectedCouncil.rep}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Second year representative (Alternate):</strong></td>
+                    <td>{selectedCouncil.representative}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -98,26 +137,25 @@ const CouncilDisplay = () => {
       </div>
 
       {/* Edit Modal */}
-      {isEditModalOpen && (
+      {isEditModalOpen && selectedCouncil && (
         <div className={styles.modalWrapper}>
           <div className={styles.modalContent}>
             <h3>Edit Council Details</h3>
             <form onSubmit={handleEditCouncil} className={styles.form}>
-           
-            {Object.keys(formData).map((field) => (
-  field !== 'id' && ( // We already removed 'createdAt' in the previous step
-    <div key={field} className={styles.formGroup}>
-      <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
-      <input
-        type="text"
-        name={field}
-        value={formData[field]}
-        onChange={handleInputChange}
-        className={styles.input}
-      />
-    </div>
-  )
-))}
+              {Object.keys(formData).map((field) => (
+                field !== 'id' && ( // We already removed 'createdAt' in the previous step
+                  <div key={field} className={styles.formGroup}>
+                    <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                    <input
+                      type="text"
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleInputChange}
+                      className={styles.input}
+                    />
+                  </div>
+                )
+              ))}
 
               <div className={styles.formButtons}>
                 <button type="submit" className={styles.submitButton}>Save</button>
@@ -137,4 +175,4 @@ const CouncilDisplay = () => {
   );
 };
 
-export default CouncilDisplay;
+export default CouncilDisplayedit;

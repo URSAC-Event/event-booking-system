@@ -247,14 +247,31 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //FOR SLIDESHOW
 // Endpoint to fetch the list of images from the 'uploads' folder
-app.get('/api/slideshow-images', (req, res) => {
-  const uploadsPath = path.join(__dirname, 'uploads');
+app.get("/api/slideshow-images", (req, res) => {
+  const uploadsPath = path.join(__dirname, "uploads");
+
   fs.readdir(uploadsPath, (err, files) => {
     if (err) {
-      return res.status(500).json({ message: 'Error reading uploads folder' });
+      return res.status(500).json({ message: "Error reading uploads folder" });
     }
-    const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file));
-    res.json(imageFiles); // Send the list of image filenames to the frontend
+
+    const imageFiles = files.filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
+
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
+
+    // Fetch approved images with a future or current date
+    connection.query("SELECT photo FROM approved WHERE datefrom >= ?", [today], (err, results) => {
+      if (err) {
+        console.error("Error fetching images from database:", err);
+        return res.status(500).json({ message: "Database query failed" });
+      }
+
+      const dbImages = results.map((row) => row.photo);
+      const validImages = imageFiles.filter((file) => dbImages.includes(file));
+
+      res.json(validImages); // Send only valid images
+    });
   });
 });
 
@@ -510,6 +527,44 @@ app.get('/api/approvedhistory', (req, res) => {
 
 
 
+app.delete('/api/approved-table/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log("Received delete request for ID:", id);
+
+  try {
+    // Ensure ID is properly formatted
+    const numericId = Number(id);
+    if (isNaN(numericId)) {
+      console.error("Invalid ID:", id);
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
+
+    // Execute DELETE query using async/await
+    const [result] = await connection.promise().query('DELETE FROM approved WHERE id = ?', [numericId]);
+
+    console.log("Delete query result:", result);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Event deleted successfully" });
+    } else {
+      console.warn("Event not found in the database for ID:", numericId);
+      return res.status(404).json({ message: "Event not found" });
+    }
+  } catch (error) {
+    console.error("Database error while deleting event:", error);
+    return res.status(500).json({ message: "Server error while deleting event", error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -702,21 +757,32 @@ const uploadForAdviserPic = multer({ storage: storageForAdviserPic }).single('ad
 
 
 // POST route to add councils
-app.post('/api/councilsadd', uploadForAdviserPic, (req, res) => {
-  const { organization, adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
+app.post('/api/councils-add', uploadForAdviserPic, (req, res) => {
+  const {
+    organization,
+    adviser,
+    link,
+    president,
+    vicePresident,
+    secretary,
+    treasurer,
+    auditor,
+    pro,
+    rep,
+    representative,
+    thirdRepresentative, // New field
+    fourthRepresentative // New field
+  } = req.body;
   const adviserPicture = req.file ? req.file.filename : null;
 
-  console.log('Request body:', req.body);
-  console.log('Uploaded file:', req.file);
-
   // Validate required fields
-  if (!organization || !adviser || !link) {
-    return res.status(400).json({ message: 'Organization, Link, and Adviser are required fields.' });
+  if (!organization || !adviser || !link || !rep) {
+    return res.status(400).json({ message: 'Organization, Link, Adviser, and Rep are required fields.' });
   }
 
   const query = `
-    INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -732,10 +798,9 @@ app.post('/api/councilsadd', uploadForAdviserPic, (req, res) => {
     pro,
     rep,
     representative,
+    thirdRepresentative, // New value
+    fourthRepresentative // New value
   ];
-
-  console.log('SQL Query:', query);
-  console.log('Values:', values);
 
   connection.query(query, values, (err, results) => {
     if (err) {
@@ -745,7 +810,7 @@ app.post('/api/councilsadd', uploadForAdviserPic, (req, res) => {
 
     res.status(200).json({
       message: 'Council data saved successfully!',
-      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative },
+      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, thirdRepresentative, fourthRepresentative },
     });
   });
 });
@@ -753,6 +818,127 @@ app.post('/api/councilsadd', uploadForAdviserPic, (req, res) => {
 
 
 
+// Delete a council by ID
+app.delete("/delete-council/:id", (req, res) => {
+  const { id } = req.params;
+  connection.query("DELETE FROM councils WHERE id = ?", [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting council:", err);
+      return res.status(500).json({ error: "Failed to delete council" });
+    }
+    res.json({ message: "Council deleted successfully" });
+  });
+});
+
+
+// Endpoint to delete user by id
+app.delete('/api/delete-user/:id', (req, res) => {
+  const userId = req.params.id;
+
+  console.log("Received userId:", userId); // Log the userId to verify it is correct
+
+  // SQL query to delete the user based on the id
+  const query = 'DELETE FROM users WHERE id = ?';
+
+  connection.query(query, [userId], (err, result) => {
+      if (err) {
+          console.error("Error deleting user:", err);
+          return res.status(500).send('Failed to delete user');
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).send('User not found');
+      }
+
+      res.status(200).send('User deleted successfully');
+  });
+});
+
+
+// In your server.js (Node.js example)
+app.delete('/users-delete/:username', (req, res) => {
+  const { username } = req.params;
+
+  // Perform the deletion in your database, e.g. MySQL or MongoDB
+  // Example SQL query (using MySQL):
+  const query = 'DELETE FROM users WHERE username = ?';
+  
+  connection.query(query, [username], (err, result) => {
+      if (err) {
+          return res.status(500).json({ error: 'Failed to delete user' });
+      }
+      res.status(200).json({ message: 'User deleted successfully' });
+  });
+});
+
+
+
+// Assuming you're using Express
+app.put('/api/update-council/:id', (req, res) => {
+  const { id } = req.params;
+  const { organization, adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative } = req.body;
+
+  // Make sure the ID exists in the database and update the data
+  const query = `
+    UPDATE councils SET organization = ?, adviser = ?, link = ?, president = ?, vicePresident = ?, secretary = ?, treasurer = ?, auditor = ?, pro = ?, rep = ?, representative = ?, trdrepresentative = ?, frthrepresentative = ?
+    WHERE id = ?
+  `;
+
+  const values = [organization, adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative, id];
+
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('Error updating council:', err);
+      return res.status(500).json({ message: 'Error updating council data', error: err.message });
+    }
+    res.status(200).json({ message: 'Council updated successfully!' });
+  });
+});
+
+// Backend route to check if username exists
+app.post('/api/users', (req, res) => {
+  const { name, username, email, password, organizationz } = req.body;
+
+  // Input validation (basic example)
+  if (!name || !username || !email || !password || !organizationz) {
+      return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  // Query to insert user into the database
+  const query = 'INSERT INTO users (name, username, email, password, organization) VALUES (?, ?, ?, ?, ?)';
+  connection.query(query, [name, username, email, password, organizationz], (err, results) => {
+      if (err) {
+          console.error('Error inserting user:', err);
+          return res.status(500).json({ message: 'Error adding user' });
+      }
+      res.status(201).json({ id: results.insertId, name, username, email, organizationz });
+  });
+});
+
+
+
+
+
+app.get('/api/getApprovedData', async (req, res) => {
+  const { organization } = req.query; // Get organization from the query parameter
+  const orgString = String(organization); // Ensure it's treated as VARCHAR
+
+  try {
+    const query = 'SELECT venue, organization, duration, date, datefrom FROM approved WHERE organization = ?';
+    connection.query(query, [orgString], (error, results) => {
+      if (error) {
+        return res.status(500).send('Error fetching data');
+      }
+      if (results.length > 0) {
+        res.json(results); // Return all results as an array
+      } else {
+        res.status(404).send('No matching data found for this organization');
+      }
+    });
+  } catch (error) {
+    res.status(500).send('Error fetching approved data');
+  }
+});
 
 
 

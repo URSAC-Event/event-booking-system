@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import styles from "./Addcouncils.module.css"; // Import the styles if needed
+import styles from "./Addcouncils.module.css"; // Import the styles
 
 const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
   const [councilFormData, setCouncilFormData] = useState({
     organization: "",
     adviser: "",
-    adviserPicture: null, // Added adviser picture state
+    adviserPicture: null,
     link: "",
     president: "",
     vicePresident: "",
@@ -15,14 +15,14 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
     pro: "",
     rep: "",
     representative: "",
+    thirdRepresentative: "", // New field
+    fourthRepresentative: "" // New field
   });
 
-  // Function to handle form submission and send data to the backend
   const handleAddCouncil = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    // Append form data for all fields
     Object.keys(councilFormData).forEach((key) => {
       if (key === 'adviserPicture' && councilFormData[key]) {
         formData.append(key, councilFormData[key]);
@@ -32,8 +32,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
     });
 
     try {
-      // Send POST request with form data to the backend
-      const response = await fetch('http://localhost:5000/api/councilsadd', {
+      const response = await fetch('http://localhost:5000/api/councils-add', {
         method: 'POST',
         body: formData,
       });
@@ -41,7 +40,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
       const data = await response.json();
       if (response.ok) {
         alert('Council data saved successfully!');
-        setShowAddCouncilForm(false); // Close the form after successful submission
+        setShowAddCouncilForm(false);
       } else {
         alert('Error saving council data: ' + data.message);
       }
@@ -52,7 +51,6 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
   };
 
   return (
-    // Only show the form if showAddCouncilForm is true
     showAddCouncilForm && (
       <div className={styles.modalWrapper}>
         <div className={styles.sectionBox}>
@@ -67,27 +65,27 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
               />
             </div>
             <div className={styles.formGroup}>
-  <label>Adviser:</label>
-  <div className={styles.adviserGroup}>
-    <input
-      type="text"
-      value={councilFormData.adviser}
-      onChange={(e) => setCouncilFormData({ ...councilFormData, adviser: e.target.value })}
-      className={styles.input}
-      placeholder="Adviser Name"
-    />
-    <input
-      type="file"
-      accept="image/png, image/jpeg, image/jpg"
-      onChange={(e) =>
-        setCouncilFormData({ ...councilFormData, adviserPicture: e.target.files[0] })
-      }
-      className={styles.fileInput} // Add styling for alignment
-    />
-  </div>
-</div>
-<div className={styles.formGroup}>
-              <label>Link"</label>
+              <label>Adviser:</label>
+              <div className={styles.adviserGroup}>
+                <input
+                  type="text"
+                  value={councilFormData.adviser}
+                  onChange={(e) => setCouncilFormData({ ...councilFormData, adviser: e.target.value })}
+                  className={styles.input}
+                  placeholder="Adviser Name"
+                />
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={(e) =>
+                    setCouncilFormData({ ...councilFormData, adviserPicture: e.target.files[0] })
+                  }
+                  className={styles.fileInput}
+                />
+              </div>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Link</label>
               <input
                 type="text"
                 value={councilFormData.link}
@@ -151,19 +149,17 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Rep:</label>
-              <select
-                value={councilFormData.rep}
-                onChange={(e) => setCouncilFormData({ ...councilFormData, rep: e.target.value })}
-                className={styles.input}
-              >
-                <option value="">Select Representative</option>
-                <option value="Rep1">Rep 1</option>
-                <option value="Rep2">Rep 2</option>
-              </select>
-            </div>
+  <label>First year Representative:</label>
+  <input
+    type="text"
+    value={councilFormData.rep}
+    onChange={(e) => setCouncilFormData({ ...councilFormData, rep: e.target.value })}
+    className={styles.input}
+    placeholder="Enter Rep name"
+  />
+</div>
             <div className={styles.formGroup}>
-              <label>Representative:</label>
+              <label>Secondyear Representative:</label>
               <input
                 type="text"
                 value={councilFormData.representative}
@@ -171,6 +167,38 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
                 className={styles.input}
               />
             </div>
+            {/* Add new input fields for third and fourth representatives */}
+            <div className={styles.formGroup}>
+              <label>Third-year Representative:</label>
+              <input
+                type="text"
+                value={councilFormData.thirdRepresentative}
+                onChange={(e) => setCouncilFormData({ ...councilFormData, thirdRepresentative: e.target.value })}
+                className={styles.input}
+                placeholder="Enter Third Year Rep name"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Fourth-year Representative:</label>
+              <input
+                type="text"
+                value={councilFormData.fourthRepresentative}
+                onChange={(e) => setCouncilFormData({ ...councilFormData, fourthRepresentative: e.target.value })}
+                className={styles.input}
+                placeholder="Enter Fourth Year Rep name"
+              />
+            </div>
+            {/* Existing form fields */}
+            <div className={styles.formGroup}>
+              <label>Link</label>
+              <input
+                type="text"
+                value={councilFormData.link}
+                onChange={(e) => setCouncilFormData({ ...councilFormData, link: e.target.value })}
+                className={styles.input}
+              />
+            </div>
+            {/* ...other form fields for president, vice-president, etc... */}
             <div className={styles.formButtons}>
               <button type="submit" className={styles.submitButton}>Submit</button>
               <button
