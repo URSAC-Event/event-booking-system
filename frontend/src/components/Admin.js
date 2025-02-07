@@ -36,6 +36,7 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
+
   useEffect(() => {
     if (activeComponent === "Events") {
       const fetchEvents = async () => {
@@ -78,18 +79,6 @@ const Admin = () => {
         const response = await fetch("http://localhost:5000/api/users");
         const data = await response.json();
 
-        const filteredUsers = users.filter((user) =>
-          Object.values(user).some((value) =>
-            value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        );
-
-        const handleEdit = (user) => {
-          // You can implement the logic for opening an edit modal or populating an edit form with user data.
-          console.log("Edit user:", user);
-          // Open your edit modal or perform any necessary actions.
-        };
-
         if (response.ok) {
           setUsers(data); // Set Users state with fetched data
         } else {
@@ -109,6 +98,18 @@ const Admin = () => {
     setUsers([...users, newUser]);
   };
 
+  const filteredUsers = users.filter((user) =>
+    Object.values(user).some((value) =>
+      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  const handleEdit = (user) => {
+    // You can implement the logic for opening an edit modal or populating an edit form with user data.
+    console.log("Edit user:", user);
+    // Open your edit modal or perform any necessary actions.
+  };
+
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/events") // Update URL to point to the correct port
@@ -117,6 +118,7 @@ const Admin = () => {
       })
       .catch((error) => console.error("Error fetching events:", error));
   }, []);
+
   //user delete button
   const handleDeleteUser = (user) => {
     // Show a confirmation dialog before proceeding with the deletion
@@ -262,7 +264,6 @@ const Admin = () => {
       alert("Error approving event");
     }
   };
-
   const handleLogout = () => {
     sessionStorage.clear();
 
@@ -285,7 +286,6 @@ const Admin = () => {
     setSelectedDocument(null);
     setSelectedDocumentName(null); // Reset the document name when closing
   };
-
   const handleViewImage = (imageName) => {
     // Construct the URL for the image in the 'uploads' folder
     const fullImageUrl = `http://localhost:5000/uploads/${imageName}`;
@@ -298,7 +298,6 @@ const Admin = () => {
     setSelectedDocumentName(imageName); // Reusing the same state for image name
     setShowDocumentModal(true);
   };
-  
   const handleButtonHover = (event, isHovering) => {
     if (isHovering) {
       event.target.style.backgroundColor = "#034d8c"; // Darker shade on hover

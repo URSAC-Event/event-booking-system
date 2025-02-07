@@ -31,13 +31,7 @@ const CustomCalendar = () => {
     const formattedDate = date.toISOString().split("T")[0];
     const matchedEvents = allEvents.filter((event) => {
       const eventDate = new Date(event.date).toISOString().split("T")[0];
-<<<<<<< HEAD
-      const eventDateFrom = new Date(event.datefrom)
-        .toISOString()
-        .split("T")[0];
-=======
       const eventDateFrom = new Date(event.datefrom).toISOString().split("T")[0];
->>>>>>> upstream/main
       return eventDate <= formattedDate && eventDateFrom >= formattedDate;
     });
 
