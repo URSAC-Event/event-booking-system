@@ -11,7 +11,10 @@ const ReportForm = () => {
     const userId = 1; // Static user ID, replace with actual logic for logged-in user
 
     try {
-      await axios.post("http://localhost:5000/submitReport", { userId, message });
+      await axios.post("http://localhost:5000/submitReport", {
+        userId,
+        message,
+      });
       alert("Report submitted successfully");
       setMessage(""); // Reset the message field after submission
     } catch (error) {
@@ -21,18 +24,18 @@ const ReportForm = () => {
   };
 
   return (
-    <div className={styles.reportFormContainer}>
-      <h2>Submit a Report</h2>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Enter your report message"
-          required
-        />
-        <button type="submit">Submit Report</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className={styles.reportContent}>
+      <textarea
+        className={styles.messageInput}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Type your message here..."
+        required
+      />
+      <button className={styles.reportButton} type="submit">
+        Send Message
+      </button>
+    </form>
   );
 };
 

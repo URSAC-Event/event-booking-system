@@ -1,16 +1,28 @@
 .editButton {
-    position: absolute; /* Allows positioning relative to the parent sectionBox */
-    top: 10px; /* Adjust spacing from the top */
-    right: 10px; /* Adjust spacing from the right */
-    background-color: #0e4296; /* Button color */
-    color: #fff; /* Text color */
-    padding: 8px 16px; /* Button padding */
-    border: none; /* Remove default border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 14px; /* Adjust font size */
-  }
-  
-  .editButton:hover {
-    background-color: #034d8c; /* Slightly darker on hover */
-  }
+  position: absolute;
+  /* Allows positioning relative to the parent sectionBox */
+  top: 10px;
+  /* Adjust spacing from the top */
+  right: 10px;
+  /* Adjust spacing from the right */
+  background-color: #0e4296;
+  /* Button color */
+  color: #fff;
+  /* Text color */
+  padding: 8px 16px;
+  /* Button padding */
+  border: none;
+  /* Remove default border */
+  border-radius: 4px;
+  /* Rounded corners */
+  cursor: pointer;
+  /* Pointer cursor on hover */
+  font-size: 14px;
+  /* Adjust font size */
+}
+
+.editButton:hover {
+  background-color: #034d8c;
+  /* Slightly darker on hover */
+}
+

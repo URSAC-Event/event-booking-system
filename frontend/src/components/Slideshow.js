@@ -34,7 +34,6 @@ const Slideshow = () => {
   }, [images.length]); // Only reset the interval when images change
 
   return (
-    <div className={styles.upcomingEventsCard}>
       <div
         className={`${styles.upcomingEventsImageContainer} ${
           isFading ? styles.fade : ""
@@ -49,15 +48,7 @@ const Slideshow = () => {
         ) : (
           <p>Loading images...</p> // Fallback if images are not yet loaded
         )}
-        <div className={styles.gradientOverlay}>
-          <h2 className={styles.upcomingEventsText}>Upcoming Events</h2>
-          <p className={styles.eventDetails}>
-            <span className={styles.eventName}>CoEng Week 2024</span> ||{" "}
-            <span className={styles.eventDate}>November 11-15, 2024</span>
-          </p>
-        </div>
       </div>
-    </div>
   );
 };
 

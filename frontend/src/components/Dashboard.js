@@ -12,7 +12,8 @@ import EventModal from "./EventModal";
 import Slideshow from "./Slideshow";
 import CouncilDisplayedit from "./CouncilDisplayedit";
 import ReportForm from "./ReportForm";
-import eventsVector from "../assets/Events-pana.svg"
+import eventsVector from "../assets/Events-pana.svg";
+import reportVector from "../assets/report.svg";
 
 const Dashboard = () => {
   const loggedInUser = { id: 1 };
@@ -264,11 +265,12 @@ const Dashboard = () => {
           </div>
         </div>
         <button className={styles.logoutButton} onClick={handleLogout}>
-          <img src={logout} className={styles.loginIcon} />
+          <img src={logout} className={styles.logoutIcon} />
           <p>Logout</p>
         </button>
       </nav>
       <div className={styles.container}>
+
         <div className={styles.firstContainer}>
           {/* Upcoming Events Section */}
           <Slideshow />
@@ -278,8 +280,49 @@ const Dashboard = () => {
             <CustomCalendar />
           </div>
         </div>
+
         <div className={styles.SecondContainer}>
-          <div className={styles.venueBooklistContainer}>
+          <div className={styles.bookingCont}>
+            <div className={styles.bookingContent}>
+              <h1 className={styles.bookingHead}>
+                Book your organization events with ease!
+              </h1>
+              <p className={styles.bookingSubhead}>
+                Simplify event reservations in just a few clicks. The event
+                should be at least 2 weeks ahead from today.
+              </p>
+              <div className={styles.buttonFlex}>
+                <button
+                  className={styles.addEventButton}
+                  onClick={() => setModalOpen(true)}
+                >
+                  Add Event
+                </button>
+              </div>
+            </div>
+            <div className={styles.illustrationCont}>
+              <img
+                src={eventsVector}
+                alt="eventVector"
+                className={styles.eventVector}
+              />
+            </div>
+          </div>
+          <div className={styles.reportCont}>
+            <div className={styles.reportIllustration}>
+              <img src={reportVector} alt="" className={styles.eventVector}/>
+            </div>
+            <div className={styles.reportContent}>
+            <h1 className={styles.bookingHead}>
+                Got any inquiries?
+              </h1>
+              <p className={styles.bookingSubhead}>
+                Send us a message including your organization name and we'll respond through your email.
+              </p>
+              <ReportForm userId={loggedInUser.id} />
+            </div>
+          </div>
+          {/* <div className={styles.venueBooklistContainer}>
             <h2 className={styles.header}>
               <CalendarPlus size={20} color="#063970" /> Venue Booklist
             </h2>
@@ -308,7 +351,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* News and Information Section (on the right) */}
           <div className={styles.layoutContainer}>
@@ -317,25 +360,25 @@ const Dashboard = () => {
 
           {/* Merged Vision and Mission Section */}
           <div className={styles.mergedSection}>
-            <h3 className={styles.vgmoHeader}>VISION</h3>
+            <h3 className={styles.vgmoHeader}>Vision</h3>
             <p className={styles.vgmo}>
               The leading University in human resource development, knowledge
               and technology generation, and environmental stewardship.
             </p>
-            <h3 className={styles.vgmoHeader}>MISSION</h3>
+            <h3 className={styles.vgmoHeader}>Mission</h3>
             <p className={styles.vgmo}>
               The University of Rizal System is committed to nurture and produce
               upright and competent graduates and empowered community through
               relevant and sustainable higher professional and technical
               instruction, research, extension, and production services.
             </p>
-            <h3 className={styles.vgmoHeader}>CORE VALUES</h3>
+            <h3 className={styles.vgmoHeader}>Core Values</h3>
             <p>R – Responsiveness</p>
             <p>I – Integrity</p>
             <p>S – Service</p>
             <p>E – Excellence</p>
             <p className={styles.vgmo}>S – Social Responsibility</p>
-            <h3 className={styles.vgmoHeader}>QUALITY POLICY</h3>
+            <h3 className={styles.vgmoHeader}>Quality Policy</h3>
             <p className={styles.vgmo}>
               The University of Rizal System commits to deliver excellent
               products and services to ensure total stakeholders’ satisfaction
@@ -346,16 +389,6 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-
-        {/* Event Modal */}
-        <EventModal
-          isModalOpen={isModalOpen}
-          setModalOpen={setModalOpen}
-          eventData={eventData}
-          handleInputChange={handleInputChange}
-          handleFileChange={handleFileChange}
-          handleModalSubmit={handleModalSubmit}
-        />
       </div>
       {/* Footer */}
       <footer className={styles.footer}>
@@ -364,6 +397,15 @@ const Dashboard = () => {
           Campus<br></br> All rights reserved.
         </p>
       </footer>
+      {/* Event Modal */}
+      <EventModal
+        isModalOpen={isModalOpen}
+        setModalOpen={setModalOpen}
+        eventData={eventData}
+        handleInputChange={handleInputChange}
+        handleFileChange={handleFileChange}
+        handleModalSubmit={handleModalSubmit}
+      />
     </div>
   );
 };

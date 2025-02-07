@@ -8,27 +8,34 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1000;
+  /* Ensure it's above other content */
 }
 
 .sectionBox {
   background-color: white;
-  padding: 40px; /* Reduced padding */
-  border-radius: 8px; /* Slightly smaller border radius */
-  width: 400px; /* Reduced width */
+  padding: 40px;
+  /* Reduced padding */
+  border-radius: 8px;
+  /* Slightly smaller border radius */
+  width: 400px;
+  /* Reduced width */
   max-width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .formGroup {
-  margin-bottom: 12px; /* Reduced margin */
+  margin-bottom: 12px;
+  /* Reduced margin */
 }
 
 .input {
   width: 100%;
-  padding: 8px; /* Reduced padding */
+  padding: 8px;
+  /* Reduced padding */
   margin-top: 5px;
-  border-radius: 4px; /* Slightly smaller radius */
+  border-radius: 4px;
+  /* Slightly smaller radius */
   border: 1px solid #ccc;
 }
 
@@ -40,22 +47,63 @@
 .submitButton {
   background-color: #0e4296;
   color: white;
-  padding: 8px 16px; /* Reduced padding */
+  padding: 8px 16px;
+  /* Reduced padding */
   border: none;
   border-radius: 5px;
 }
 
 .cancelButton {
   background-color: #ccc;
-  padding: 8px 16px; /* Reduced padding */
+  padding: 8px 16px;
+  /* Reduced padding */
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
+.reportContent {
+  display: flex;
+  flex-direction: column;
+}
 
+.messageInput {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+}
 
-/* Container for the report form */
+.reportButton {
+  background-color: #0e4296;
+  font-size: 1em;
+  padding: 10px 24px;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.15s;
+  display: inline;
+}
+
+@media screen and (max-width: 768px) {
+  .reportButton {
+    background-color: #0e4296;
+    font-size: 1em;
+    padding: 10px 24px;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: 0.15s;
+    max-width: none;
+    float: right;
+  }
+}
+
+/* 
+
+Container for the report form
 .reportFormContainer {
   margin: 20px auto;
   padding: 20px;
@@ -66,14 +114,14 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Heading */
+
 .reportFormContainer h2 {
   text-align: center;
   color: #0e4296;
   margin-bottom: 20px;
 }
 
-/* Textarea for report message */
+
 .reportFormContainer textarea {
   width: 100%;
   height: 100px;
@@ -86,7 +134,6 @@
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Submit button */
 .reportFormContainer button {
   width: 100%;
   padding: 10px 15px;
@@ -103,7 +150,6 @@
   background-color: #073269;
 }
 
-/* Responsive behavior */
 @media (max-width: 600px) {
   .reportFormContainer {
     padding: 15px;
@@ -113,4 +159,4 @@
   .reportFormContainer textarea {
     height: 80px;
   }
-}
+} */

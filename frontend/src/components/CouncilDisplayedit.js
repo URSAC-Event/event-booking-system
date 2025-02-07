@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./Dashboard.module.css"; // For dashboard styles
+// import styles from "./CouncilDisplayedit.module.css"
 
 const CouncilDisplay = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
@@ -92,21 +93,21 @@ const CouncilDisplay = () => {
               <button className={styles.editButton} onClick={openEditModal}>
                 Edit
               </button>
-              <table>
-                <tbody>
-                  {Object.entries(selectedCouncil).map(
-                    ([key, value]) =>
-                      key !== "id" && ( // Skip ID field from display
-                        <tr key={key}>
-                          <td className={styles.position}>
-                            <strong>{key.replace(/([A-Z])/g, " $1")}:</strong>
-                          </td>
-                          <td>{value}</td>
-                        </tr>
-                      )
-                  )}
-                </tbody>
-              </table>
+              <div className={styles.orgList}>
+                {Object.entries(selectedCouncil).map(
+                  ([key, value]) =>
+                    key !== "id" && ( // Skip ID field from display
+                      <div key={key}>
+                        <p>
+                          <span className={styles.orgPosition}>
+                            {key.replace(/([A-Z])/g, " $1")}:
+                          </span>{" "}
+                          {value}
+                        </p>
+                      </div>
+                    )
+                )}
+              </div>
             </div>
           )}
         </div>
