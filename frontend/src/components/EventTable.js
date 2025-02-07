@@ -1,30 +1,35 @@
 // src/components/EventTable.js
-import React from 'react';
-import axios from 'axios';
-import styles from './Admin.module.css'; // Make sure the CSS file is correctly imported
+import React, { useState } from 'react';
+import styles from './Admin.module.css';
 
 const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm, handleDelete, handleButtonHover }) => {
-     // Function to format the date as YYYY-MM-DD
-     const formatDate = (date) => {
-        if (!date) return "";
-      
-        // Parse the date and convert it to the correct format
-        const parsedDate = new Date(date);
-        // Check if parsedDate is a valid date object
-        if (!isNaN(parsedDate)) {
-          return parsedDate.toLocaleDateString('en-GB'); // Format to "dd/mm/yyyy" or "yyyy-mm-dd"
-        } else {
-          return "";
-        }
-      };
-      
-      
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Function to format the date as YYYY-MM-DD
+  const formatDate = (date) => {
+    if (!date) return "";
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate) ? parsedDate.toLocaleDateString('en-GB') : "";
+  };
+
+  // Filter events based on search term
+  const filteredEvents = events.filter(event =>
+    event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.venue.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
-      <h2>Event requests</h2>
-      <div className={styles.addEventButtonContainer}>
-        {/* You can add a button or a link for adding an event here */}
-      </div>
+      <h2>Event Requests</h2>
+      <input
+        type="text"
+        placeholder="Search events..."
+        className={styles.searchBar}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
       <table className={styles.table}>
         <thead>
           <tr className={styles.tableHeader}>
@@ -39,14 +44,13 @@ const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm
           </tr>
         </thead>
         <tbody>
-          {events.length > 0 ? (
-            events.map((event) => (
+          {filteredEvents.length > 0 ? (
+            filteredEvents.map((event) => (
               <tr key={event.id} className={styles.tableRow}>
                 <td className={styles.tableCell}>{event.name}</td>
                 <td className={styles.tableCell}>{event.organization}</td>
                 <td className={styles.tableCell}>{formatDate(event.date)} to {formatDate(event.datefrom)}</td>
                 <td className={styles.tableCell}>{event.duration}</td>
-
                 <td className={styles.tableCell}>
                   {event.documents && (
                     <button
@@ -75,24 +79,16 @@ const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm
                 <td className={styles.tableCell}>
                   <button
                     className={styles.button}
-                    onClick={() => {
-                      console.log('Approve button clicked for event ID:', event.id);
-                      handleConfirm(event.id);
-                    }}
+                    onClick={() => handleConfirm(event.id)}
                   >
                     ✔
                   </button>
-
                   <button
-  className={styles.button}
-  onClick={() => {
-    console.log('Delete button clicked for event ID:', event.id);
-    handleDelete(event.id, event.organization); // Call delete and notify organization
-  }}
->
-  ❌
-</button>
-
+                    className={styles.button}
+                    onClick={() => handleDelete(event.id, event.organization)}
+                  >
+                    ❌
+                  </button>
                 </td>
               </tr>
             ))

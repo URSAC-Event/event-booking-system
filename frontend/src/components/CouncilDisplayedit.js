@@ -3,7 +3,7 @@ import axios from "axios";
 import styles from "./Dashboard.module.css"; // For dashboard styles
 // import styles from "./CouncilDisplayedit.module.css"
 
-const CouncilDisplay = () => {
+const CouncilDisplayedit = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -90,50 +90,84 @@ const CouncilDisplay = () => {
 
           {selectedCouncil && (
             <div className={styles.details}>
-              <button className={styles.editButton} onClick={openEditModal}>
-                Edit
-              </button>
-              <div className={styles.orgList}>
-                {Object.entries(selectedCouncil).map(
-                  ([key, value]) =>
-                    key !== "id" && ( // Skip ID field from display
-                      <div key={key}>
-                        <p>
-                          <span className={styles.orgPosition}>
-                            {key.replace(/([A-Z])/g, " $1")}:
-                          </span>{" "}
-                          {value}
-                        </p>
-                      </div>
-                    )
-                )}
-              </div>
+              <button className={styles.editButton} onClick={openEditModal}>Edit</button>
+              <table>
+                <tbody>
+                <tr>
+              
+              <td>
+                <a href={selectedCouncil.link} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
+                    alt="Adviser"
+                    className={styles.adviserImage}
+                  />
+                </a>
+              </td>
+            </tr>
+                  <tr>
+                    <td><strong>Adviser:</strong></td>
+                    <td>{selectedCouncil.adviser}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>President:</strong></td>
+                    <td>{selectedCouncil.president}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Vice President:</strong></td>
+                    <td>{selectedCouncil.vicePresident}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Secretary:</strong></td>
+                    <td>{selectedCouncil.secretary}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Treasurer:</strong></td>
+                    <td>{selectedCouncil.treasurer}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Auditor:</strong></td>
+                    <td>{selectedCouncil.auditor}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>PRO:</strong></td>
+                    <td>{selectedCouncil.pro}</td>
+                  </tr>
+                  <tr>
+                    <td><strong> First year representative:</strong></td>
+                    <td>{selectedCouncil.rep}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Second year representative (Alternate):</strong></td>
+                    <td>{selectedCouncil.representative}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           )}
         </div>
       </div>
 
       {/* Edit Modal */}
-      {isEditModalOpen && (
+      {isEditModalOpen && selectedCouncil && (
         <div className={styles.modalWrapper}>
           <div className={styles.modalContent}>
             <h3 className={styles.modalHeader}>Edit Council Details</h3>
             <form onSubmit={handleEditCouncil} className={styles.form}>
-              {Object.keys(formData).map(
-                (field) =>
-                  field !== "id" && ( // We already removed 'createdAt' in the previous step
-                    <div key={field} className={styles.formGroup}>
-                      <label>{field.replace(/([A-Z])/g, " $1")}:</label>
-                      <input
-                        type="text"
-                        name={field}
-                        value={formData[field]}
-                        onChange={handleInputChange}
-                        className={styles.input}
-                      />
-                    </div>
-                  )
-              )}
+              {Object.keys(formData).map((field) => (
+                field !== 'id' && ( // We already removed 'createdAt' in the previous step
+                  <div key={field} className={styles.formGroup}>
+                    <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                    <input
+                      type="text"
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleInputChange}
+                      className={styles.input}
+                    />
+                  </div>
+                )
+              ))}
 
               <div className={styles.formButtons}>
                 <button
@@ -156,4 +190,4 @@ const CouncilDisplay = () => {
   );
 };
 
-export default CouncilDisplay;
+export default CouncilDisplayedit;

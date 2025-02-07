@@ -16,17 +16,16 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Make a POST request to the user login endpoint
       const response = await axios.post("http://localhost:5000/login", {
         username,
         password,
       });
 
       if (response.data.success) {
-        // If login is successful, redirect to Dashboard
+        // Store the user role or success status in localStorage
+        localStorage.setItem("userRole", response.data.role); // Assuming 'role' is part of the response
         navigate("/dashboard");
       } else {
-        // Display an error message if login failed
         setErrorMessage(response.data.message);
       }
     } catch (error) {

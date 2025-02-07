@@ -8,6 +8,19 @@
     background-color: #F4F4F9;
    
 }
+
+.searchContainer {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .searchInput {
+    width: 50%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
 /* Navbar styles */
 .navbar {
     display: flex;

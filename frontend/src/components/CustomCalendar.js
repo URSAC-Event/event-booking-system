@@ -31,9 +31,13 @@ const CustomCalendar = () => {
     const formattedDate = date.toISOString().split("T")[0];
     const matchedEvents = allEvents.filter((event) => {
       const eventDate = new Date(event.date).toISOString().split("T")[0];
+<<<<<<< HEAD
       const eventDateFrom = new Date(event.datefrom)
         .toISOString()
         .split("T")[0];
+=======
+      const eventDateFrom = new Date(event.datefrom).toISOString().split("T")[0];
+>>>>>>> upstream/main
       return eventDate <= formattedDate && eventDateFrom >= formattedDate;
     });
 
@@ -53,8 +57,9 @@ const CustomCalendar = () => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
 
-    const days = [];
+    const days = new Array(startingDay).fill(null); // Empty slots for previous month days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(new Date(year, month, i));
     }
@@ -71,6 +76,7 @@ const CustomCalendar = () => {
 
   // Check if any events exist for the given date
   const hasEvents = (date) => {
+    if (!date) return false;
     const formattedDate = date.toISOString().split("T")[0];
     return allEvents.some((event) => {
       const eventDate = new Date(event.date).toISOString().split("T")[0];
@@ -108,29 +114,30 @@ const CustomCalendar = () => {
             {day}
           </div>
         ))}
-        {generateCalendarDays().map((date) => (
+        {generateCalendarDays().map((date, index) => (
           <div
-            key={date}
+            key={index}
             style={{
               textAlign: "center",
               padding: "10px",
               cursor: "pointer",
               backgroundColor:
                 selectedDate?.toISOString().split("T")[0] ===
-                date.toISOString().split("T")[0]
+                date?.toISOString().split("T")[0]
                   ? "#0e4296"
                   : "transparent",
               color:
                 selectedDate?.toISOString().split("T")[0] ===
-                date.toISOString().split("T")[0]
+                date?.toISOString().split("T")[0]
                   ? "#fff"
                   : "#000",
               position: "relative",
+              visibility: date ? "visible" : "hidden",
             }}
-            onClick={() => handleDateChange(date)}
+            onClick={() => date && handleDateChange(date)}
           >
-            {date.getDate()}
-            {hasEvents(date) && (
+            {date ? date.getDate() : ""}
+            {date && hasEvents(date) && (
               <div
                 style={{
                   position: "absolute",
