@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Customcal.module.css";
 
-
 const CustomCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(null); // Store selected date
   const [allEvents, setAllEvents] = useState([]); // Store all events from backend
@@ -32,10 +31,10 @@ const CustomCalendar = () => {
     const formattedDate = date.toISOString().split("T")[0];
     const matchedEvents = allEvents.filter((event) => {
       const eventDate = new Date(event.date).toISOString().split("T")[0];
-      const eventDateFrom = new Date(event.datefrom).toISOString().split("T")[0];
-      return (
-        eventDate <= formattedDate && eventDateFrom >= formattedDate
-      );
+      const eventDateFrom = new Date(event.datefrom)
+        .toISOString()
+        .split("T")[0];
+      return eventDate <= formattedDate && eventDateFrom >= formattedDate;
     });
 
     setFilteredEvents(matchedEvents); // Update filtered events
@@ -75,7 +74,9 @@ const CustomCalendar = () => {
     const formattedDate = date.toISOString().split("T")[0];
     return allEvents.some((event) => {
       const eventDate = new Date(event.date).toISOString().split("T")[0];
-      const eventDateFrom = new Date(event.datefrom).toISOString().split("T")[0];
+      const eventDateFrom = new Date(event.datefrom)
+        .toISOString()
+        .split("T")[0];
       return eventDate <= formattedDate && eventDateFrom >= formattedDate;
     });
   };
@@ -84,14 +85,14 @@ const CustomCalendar = () => {
     <div className={styles.calendarContainer}>
       <div className={styles.MonthSelection}>
         <button className={styles.arrows} onClick={() => changeMonth(-1)}>
-          <FontAwesomeIcon icon={faCaretLeft} className={styles.icon}/>
+          <FontAwesomeIcon icon={faCaretLeft} className={styles.icon} />
         </button>
         <h3>
           {calendarDate.toLocaleString("default", { month: "long" })}{" "}
           {calendarDate.getFullYear()}
         </h3>
         <button className={styles.arrows} onClick={() => changeMonth(1)}>
-          <FontAwesomeIcon icon={faCaretRight} className={styles.icon}/>
+          <FontAwesomeIcon icon={faCaretRight} className={styles.icon} />
         </button>
       </div>
 

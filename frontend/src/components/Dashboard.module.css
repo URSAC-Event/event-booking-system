@@ -1,20 +1,25 @@
 /* General container styles */
 .container {
     background-color: #f9f9f9;
-    padding: 24px 48px;
+    padding: 48px 96px;
+    margin-top: 96px;
 }
 
 /* Navbar styles */
 .navbar {
-    display: flex;
-    flex-wrap: wrap;
-    /* Ensure items wrap on smaller screens */
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 24px;
-    /* Adjusted padding */
-    background-color: #063970;
-    color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 96px;
+  background-color: #063970;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+
 }
 
 .logoContainer {
@@ -25,18 +30,18 @@
 .titleflex {
     display: flex;
     flex-direction: column;
-    margin-left: 8px;
+    margin-left: 12px;
 }
 
 .title {
     font-family: "Bebas Neue", sans-serif;
     font-weight: 300;
-    font-size: 18px;
+    font-size: 24px;
 }
 
 .subtitle {
-    margin-top: -4px;
-    font-size: 14px;
+    margin-top: -8px;
+    font-size: 16px;
     font-weight: 400;
 }
 
@@ -45,7 +50,7 @@
     height: 48px;
 }
 
-.loginIcon {
+.logoutIcon {
     width: 24px;
     height: 24px;
 }
@@ -69,43 +74,11 @@
 }
 
 .firstContainer {
-    display: flex;
-    flex-wrap: wrap;
-    /* Allow wrapping for smaller screens */
-    gap: 36px;
-    /* Reduced gap for smaller screens */
-    justify-content: space-between;
-    /* Space out items */
-}
-
-.upcomingEventsCard {
-    position: relative;
-    height: auto;
-    max-height: 500px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    flex: 1;
-    /* Allow it to take remaining space */
-    max-width: 100%;
-    /* Full width on small screens */
-    min-width: 300px;
-    /* Ensure it doesn’t shrink too much */
-}
-
-.upcomingEventImage {
+    display: grid;
+    grid-template-columns: 3fr 1fr; /* 3:1 width ratio */
+    gap: 48px; /* Adjust spacing if needed */
     width: 100%;
-    /* Full width of container */
-    height: 100%;
-    /* Full height of container */
-    object-fit: cover;
-    /* Ensure the image fills the container and maintains aspect ratio */
-    object-position: center;
-    /* Center the image in the container */
-    display: block;
-    /* Avoid inline gaps */
-    border-radius: 16px;
-    /* Maintain rounded corners */
+    align-items: stretch; /* Ensures both children stretch equally */
 }
 
 .gradientOverlay {
@@ -121,6 +94,22 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 48px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    max-height: 500px;
+}
+
+.calendar h1 {
+    font-size: 24px;
+    color: #0e4296;
 }
 
 .upcomingEventsText {
@@ -200,33 +189,12 @@
     color: #0e4296;
 }
 
-.header {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
 
 .newSidebarContainer {
     padding: 20px;
 }
 
-.addEventButton {
-    background-color: #0e4296;
-    padding: 8px 16px;
-    color: white;
-    border-radius: 8px;
-    margin-top: 8px;
-    border: none;
-    cursor: pointer;
-    transition: 0.15s;
-}
 
-.addEventButton:hover {
-    background-color: #0e4296bc;
-}
-
-.eventVector{
-    height: 200px;
-}
 
 /* VMGO */
 .mergedSection {
@@ -262,6 +230,8 @@
 
 .header {
     color: #154c79;
+    font-size: 1.5em;
+    margin-bottom: 10px;
 }
 
 .sidebarContainer {
@@ -298,7 +268,6 @@
 
 .sidebarContent {
     width: 100%;
-    display: flex;
 }
 
 .position {
@@ -320,12 +289,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 2;
 }
 
 .modal {
+    padding: 24px;
     background-color: #fff;
-    border-radius: 10px;
-    width: 500px;
+    border-radius: 8px;
+    width: 400px;
     height: 600px;
     overflow-y: scroll;
 }
@@ -354,16 +325,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-/* Modal */
-.modal {
-    background-color: #fff;
-    padding: 20px;
-    /* Reduced padding */
-    border-radius: 8px;
-    width: 400px;
-    /* Reduced width */
 }
 
 /* Form group styles */
@@ -561,36 +522,99 @@ span {
     background-color: #f9f9f9;
 }
 
-
-
-
-
-@media screen and (min-width: 1024px) {
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        /* Center content */
-    }
-    
-    .navbar {
-        padding: 24px 96px;
-        
-    }
-
-    .content {
-        gap: 36px;
-        padding: 24px 96px;
-    }
-
-    .firstContainer {
-        gap: 36px;
-    }
+.SecondContainer {
+    margin-top: 48px;
 }
+
+/* Add Event Styling */
+
+.bookingCont {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: 24px;
+}
+
+.eventVector {
+    width: 100%;
+    max-height: 400px;
+}
+
+.bookingHead {
+    font-size: 2.5em;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    color: #063970;
+}
+
+.bookingSubhead {
+    max-width: 500px;
+    margin-bottom: 16px;
+}
+
+.addEventButton {
+    background-color: #0e4296;
+    font-size: 1em;
+    padding: 10px 24px;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.addEventButton:hover {
+    background-color: #0e4296bc;
+}
+
+.orgList {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.orgPosition {
+    margin: 0;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+
+/* Report Cont */
+
+.reportCont {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: 36px;
+    margin-top: 48px;
+}
+
+
+
 @media screen and (max-width: 768px) {
     .navbar {
         flex-direction: row;
         /* Stack items vertically */
-        padding: 12px 16px;
+        padding: 12px 32px;
+    }
+
+    .logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    .titleflex {
+        margin-left: 8px;
     }
 
     .title {
@@ -605,16 +629,72 @@ span {
         font-size: 12px;
     }
 
-    .content {
+    .container {
+        margin-top: 56px;
+        padding: 32px;
+    }
+
+    .bookingCont {
+        display: flex;
         flex-direction: column;
-        /* Stack content vertically */
-        gap: 12px;
+        align-items: flex-start;
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .bookingContent {
+        order: 2;
+    }
+
+    .illustrationCont {
+        order: 1;
+        align-self: center;
+        width: 100%;
+    }
+
+    .eventVector {
+        width: 100%;
+        max-height: 400px;
+    }
+
+    .bookingHead {
+        font-size: 24px;
+    }
+
+    .bookingSubhead {
+        margin-bottom: 28px;
+        max-width: none;
+    }
+
+    .buttonFlex {
+        display: flex;
+        justify-content: end;
+    }
+
+    .reportCont {
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        column-gap: 36px;
+        margin-top: 48px;
     }
     
+    .reportIllustration {
+        width: 100%;
+    }
+
+
+
+
+    
     .firstContainer {
+        display: flex;
         flex-direction: column;
-        /* Stack items */
-        gap: 16px;
+        gap: 1rem; /* Adjust spacing if needed */
     }
 
     .upcomingEventsCard {
@@ -623,33 +703,157 @@ span {
         min-width: 100%;
         /* Prevent shrinking */
     }
+
+    .calendar {
+        max-height: none;
+    }
+
+    .leftSection {
+        max-height: none;
+    }
 }
 
 @media screen and (max-width: 426px) {
     .navbar {
-        padding: 8px 12px;
+        padding: 16px;
         flex-direction: row;
     }
     .logo {
-        height: 44px;
+        height: 32px;
+        width: 32px;
+    }
+
+    .titleflex {
+        display: flex;
+        flex-direction: column;
+        margin-left: 8px;
+        gap: 4px;
     }
 
     .logoutButton p{
         display: none;
     }
 
-    .content {
-        gap: 8px;
-        padding: 8px;
+    .container {
+        padding: 16px;
+        margin-top: 67px;
     }
+
+    .mergedSection {
+        padding: 24px;
+        text-align: left;
+    }
+
+    .vgmoHeader {
+        font-size: 24px;
+        text-transform: capitalize;
+    }
+
+    .bookingCont {
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .bookingContent {
+        order: 2;
+    }
+
+    .illustrationCont {
+        order: 1;
+    }
+
+    .bookingHead {
+        font-size: 24px;
+    }
+
+    .bookingSubhead {
+        margin-bottom: 24px;
+    }
+
+    .buttonFlex {
+        display: flex;
+        justify-content: end;
+    }
+
+    .sidebarContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .sidebar {
+        display: flex;
+        flex-direction: row;
+        max-height:none;
+        overflow-x: scroll;
+        overflow-y: none;
+        scrollbar-gutter: none;
+        gap: 4px;
+        height: 100px;
+    }
+
+    /* max-height: 550px;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+    gap: 4px; */
+
+    .sidebar button {
+        padding: 16px 8px;
+        border-radius: 0px;
+        border: none;
+        cursor: pointer;
+        background-color: #0e4296;
+        color: white;
+        transition: 0.15s;
+        border-radius: 8px;
+        overflow-y: none;
+
+    }
+    
+    .sidebar button:hover {
+        background-color: #0e4296bc;
+    
+    }
+
+
+
+
+
+
+
+
+
+
 
     .upcomingEventsCard {
         max-width: 100%;
         min-width: 100%;
     }
 
-    .sidebarr,
+    /* .sidebarr,
     .sidebar {
         max-height: 300px;
+    } */
+
+    .footer {
+        margin-top: 24px;
+    }
+
+    .footer p{
+        font-size: 12px;
+    }
+
+    .calendar {
+        max-height: none;
+    }
+
+    .leftSection {
+        max-height: none;
+    }
+
+    .calendar {
+        padding: 24px;
     }
 }
