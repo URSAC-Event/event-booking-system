@@ -152,6 +152,59 @@
 }
 
 /* Content area */
+
+.heroSection {
+    min-height: 200px;
+    display: flex;
+    gap: 48px;
+}
+
+.welcomeCont {
+    width: 600px;
+    border-radius: 12px;
+    padding: 48px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    flex-shrink: 1;
+}
+
+.headers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.headers h1 {
+    font-size: 28px;
+    max-width: 300px;
+}
+
+.getStartedBtn {
+    font-size: 1em;
+    padding: 10px 24px;
+    width: 150px;
+    background-color: #0e4296;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    transition: 0.15s;
+    cursor: pointer;
+}
+
+.getStartedBtn:hover {
+    opacity: 0.5;
+}
+
+.ssCont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .content {
     display: flex;
     justify-content: space-between;
@@ -184,20 +237,25 @@
     justify-content: flex-end;
 }
 
+.SecondContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
 .calendar {
     display: flex;
     flex-direction: column;
     background-color: white;
-    padding: 48px;
+    padding: 64px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    height: 100%;
-    max-height: 500px;
 }
 
 .calendar h1 {
     font-size: 24px;
     color: #0e4296;
+    margin-bottom: 16px;
 }
 
 .upcomingEventsText {
@@ -287,7 +345,6 @@
 /* VMGO */
 .mergedSection {
     background-color: white;
-    margin-top: 48px;
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -302,7 +359,6 @@
 }
 
 .layoutContainer {
-    margin-top: 48px;
     display: block;
     gap: 36px;
     width: 100%;
@@ -311,7 +367,7 @@
 .leftSection {
     max-height: 640px;
     background-color: white;
-    padding: 24px;
+    padding: 64px;
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -325,7 +381,7 @@
 .sidebarContainer {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    height: 380px;
+    height: 420px;
     gap: 24px;
 }
 
@@ -356,6 +412,11 @@
 
 .sidebarContent {
     width: 100%;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.sidebarContent:hover {
     overflow-y: auto;
 }
 
@@ -601,10 +662,6 @@ span {
     background-color: #f9f9f9;
 }
 
-.SecondContainer {
-    margin-top: 48px;
-}
-
 /* Add Event Styling */
 
 .bookingCont {
@@ -675,7 +732,6 @@ span {
     grid-template-columns: 1fr 1fr;
     align-items: center;
     column-gap: 36px;
-    margin-top: 48px;
 }
 
 
@@ -720,7 +776,7 @@ span {
 .iconCont:hover {
     opacity: 0.5;
 }
-    
+
 
 .editIcon {
     margin-top: 6px;
@@ -750,6 +806,58 @@ span {
     /* This will crop the image to maintain aspect ratio */
     border-radius: 50%;
     /* Optional: to give the image rounded corners */
+}
+
+@media all and (max-width: 1024px) {
+    .navbar {
+        padding: 24px 64px;
+    }
+
+    .container {
+        padding: 48px 64px;
+    }
+
+    .heroSection {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        padding: 48px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        gap: 24px;
+    }
+
+    .welcomeCont {
+        width: 100%;
+        box-shadow: none;
+        order: 2;
+        padding: 0;
+    }
+
+    .headers h1 {
+        font-size: 28px;
+        max-width: none;
+    }
+
+    .calendar {
+        padding: 48px;
+    }
+
+    .bookingCont {
+        padding: 48px;
+    }
+
+    .reportCont {
+        padding: 48px;
+    }
+
+    .leftSection {
+        padding: 48px;
+    }
+
+    .mergedSection {
+        padding: 48px;
+    }
 }
 
 
@@ -787,12 +895,17 @@ span {
         padding: 32px;
     }
 
+
+    .welcomeCont {
+        padding: 0;
+    }
+
     .bookingCont {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        padding: 24px;
-        gap: 24px;
+        padding: 48px;
+        gap: 48px;
     }
 
     .bookingContent {
@@ -833,13 +946,24 @@ span {
         flex-direction: column;
         align-items: center;
         column-gap: 36px;
-        margin-top: 48px;
+        padding: 48px;
     }
 
     .reportIllustration {
         width: 100%;
     }
 
+    .leftSection {
+        padding: 48px;
+    }
+
+    .mergedSection {
+        padding: 48px;
+    }
+
+    .calendar {
+        padding: 48px;
+    }
 
 
 
@@ -892,6 +1016,16 @@ span {
     .container {
         padding: 16px;
         margin-top: 67px;
+    }
+
+    .heroSection {
+        padding: 24px;
+        gap: 12px;
+    }
+
+    .getStartedBtn {
+        width: 150px;
+        align-items: flex-end;
     }
 
     .mergedSection {

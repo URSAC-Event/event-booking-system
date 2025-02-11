@@ -5,7 +5,6 @@ import styles from "./Dashboard.module.css"; // For dashboard styles
 import { FaAngleDown } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 
-
 const CouncilDisplayedit = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -65,7 +64,9 @@ const CouncilDisplayedit = () => {
 
   return (
     <div className={styles.leftSection}>
-      <h2 className={styles.councilMainHeader}>Councils and Organization List</h2>
+      <h2 className={styles.councilMainHeader}>
+        Councils and Organization List
+      </h2>
 
       <div className={styles.sidebarContainer}>
         <div className={styles.sidebar}>
@@ -109,9 +110,7 @@ const CouncilDisplayedit = () => {
 
         <div className={styles.sidebarContent}>
           <h3 className={styles.councilSubheader}>
-            {selectedCouncil
-              ? ""
-              : "Select a Council/Organization"}
+            {selectedCouncil ? "" : "Select a Council/Organization"}
           </h3>
           {selectedCouncil && (
             <div className={styles.details}>
@@ -129,14 +128,11 @@ const CouncilDisplayedit = () => {
                     />
                   </a>
                   <h3 className={styles.councilSubheader}>
-                    {selectedCouncil
-                      ? selectedCouncil.organization
-                      : ""}
+                    {selectedCouncil ? selectedCouncil.organization : ""}
                   </h3>
                   <h3 className={styles.councilSubheaderMobile}>
                     {selectedCouncil ? selectedCouncil.organization : ""}
                   </h3>
-
                 </div>
                 <div className={styles.iconCont}>
                   <FaPen className={styles.editIcon} onClick={openEditModal} />
@@ -150,7 +146,8 @@ const CouncilDisplayedit = () => {
                   <strong>President:</strong> {selectedCouncil.president}
                 </p>
                 <p>
-                  <strong>Vice President:</strong> {selectedCouncil.vicePresident}
+                  <strong>Vice President:</strong>{" "}
+                  {selectedCouncil.vicePresident}
                 </p>
                 <p>
                   <strong>Secretary:</strong> {selectedCouncil.secretary}
@@ -169,8 +166,16 @@ const CouncilDisplayedit = () => {
                   {selectedCouncil.rep}
                 </p>
                 <p>
-                  <strong>Second Year Representative (Alternate):</strong>{" "}
+                  <strong>Second Year Representative:</strong>{" "}
                   {selectedCouncil.representative}
+                </p>
+                <p>
+                  <strong>Third Year Representative:</strong>{" "}
+                  {selectedCouncil.trdrepresentative}
+                </p>
+                <p>
+                  <strong>Fourth Year Representative:</strong>{" "}
+                  {selectedCouncil.frthrepresentative}
                 </p>
               </div>
             </div>

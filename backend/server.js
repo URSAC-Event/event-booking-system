@@ -707,7 +707,7 @@ app.get('/api/councilsdisplay', (req, res) => {
 // Update council details endpoint
 app.put('/api/councilsedit/:id', (req, res) => {
   const councilId = req.params.id; // ID from the URL
-  const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
+  const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative } = req.body;
 
   // Ensure created_at is never included
   const updateQuery = `
@@ -721,11 +721,13 @@ app.put('/api/councilsedit/:id', (req, res) => {
         auditor = ?, 
         pro = ?, 
         rep = ?, 
-        representative = ? 
+        representative = ?,
+        trdrepresentative = ?,
+        frthrepresentative = ?
     WHERE id = ?
   `;
 
-  const values = [adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, councilId];
+  const values = [adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative, councilId];
 
   connection.query(updateQuery, values, (err, result) => {
     if (err) {

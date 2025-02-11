@@ -56,6 +56,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
         <div className={styles.sectionBox}>
           <form onSubmit={handleAddCouncil} className={styles.form}>
             <div className={styles.formGroup}>
+              <h1 className={styles.header}>Add Council/Organization</h1>
               <label>Organization/Council:</label>
               <input
                 type="text"
@@ -74,14 +75,19 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
                   className={styles.input}
                   placeholder="Adviser Name"
                 />
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg"
-                  onChange={(e) =>
-                    setCouncilFormData({ ...councilFormData, adviserPicture: e.target.files[0] })
-                  }
-                  className={styles.fileInput}
-                />
+                <div className={styles.logo}>
+                  <label>Logo: </label>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    onChange={(e) =>
+                      setCouncilFormData({ ...councilFormData, adviserPicture: e.target.files[0] })
+                    }
+                    className={styles.fileInput}
+                  />
+
+                </div>
+
               </div>
             </div>
             <div className={styles.formGroup}>
@@ -149,17 +155,17 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
               />
             </div>
             <div className={styles.formGroup}>
-  <label>First year Representative:</label>
-  <input
-    type="text"
-    value={councilFormData.rep}
-    onChange={(e) => setCouncilFormData({ ...councilFormData, rep: e.target.value })}
-    className={styles.input}
-    placeholder="Enter Rep name"
-  />
-</div>
+              <label>First-Year Representative:</label>
+              <input
+                type="text"
+                value={councilFormData.rep}
+                onChange={(e) => setCouncilFormData({ ...councilFormData, rep: e.target.value })}
+                className={styles.input}
+                placeholder="Enter Rep name"
+              />
+            </div>
             <div className={styles.formGroup}>
-              <label>Secondyear Representative:</label>
+              <label>Second-Year Representative:</label>
               <input
                 type="text"
                 value={councilFormData.representative}
@@ -169,7 +175,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
             </div>
             {/* Add new input fields for third and fourth representatives */}
             <div className={styles.formGroup}>
-              <label>Third-year Representative:</label>
+              <label>Third-Year Representative:</label>
               <input
                 type="text"
                 value={councilFormData.thirdRepresentative}
@@ -179,7 +185,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Fourth-year Representative:</label>
+              <label>Fourth-Year Representative:</label>
               <input
                 type="text"
                 value={councilFormData.fourthRepresentative}
@@ -200,7 +206,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
             </div>
             {/* ...other form fields for president, vice-president, etc... */}
             <div className={styles.formButtons}>
-              <button type="submit" className={styles.submitButton}>Submit</button>
+
               <button
                 type="button"
                 onClick={() => setShowAddCouncilForm(false)}
@@ -208,6 +214,8 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
               >
                 Cancel
               </button>
+
+              <button type="submit" className={styles.submitButton}>Submit</button>
             </div>
           </form>
         </div>

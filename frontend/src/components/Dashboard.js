@@ -153,7 +153,7 @@ const Dashboard = () => {
       try {
         const userFromDate = new Date(eventData.fromDate); // Convert to Date object
         const userToDate = eventData.toDate ? new Date(eventData.toDate) : null; // Only set toDate if provided
-  
+
         // Validation: Ensure `toDate` is not earlier than `fromDate`
         if (userToDate && userToDate < userFromDate) {
           const errorMessage = "`To Date` cannot be earlier than `From Date`.";
@@ -161,7 +161,7 @@ const Dashboard = () => {
           setError(errorMessage); // Update the error state
           return; // Prevent submission
         }
-  
+
         console.log("Checking for overlapping events...");
 
         // Fetch all approved events from the server
@@ -172,7 +172,7 @@ const Dashboard = () => {
         for (let event of approvedEvents) {
           const savedStartDate = new Date(event.date); // Assume event.date is the `fromDate`
           const savedEndDate = event.datefrom ? new Date(event.datefrom) : savedStartDate; // If `toDate` is not provided, use `fromDate`
-  
+
           // Check if the event is in the same venue and dates overlap
           if (event.venue === eventData.venue) {
             if (
@@ -185,7 +185,7 @@ const Dashboard = () => {
               const [savedFrom, savedTo] = event.duration.split(' to ');
               const savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[2]);
               const savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[2]);
-  
+
               // Time overlap check
               if (
                 (userFrom.hours < savedToTime.hours ||
@@ -213,11 +213,11 @@ const Dashboard = () => {
         formData.append("name", eventData.name);
         formData.append("organization", eventData.organization);
         formData.append("date", eventData.fromDate); // Store fromDate in 'date'
-  
+
         if (eventData.toDate) {
           formData.append("datefrom", eventData.toDate); // Store toDate only if provided
         }
-  
+
         formData.append("duration", duration); // Use the formatted duration string
         formData.append("document", eventData.document);
         formData.append("poster", eventData.poster);
@@ -254,7 +254,7 @@ const Dashboard = () => {
       console.warn("Incomplete time fields provided by the user.");
       setError("Please fill in all time fields correctly.");
     }
-  };  
+  };
 
   return (
     <div>
@@ -275,18 +275,23 @@ const Dashboard = () => {
         </button>
       </nav>
       <div className={styles.container}>
-
-        <div className={styles.firstContainer}>
-          {/* Upcoming Events Section */}
-          <Slideshow />
-
+        <div className={styles.SecondContainer}>
+          <div className={styles.heroSection}>
+            <div className={styles.welcomeCont}>
+              <div className={styles.headers}>
+                <h1>URSAC Event Booking System</h1>
+                <p>Easily book and manage events at URS Antipolo Campus. Plan gatherings, reserve venues, and track schedules in one place.</p>
+              </div>
+              <button className={styles.getStartedBtn}>Get Started</button>
+            </div>
+            {/* <div className={styles.ssCont}> */}
+            <Slideshow />
+            {/* </div> */}
+          </div>
           <div className={styles.calendar}>
             <h1>Campus Calendar</h1>
             <CustomCalendar />
           </div>
-        </div>
-
-        <div className={styles.SecondContainer}>
           <div className={styles.bookingCont}>
             <div className={styles.bookingContent}>
               <h1 className={styles.bookingHead}>
@@ -315,10 +320,10 @@ const Dashboard = () => {
           </div>
           <div className={styles.reportCont}>
             <div className={styles.reportIllustration}>
-              <img src={reportVector} alt="" className={styles.eventVector}/>
+              <img src={reportVector} alt="" className={styles.eventVector} />
             </div>
             <div className={styles.reportContent}>
-            <h1 className={styles.bookingHead}>
+              <h1 className={styles.bookingHead}>
                 Got any inquiries?
               </h1>
               <p className={styles.bookingSubhead}>

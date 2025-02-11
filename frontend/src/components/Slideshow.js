@@ -29,17 +29,17 @@ const Slideshow = () => {
       setTimeout(() => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
         setIsFading(false);
-      }, 900); // Duration of fade-out matches CSS
-    }, 6000); // Change slides every 6 seconds
+      }, 300); // Duration of fade-out matches CSS
+    }, 8000); // Change slides every 6 seconds
 
     return () => clearInterval(interval);
   }, [images.length]);
 
   return (
+    <div className={styles.slideshowCont}>
       <div
-        className={`${styles.upcomingEventsImageContainer} ${
-          isFading ? styles.fade : ""
-        }`}
+        className={`${styles.upcomingEventsImageContainer} ${isFading ? styles.fade : ""
+          }`}
       >
         {images.length > 0 ? (
           <img
@@ -51,6 +51,7 @@ const Slideshow = () => {
           <p>No upcoming events</p> // Fallback if no images are available
         )}
       </div>
+    </div>
   );
 };
 

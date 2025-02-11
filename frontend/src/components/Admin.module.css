@@ -26,7 +26,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 24px 96px;
     background-color: #10346e;
     color: #fff;
     position: fixed;
@@ -95,12 +95,15 @@
 .sidebar {
     background-color: #063970;
     width: 250px;
+    position: sticky;
+    margin-top: 36px;
     min-width: 200px;
     height: 1000px;
     padding-top: 0px;
-    position: sticky;
     top: 0;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    
+
 }
 
 .sidebarList {
@@ -143,12 +146,14 @@
     background-color: #0b5296;
     color: #FFD700;
     border-left: 4px solid #FFD700;
+
 }
 
 /* Content styles */
 .content {
+    
     flex: 1;
-    padding: 20px;
+    padding: 48px 20px 20px 20px;
 }
 
 /* Table styles */
@@ -192,6 +197,36 @@
     cursor: pointer;
     margin: 2px 5px;
     transition: background-color 0.3s;
+}
+
+.addCouncilButton{
+    background-color: #0e4296;
+    color: white;
+    padding: 12px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 2px 5px;
+    transition: background-color 0.3s;
+}
+
+.addButton{
+    background-color: #0e4296;
+    color: white;
+    padding: 12px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 2px 5px;
+    margin-left: 20px;
+}
+
+.addCouncilButton:hover {
+    background-color: #034d8c;
+}
+
+.addButton:hover {
+    background-color: #034d8c;
 }
 
 .button:hover {

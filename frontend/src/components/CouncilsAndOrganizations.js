@@ -78,7 +78,7 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
 
       <div className={styles.addCouncilButtonContainer}>
         <button className={styles.addCouncilButton} onClick={() => setShowAddCouncilForm(true)}>
-          Add New Council
+          Add New
         </button>
       </div>
 

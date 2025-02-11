@@ -54,57 +54,51 @@ const PublicPage = () => {
       <div className={styles.container}>
         {/* Main Content */}
 
-        <div className={styles.firstContainer}>
-  {/* Upcoming Events Section */}
-  <Slideshow />
+        {/* Upcoming Events Section */}
+        <Slideshow />
 
-  <div className={styles.calendarSection}>
-    <h1>Campus Calendar</h1>
-    <CustomCalendar />
-  </div>
-
-
-</div>
+        <div className={styles.calendarSection}>
+          <h1>Campus Calendar</h1>
+          <CustomCalendar />
+        </div>
 
 
-       
+
+
 
         {/* News and Information Section (on the right) */}
         <div className={styles.layoutContainer}>
-          
-        <CouncilDisplay />
-        <div className={styles.rightSection}>
-    <UpcomingEvents />
-  
-        </div>
- 
-         
-        
+
+          <CouncilDisplay />
+          <div className={styles.rightSection}>
+            <UpcomingEvents />
+
+          </div>
+
+
+
 
         </div>
-        <div className={styles.layoutContainer}>
-          
-        </div>
         <div className={styles.mergedSection}>
-          <h3 className={styles.vgmoHeader}>VISION</h3>
+          <h3 className={styles.vgmoHeader}>Vision</h3>
           <p className={styles.vgmo}>
             The leading University in human resource development, knowledge and
             technology generation, and environmental stewardship.
           </p>
-          <h3 className={styles.vgmoHeader}>MISSION</h3>
+          <h3 className={styles.vgmoHeader}>Mission</h3>
           <p className={styles.vgmo}>
             The University of Rizal System is committed to nurture and produce
             upright and competent graduates and empowered community through
             relevant and sustainable higher professional and technical
             instruction, research, extension, and production services.
           </p>
-          <h3 className={styles.vgmoHeader}>CORE VALUES</h3>
+          <h3 className={styles.vgmoHeader}>Core Values</h3>
           <p>R – Responsiveness</p>
           <p>I – Integrity</p>
           <p>S – Service</p>
           <p>E – Excellence</p>
           <p className={styles.vgmo}>S – Social Responsibility</p>
-          <h3 className={styles.vgmoHeader}>QUALITY POLICY</h3>
+          <h3 className={styles.vgmoHeader}>Quality Policy</h3>
           <p className={styles.vgmo}>
             The University of Rizal System commits to deliver excellent products
             and services to ensure total stakeholders’ satisfaction in
@@ -116,10 +110,10 @@ const PublicPage = () => {
 
 
         {/* Merged Vision and Mission Section */}
-       
+
       </div>
 
-      
+
 
 
       {/* Footer */}
