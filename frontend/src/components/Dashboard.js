@@ -282,7 +282,18 @@ const Dashboard = () => {
                 <h1>URSAC Event Booking System</h1>
                 <p>Easily book and manage events at URS Antipolo Campus. Plan gatherings, reserve venues, and track schedules in one place.</p>
               </div>
-              <button className={styles.getStartedBtn}>Get Started</button>
+              <button
+                className={styles.getStartedBtn}
+                onClick={() => {
+                  const element = document.getElementById('book');
+                  const yOffset = -150; // Adjust this value to control the offset
+                  const yPosition = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+                  window.scrollTo({ top: yPosition, behavior: 'smooth' });
+                }}
+              >
+                Get Started
+              </button>
             </div>
             {/* <div className={styles.ssCont}> */}
             <Slideshow />
@@ -292,7 +303,7 @@ const Dashboard = () => {
             <h1>Campus Calendar</h1>
             <CustomCalendar />
           </div>
-          <div className={styles.bookingCont}>
+          <div className={styles.bookingCont} id="book">
             <div className={styles.bookingContent}>
               <h1 className={styles.bookingHead}>
                 Book your organization events with ease!

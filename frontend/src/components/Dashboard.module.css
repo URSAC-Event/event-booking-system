@@ -195,6 +195,11 @@
     cursor: pointer;
 }
 
+.getStartedBtn a {
+    color: white;
+    text-decoration: none;
+}
+
 .getStartedBtn:hover {
     opacity: 0.5;
 }
@@ -388,9 +393,14 @@
 .sidebar {
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: hidden;
     scrollbar-gutter: stable;
     gap: 4px;
+    transition: 0.3s;
+}
+
+.sidebar:hover {
+    overflow-y: scroll;
 }
 
 .sidebar button {
@@ -538,10 +548,6 @@
 
 label {
     font-size: 16px;
-}
-
-span {
-    margin: 0 10px;
 }
 
 .timeFromGroup,
@@ -808,6 +814,24 @@ span {
     /* Optional: to give the image rounded corners */
 }
 
+.placeholderCont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+.placeholderCont p {
+    color: #282828;
+    text-align: center;
+}
+
+.placholderIcon {
+    color: rgb(210, 210, 210);
+    font-size: 64px;
+}
+
 @media all and (max-width: 1024px) {
     .navbar {
         padding: 24px 64px;
@@ -832,6 +856,10 @@ span {
         box-shadow: none;
         order: 2;
         padding: 0;
+    }
+
+    .header {
+        max-width: 320px;
     }
 
     .headers h1 {
@@ -865,7 +893,6 @@ span {
 @media screen and (max-width: 768px) {
     .navbar {
         flex-direction: row;
-        /* Stack items vertically */
         padding: 12px 32px;
     }
 
@@ -1127,6 +1154,9 @@ span {
         transform: translateY(-50%);
     }
 
+    .leftSection {
+        padding: 24px;
+    }
 
 
 

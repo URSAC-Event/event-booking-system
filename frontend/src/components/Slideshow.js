@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "./PublicPage.module.css";
+import placeholder from "../assets/placeholder.png";
 
 const Slideshow = () => {
   const [imageFiles, setImageFiles] = useState([]);
@@ -48,7 +49,11 @@ const Slideshow = () => {
             className={styles.upcomingEventImage}
           />
         ) : (
-          <p>No upcoming events</p> // Fallback if no images are available
+          <img
+            src={placeholder}
+            alt="Placeholder Image"
+            className={styles.upcomingEventImage}
+          />
         )}
       </div>
     </div>

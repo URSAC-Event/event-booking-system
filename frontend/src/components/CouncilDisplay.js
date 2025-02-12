@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./Dashboard.module.css"; // Adjust path as needed
 import { FaAngleDown } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
+
 
 const CouncilDisplay = () => {
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -128,14 +130,15 @@ const CouncilDisplay = () => {
         </div>
 
         <div className={styles.sidebarContent}>
-          <h3 className={styles.councilSubheader}>
-            {selectedCouncil
-              ? ""
-              : "Select a Council/Organization"}
-          </h3>
+          {selectedCouncil
+            ? ""
+            : <div className={styles.placeholderCont}>
+              <FaUsers className={styles.placholderIcon} />
+              <p>Select a Council/Organization</p>
+            </div>}
           {selectedCouncil && (
             <div className={styles.details}>
-<div className={styles.profileCont}>
+              <div className={styles.profileCont}>
                 <div className={styles.profile}>
                   <a
                     href={selectedCouncil.link}
@@ -195,7 +198,7 @@ const CouncilDisplay = () => {
         </div>
       </div>
 
-      {/* Conditionally render the floating display */}
+      {/* Conditionally render the floating display
       {approvedData && approvedData.length > 0 && (
         <div className={styles.floatingDisplay}>
           {selectedCouncil && approvedData && (
@@ -233,7 +236,7 @@ const CouncilDisplay = () => {
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

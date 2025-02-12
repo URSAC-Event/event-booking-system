@@ -10,6 +10,75 @@
   margin-top: 96px;
 }
 
+.SecondContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.heroSection {
+  min-height: 200px;
+  display: flex;
+  gap: 48px;
+}
+
+
+.welcomeCont {
+  width: 600px;
+  border-radius: 12px;
+  padding: 48px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  flex-shrink: 1;
+}
+
+.headers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headers h1 {
+  font-size: 28px;
+  max-width: 300px;
+}
+
+.getStartedBtn {
+  font-size: 1em;
+  padding: 10px 24px;
+  width: 150px;
+  background-color: #0e4296;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  transition: 0.15s;
+  cursor: pointer;
+}
+
+.getStartedBtn:hover {
+  opacity: 0.5;
+}
+
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 64px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar h1 {
+  font-size: 24px;
+  color: #0e4296;
+  margin-bottom: 16px;
+}
+
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -206,35 +275,6 @@
   border-radius: 8px;
 }
 
-/* Calendar container styles */
-.calendar {
-  border: none;
-  margin-bottom: 16px;
-}
-
-.calendarSection {
-  flex: 1 1 45%;
-  /* Allow it to take remaining space */
-  max-width: 400px;
-  min-width: 300px;
-  max-height: 500px;
-  padding: 48px;
-  border-radius: 16px;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.calendarSection h1 {
-  font-size: 24px;
-  color: #0e4296;
-}
-
-.calendarTitle {
-  font-size: 20px;
-  margin-bottom: 16px;
-  text-align: left;
-}
-
 .bold {
   font-weight: bold;
 }
@@ -350,22 +390,21 @@
   flex-wrap: wrap;
 }
 
-.newsItem {
+/* .newsItem {
 
   margin: 10px 0;
   padding: 15px;
   border-radius: 8px;
-}
+} */
 
 .rightSection {
-  padding: 0px 20px 20px 20px;
+  padding: 64px 64px 64px 64px;
   position: relative;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
+  background-color: white;
   border-radius: 12px;
-  max-height: 640px;
-  overflow-y: auto;
+  transition: 0.3s;
   /* Allow scrolling if content overflows */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header {
@@ -373,9 +412,8 @@
   color: #0e4296;
   position: sticky;
   top: 0;
-  background-color: #f9f9f9;
-  padding-top: 20px;
   padding-bottom: 16px;
+  background-color: white;
 }
 
 .itemHeader {
@@ -386,15 +424,15 @@
 }
 
 .upcomingCont {
-  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
 }
 
 .newsItem {
-  margin-bottom: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
+  padding: 16px;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: aliceblue;
 }
 
 .newsImage {
@@ -413,35 +451,37 @@
 }
 
 .pagination {
+  margin-top: 24px;
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
+  align-items: center;
+  gap: 16px;
 }
 
 .pagination button {
-  padding: 5px 10px;
-  background-color: #0e4296;
-  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: #0e4296;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
+  font-size: 18px;
 }
 
 .pagination button:disabled {
-  background-color: #ddd;
+  color: gray;
   cursor: not-allowed;
 }
 
-.layoutContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* Two columns */
-  gap: 48px;
+/* .layoutContainer {
+  display: ; */
+/* Two columns */
+/* gap: 48px;
   width: 100%;
-  position: relative;
-  /* Set the parent container to relative positioning */
-}
+  position: relative; */
+/* Set the parent container to relative positioning */
+/* } */
 
 
 
@@ -496,52 +536,106 @@
   background-color: #dcdbdb;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 0px;
-}
 
-::-webkit-scrollbar-track {
-  background-color: rgb(255, 255, 255);
-  border-radius: 4px;
-}
 
-::-webkit-scrollbar-thumb {
-  background-color: #063970;
-  transition: 0.15s;
-  border-radius: 4px;
-}
+@media all and (max-width: 1024px) {
+  .navbar {
+    padding: 24px 64px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: #0e4296bc;
+  .container {
+    padding: 48px 64px;
+  }
+
+  .heroSection {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 48px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    gap: 24px;
+  }
+
+  .welcomeCont {
+    width: 100%;
+    box-shadow: none;
+    order: 2;
+    padding: 0;
+  }
+
+  .headers h1 {
+    font-size: 28px;
+    max-width: none;
+  }
+
+  .calendar {
+    padding: 48px;
+  }
+
+  .layoutContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
 }
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 16px;
+    padding: 12px 32px;
     flex-direction: row;
+  }
+
+  .logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .titleflex {
+    margin-left: 8px;
   }
 
   .title {
     font-size: 16px;
-    text-align: center;
   }
 
   .subtitle {
     font-size: 12px;
   }
 
-  /* .calendarContainer,
-  .upcomingEventsCard {
-    width: 100%;
-    padding: 12px;
-    box-shadow: none;
-    border-radius: 8px;
-  } */
+  .container {
+    margin-top: 56px;
+    padding: 32px;
+  }
+
+  .calendar {
+    padding: 48px;
+    max-height: none;
+  }
+
+  .welcomeCont {
+    padding: 0;
+  }
 
   .loginButton {
     font-size: 12px;
   }
+
+  .leftSection {
+    padding: 48px;
+    max-height: none;
+  }
+
+  .rightSection {
+    padding: 48px;
+  }
+
+  .mergedSection {
+    padding: 48px;
+  }
+
+
 }
 
 /* General styles for small screens */
@@ -570,20 +664,39 @@
 
 
   .container {
+    padding: 16px;
     margin-top: 67px;
-    padding: 24px 16px;
-    gap: 24px;
   }
 
-  .layoutContainer {
+  .SecondContainer {
     display: flex;
     flex-direction: column;
     gap: 24px;
   }
 
-  .calendarContainer {
-    width: 100%;
-    padding: 16px;
+  .leftSection {
+    padding: 24px;
+  }
+
+  .rightSection {
+    padding: 24px;
+  }
+
+  .heroSection {
+    padding: 24px;
+    gap: 12px;
+  }
+
+  .getStartedBtn {
+    width: 150px;
+    align-items: flex-end;
+  }
+
+
+  .layoutContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .mergedSection {
@@ -595,6 +708,11 @@
   .rightSection {
     max-height: none;
     overflow-y: auto;
+  }
+
+  .calendar {
+    max-height: none;
+    padding: 24px;
   }
 
   .vgmoHeader {

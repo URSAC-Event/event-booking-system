@@ -52,60 +52,67 @@ const PublicPage = () => {
       </nav>
 
       <div className={styles.container}>
-        {/* Main Content */}
+        <div className={styles.SecondContainer}>
+          <div className={styles.heroSection}>
+            <div className={styles.welcomeCont}>
+              <div className={styles.headers}>
+                <h1>URSAC Event Booking System</h1>
+                <p>Easily book and manage events at URS Antipolo Campus. Plan gatherings, reserve venues, and track schedules in one place.</p>
+              </div>
+              <button className={styles.getStartedBtn} onClick={handleLoginClick}>Get Started</button>
+            </div>
+            <Slideshow />
+          </div>
 
-        {/* Upcoming Events Section */}
-        <Slideshow />
-
-        <div className={styles.calendarSection}>
-          <h1>Campus Calendar</h1>
-          <CustomCalendar />
-        </div>
 
 
-
-
-
-        {/* News and Information Section (on the right) */}
-        <div className={styles.layoutContainer}>
-
-          <CouncilDisplay />
-          <div className={styles.rightSection}>
-            <UpcomingEvents />
-
+          <div className={styles.calendar}>
+            <h1>Campus Calendar</h1>
+            <CustomCalendar />
           </div>
 
 
 
 
-        </div>
-        <div className={styles.mergedSection}>
-          <h3 className={styles.vgmoHeader}>Vision</h3>
-          <p className={styles.vgmo}>
-            The leading University in human resource development, knowledge and
-            technology generation, and environmental stewardship.
-          </p>
-          <h3 className={styles.vgmoHeader}>Mission</h3>
-          <p className={styles.vgmo}>
-            The University of Rizal System is committed to nurture and produce
-            upright and competent graduates and empowered community through
-            relevant and sustainable higher professional and technical
-            instruction, research, extension, and production services.
-          </p>
-          <h3 className={styles.vgmoHeader}>Core Values</h3>
-          <p>R – Responsiveness</p>
-          <p>I – Integrity</p>
-          <p>S – Service</p>
-          <p>E – Excellence</p>
-          <p className={styles.vgmo}>S – Social Responsibility</p>
-          <h3 className={styles.vgmoHeader}>Quality Policy</h3>
-          <p className={styles.vgmo}>
-            The University of Rizal System commits to deliver excellent products
-            and services to ensure total stakeholders’ satisfaction in
-            instruction, research, extension, production and dynamic
-            administrative support and to continuously improve its Quality
-            Management System processes to satisfy all applicable requirements.
-          </p>
+
+          {/* News and Information Section (on the right) */}
+
+          <div className={styles.rightSection}>
+            <UpcomingEvents />
+          </div>
+
+          <div className={styles.layoutContainer}>
+            <CouncilDisplay />
+          </div>
+
+          <div className={styles.mergedSection}>
+            <h3 className={styles.vgmoHeader}>Vision</h3>
+            <p className={styles.vgmo}>
+              The leading University in human resource development, knowledge and
+              technology generation, and environmental stewardship.
+            </p>
+            <h3 className={styles.vgmoHeader}>Mission</h3>
+            <p className={styles.vgmo}>
+              The University of Rizal System is committed to nurture and produce
+              upright and competent graduates and empowered community through
+              relevant and sustainable higher professional and technical
+              instruction, research, extension, and production services.
+            </p>
+            <h3 className={styles.vgmoHeader}>Core Values</h3>
+            <p>R – Responsiveness</p>
+            <p>I – Integrity</p>
+            <p>S – Service</p>
+            <p>E – Excellence</p>
+            <p className={styles.vgmo}>S – Social Responsibility</p>
+            <h3 className={styles.vgmoHeader}>Quality Policy</h3>
+            <p className={styles.vgmo}>
+              The University of Rizal System commits to deliver excellent products
+              and services to ensure total stakeholders’ satisfaction in
+              instruction, research, extension, production and dynamic
+              administrative support and to continuously improve its Quality
+              Management System processes to satisfy all applicable requirements.
+            </p>
+          </div>
         </div>
 
 
