@@ -80,3 +80,15 @@
   font-size: 16px;
   color: #777;
 }
+
+@media all and (max-width: 768px) {
+  .reportList {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media all and (max-width: 426px) {
+  .reportList {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}

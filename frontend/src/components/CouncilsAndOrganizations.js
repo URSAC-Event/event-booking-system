@@ -84,7 +84,7 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
           <FaSearch className={styles.searchIcon} />
         </div>
         <button className={styles.addCouncilButton} onClick={() => setShowAddCouncilForm(true)}>
-          <FaPlus /><span>Add New Council / Organization </span>
+          <FaPlus /><span>Add Council / Organization </span>
         </button>
       </div>
 

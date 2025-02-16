@@ -28,6 +28,8 @@ import { FaPlus } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import logout from "../assets/logout.svg";
+import { FaBars } from "react-icons/fa";
+
 
 
 const Admin = () => {
@@ -41,8 +43,16 @@ const Admin = () => {
   const [selectedDocumentName, setSelectedDocumentName] = useState(null);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [mobile, setMobile] = useState("")
   const navigate = useNavigate();
+
+  const handleOpenMenu = () => {
+    setMobile("mobile")
+  }
+
+  const handleCloseMenu = () => {
+    setMobile("")
+  }
 
   useEffect(() => {
     if (activeComponent === "Events") {
@@ -538,6 +548,8 @@ const Admin = () => {
             <h1 className={styles.subtitle}>Event Booking System</h1>
           </div>
         </div>
+        <FaBars className={styles.menuBtn} onClick={handleOpenMenu} />
+
         <button className={styles.logoutButton} onClick={handleLogout}>
           <img src={logout} className={styles.logoutIcon} />
           <p>Logout</p>
@@ -547,61 +559,72 @@ const Admin = () => {
       {/* Sidebar and main content */}
       <div className={styles.main}>
         {/* Sidebar */}
-        <aside className={styles.sidebar}>
-          <ul className={styles.sidebarList}>
-            <li
-              className={`${styles.sidebarItem} ${activeComponent === "Events" ? styles.activeSidebarItem : ""
-                }`}
-              onClick={() => setActiveComponent("Events")}
-            >
-              <CalendarPlus size={20} color="#f2f8ff" />
-              <span>Event Requests</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${activeComponent === "ApproveEvents"
-                ? styles.activeSidebarItem
-                : ""
-                }`}
-              onClick={() => setActiveComponent("ApproveEvents")}
-            >
-              <CalendarCheck size={20} color="#f2f8ff" />
-              <span>Upcoming Events</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${activeComponent === "Councils" ? styles.activeSidebarItem : ""
-                }`}
-              onClick={() => setActiveComponent("Councils")}
-            >
-              <Users size={20} color="#f2f8ff" />
-              <span>Councils and Organizations</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${activeComponent === "Users" ? styles.activeSidebarItem : ""
-                }`}
-              onClick={() => setActiveComponent("Users")}
-            >
-              <User size={20} color="#f2f8ff" />
-              <span>Users</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${activeComponent === "Reports" ? styles.activeSidebarItem : ""
-                }`}
-              onClick={() => setActiveComponent("Reports")}
-            >
-              <FilePenLine size={20} color="#f2f8ff" />
-              <span>Reports</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${activeComponent === "History" ? styles.activeSidebarItem : ""
-                }`}
-              onClick={() => setActiveComponent("History")}
-            >
-              <FaHistory size={20} color="#f2f8ff" />
-              <span>History</span>
-            </li>
-          </ul>
-        </aside>
+        <div className={`${styles.sidenavOverlay} ${styles[mobile]}`} onClick={handleCloseMenu}>
+          <aside className={styles.sidebar}>
+            <div className={styles.logoMobileCont}>
+              <img src={logo} alt="Logo" className={styles.logoMobile} />
+              <div className={styles.titleflex}>
+                <h1 className={styles.title}>
+                  University of Rizal System
+                </h1>
+                <h1 className={styles.subtitle}>Event Booking System</h1>
+              </div>
+            </div>
+            <ul className={styles.sidebarList}>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Events" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Events")}
+              >
+                <CalendarPlus size={20} color="#f2f8ff" />
+                <span>Event Requests</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "ApproveEvents"
+                  ? styles.activeSidebarItem
+                  : ""
+                  }`}
+                onClick={() => setActiveComponent("ApproveEvents")}
+              >
+                <CalendarCheck size={20} color="#f2f8ff" />
+                <span>Upcoming Events</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Councils" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Councils")}
+              >
+                <Users size={20} color="#f2f8ff" />
+                <span>Councils and Organizations</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Users" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Users")}
+              >
+                <User size={20} color="#f2f8ff" />
+                <span>Users</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Reports" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Reports")}
+              >
+                <FilePenLine size={20} color="#f2f8ff" />
+                <span>Reports</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "History" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("History")}
+              >
+                <FaHistory size={20} color="#f2f8ff" />
+                <span>History</span>
+              </li>
+            </ul>
+          </aside>
 
+        </div>
         {/* Main Content Area */}
         <main className={styles.content}>{renderContent()}</main>
       </div>
