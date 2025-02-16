@@ -139,6 +139,18 @@ const Dashboard = () => {
         eventData.toAmPm
       );
 
+      const minTime = { hours: 7, minutes: 0 };  // 7:00 AM
+      const maxTime = { hours: 18, minutes: 0 }; // 6:00 PM
+
+
+      if (
+        (userFrom.hours < minTime.hours || (userFrom.hours === minTime.hours && userFrom.minutes < minTime.minutes)) ||
+        (userTo.hours > maxTime.hours || (userTo.hours === maxTime.hours && userTo.minutes > maxTime.minutes))
+      ) {
+        setError("Time must be between 5:00 AM and 7:00 PM.");
+        return;
+      }
+
       // Format the start and end times into a readable string
       const fromTime = `${String(eventData.fromHour).padStart(2, "0")}:${String(
         eventData.fromMinute

@@ -73,7 +73,6 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
                   value={councilFormData.adviser}
                   onChange={(e) => setCouncilFormData({ ...councilFormData, adviser: e.target.value })}
                   className={styles.input}
-                  placeholder="Adviser Name"
                 />
                 <div className={styles.logo}>
                   <label>Logo: </label>
@@ -161,7 +160,6 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
                 value={councilFormData.rep}
                 onChange={(e) => setCouncilFormData({ ...councilFormData, rep: e.target.value })}
                 className={styles.input}
-                placeholder="Enter Rep name"
               />
             </div>
             <div className={styles.formGroup}>
@@ -181,7 +179,6 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
                 value={councilFormData.thirdRepresentative}
                 onChange={(e) => setCouncilFormData({ ...councilFormData, thirdRepresentative: e.target.value })}
                 className={styles.input}
-                placeholder="Enter Third Year Rep name"
               />
             </div>
             <div className={styles.formGroup}>
@@ -190,17 +187,6 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
                 type="text"
                 value={councilFormData.fourthRepresentative}
                 onChange={(e) => setCouncilFormData({ ...councilFormData, fourthRepresentative: e.target.value })}
-                className={styles.input}
-                placeholder="Enter Fourth Year Rep name"
-              />
-            </div>
-            {/* Existing form fields */}
-            <div className={styles.formGroup}>
-              <label>Link</label>
-              <input
-                type="text"
-                value={councilFormData.link}
-                onChange={(e) => setCouncilFormData({ ...councilFormData, link: e.target.value })}
                 className={styles.input}
               />
             </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./PublicPage.module.css";
+import styles from "./eventhistory.module.css";
 
 const EventHistory = () => {
   const [news, setNews] = useState([]);
@@ -23,37 +23,35 @@ const EventHistory = () => {
   const pastEvents = news.filter((item) => new Date(item.date) <= now);
 
   return (
-    <div>
-      <h3 className={styles.header}>Event History</h3>
-      {pastEvents.length > 0 ? (
-        pastEvents.map((item) => (
-          <div key={item.id} className={styles.newsItem}>
-            <img
-              src={`http://localhost:5000/uploads/${item.photo}`}
-              alt={item.name}
-              className={styles.newsImage}
-            />
-            <h4>{item.name}</h4>
-            <p>
-              Venue: {item.venue} <br />
-              Organization: {item.organization} <br />
-              Duration: {item.duration} hours <br />
-              Date: {new Date(item.date).toLocaleDateString()} -{" "}
-              {new Date(item.datefrom).toLocaleDateString()}
-            </p>
-            <a
-              href={`http://localhost:5000/uploads/${item.documents}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.documentLink}
-            >
-              View Document
-            </a>
-          </div>
-        ))
-      ) : (
-        <p>No past events available at the moment.</p>
-      )}
+    <div className={styles.historyCont}>
+      <h2 className={styles.header}>History</h2>
+      <p>View all previous events.</p>
+      <div className={styles.historyGrid}>
+        {pastEvents.length > 0 ? (
+          pastEvents.map((item) => (
+            <div key={item.id} className={styles.newsItem}>
+              <div className={styles.imgCont} >
+                <a className={styles.imgCont} href={`http://localhost:5000/uploads/${item.documents}`}
+                  target="_blank"
+                  rel="noopener noreferrer"><img
+                    src={`http://localhost:5000/uploads/${item.photo}`}
+                    alt={item.name}
+                    className={styles.newsImage}
+                  /></a>
+              </div>
+              <div className={styles.itemInfo}>
+                <h4>{item.name}</h4>
+                <p>{item.organization}</p>
+                <p>{item.duration} • {new Date(item.date).toLocaleDateString()} -{" "}
+                  {new Date(item.datefrom).toLocaleDateString()}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No past events available at the moment.</p>
+        )}
+      </div>
+
     </div>
   );
 };

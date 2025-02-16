@@ -37,33 +37,24 @@ const UpcomingEvents = () => {
     <div>
       <h3 className={styles.header}>Upcoming Events</h3>
       <div className={styles.upcomingCont}>
-
         {currentUpcomingEvents.length > 0 ? (
           currentUpcomingEvents.map((item) => (
             <div key={item.id} className={styles.newsItem}>
-              <div className={styles.itemHeader}>
-                <img
-                  src={`http://localhost:5000/uploads/${item.photo}`}
-                  alt={item.name}
-                  className={styles.newsImage}
-                />
-                <h4>{item.name}</h4>
+              <div className={styles.imgCont}>
+                <a className={styles.imgCont} href={`http://localhost:5000/uploads/${item.documents}`}
+                  target="_blank"
+                  rel="noopener noreferrer"><img
+                    src={`http://localhost:5000/uploads/${item.photo}`}
+                    alt={item.name}
+                    className={styles.newsImage}
+                  /></a>
               </div>
-              <p>
-                Venue: {item.venue} <br />
-                Organization: {item.organization} <br />
-                Duration: {item.duration} hours <br />
-                Date: {new Date(item.date).toLocaleDateString()} -{" "}
-                {new Date(item.datefrom).toLocaleDateString()}
-              </p>
-              <a
-                href={`http://localhost:5000/uploads/${item.documents}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.documentLink}
-              >
-                View Document
-              </a>
+              <div className={styles.itemInfo}>
+                <h4>{item.name}</h4>
+                <p>{item.organization}</p>
+                <p>{item.duration} • {new Date(item.date).toLocaleDateString()} -{" "}
+                  {new Date(item.datefrom).toLocaleDateString()}</p>
+              </div>
             </div>
           ))
         ) : (

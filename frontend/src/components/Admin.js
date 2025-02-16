@@ -22,10 +22,17 @@ import {
 import AdminPanel from "./AdminPanel";
 import EventHistory from "./EventHistory";
 import ReportForm from "./ReportForm";
+import { FaHistory } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
+import logout from "../assets/logout.svg";
+
 
 const Admin = () => {
   const [showAddCouncilForm, setShowAddCouncilForm] = useState(false);
-  const [activeComponent, setActiveComponent] = useState("Dashboard");
+  const [activeComponent, setActiveComponent] = useState("Events");
   const [events, setEvents] = useState([]);
   const [councils, setCouncils] = useState([]);
   const [users, setUsers] = useState([]);
@@ -300,9 +307,9 @@ const Admin = () => {
   };
   const handleButtonHover = (event, isHovering) => {
     if (isHovering) {
-      event.target.style.backgroundColor = "#034d8c"; // Darker shade on hover
+
     } else {
-      event.target.style.backgroundColor = "#0e4296"; // Original color
+
     }
   };
 
@@ -374,37 +381,37 @@ const Admin = () => {
         );
       case "Users":
         return (
-          <div>
+          <div className={styles.usersCont}>
             <h2>Users</h2>
+            <p>Create and manage accounts.</p>
 
             {/* Search Bar */}
             <div className={styles.searchContainer}>
-              <input
-                type="text"
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={styles.searchInput}
+              <div className={styles.searchWrap}>
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={styles.searchBar}
+                />
+                <FaSearch className={styles.searchIcon} />
+              </div>
+              <button className={styles.addCouncilButton} onClick={() => setIsModalOpen(true)}>
+                <FaPlus /><span>Create New User</span>
+              </button>
+            </div>
+
+            <div>
+              <AddUserModal
+                isOpen={isModalOpen}
+                closeModal={() => setIsModalOpen(false)}
+                addUser={handleAddUser}
               />
             </div>
 
-            <button
-              className={styles.addButton}
-              onClick={() => setIsModalOpen(true)}
-            >
-              Add User
-            </button>
-
             <div className={styles.sectionBox}>
               <table className={styles.table}>
-                <div>
-                  <AddUserModal
-                    isOpen={isModalOpen}
-                    closeModal={() => setIsModalOpen(false)}
-                    addUser={handleAddUser}
-                  />
-                </div>
-
                 <thead>
                   <tr className={styles.tableHeader}>
                     <th className={styles.tableCell}>Name</th>
@@ -412,10 +419,7 @@ const Admin = () => {
                     <th className={styles.tableCell}>Username</th>
                     <th className={styles.tableCell}>Email</th>
                     <th className={styles.tableCell}>Password</th>
-                    <th className={styles.tableCell}>Action</th>{" "}
-                    {/* New Action Column */}
-                    <th className={styles.tableCell}>Edit</th>{" "}
-                    {/* Edit Column */}
+                    <th className={styles.tableCell}>Action</th>
                   </tr>
                 </thead>
 
@@ -431,22 +435,16 @@ const Admin = () => {
                         <td className={styles.tableCell}>{user.email}</td>
                         <td className={styles.tableCell}>{user.password}</td>
                         <td className={styles.tableCell}>
-                          <button
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteUser(user)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                        <td className={styles.tableCell}>
-                          <button
-                            className={styles.editButton}
-                            onClick={() =>
+                          <div className={styles.actions}>
+                            <button className={styles.editButton} onClick={() =>
                               alert("Edit functionality coming soon!")
-                            } // Edit button without function
-                          >
-                            Edit
-                          </button>
+                            }>
+                              <FaPen className={styles.pen} />
+                            </button>
+                            <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
+                              <FaTrash className={styles.trash} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -465,24 +463,15 @@ const Admin = () => {
 
       case "Reports":
         return (
-          <div className={styles.sectionBox}>
-            <div>
-              <div>
-                <h1>Admin Dashboard</h1>
-                <AdminPanel />
-              </div>
-            </div>
+          <div className={styles.queriesCont}>
+            <h2>Queries</h2>
+            <p>Review user queries, feedbacks, or reports.</p>
+            <AdminPanel />
           </div>
         );
       case "History":
         return (
-          <div className={styles.sectionBox}>
-            <div>
-              <div>
-                <EventHistory />
-              </div>
-            </div>
-          </div>
+          <EventHistory />
         );
       default:
         return (
@@ -550,7 +539,8 @@ const Admin = () => {
           </div>
         </div>
         <button className={styles.logoutButton} onClick={handleLogout}>
-          Logout
+          <img src={logout} className={styles.logoutIcon} />
+          <p>Logout</p>
         </button>
       </nav>
 
@@ -560,59 +550,53 @@ const Admin = () => {
         <aside className={styles.sidebar}>
           <ul className={styles.sidebarList}>
             <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Events" ? styles.activeSidebarItem : ""
-              }`}
+              className={`${styles.sidebarItem} ${activeComponent === "Events" ? styles.activeSidebarItem : ""
+                }`}
               onClick={() => setActiveComponent("Events")}
             >
               <CalendarPlus size={20} color="#f2f8ff" />
-              <span>Pending Events</span>
+              <span>Event Requests</span>
             </li>
             <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "ApproveEvents"
-                  ? styles.activeSidebarItem
-                  : ""
-              }`}
+              className={`${styles.sidebarItem} ${activeComponent === "ApproveEvents"
+                ? styles.activeSidebarItem
+                : ""
+                }`}
               onClick={() => setActiveComponent("ApproveEvents")}
             >
               <CalendarCheck size={20} color="#f2f8ff" />
-              <span>Approved Events</span>
+              <span>Upcoming Events</span>
             </li>
             <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Councils" ? styles.activeSidebarItem : ""
-              }`}
+              className={`${styles.sidebarItem} ${activeComponent === "Councils" ? styles.activeSidebarItem : ""
+                }`}
               onClick={() => setActiveComponent("Councils")}
             >
               <Users size={20} color="#f2f8ff" />
               <span>Councils and Organizations</span>
             </li>
             <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Users" ? styles.activeSidebarItem : ""
-              }`}
+              className={`${styles.sidebarItem} ${activeComponent === "Users" ? styles.activeSidebarItem : ""
+                }`}
               onClick={() => setActiveComponent("Users")}
             >
               <User size={20} color="#f2f8ff" />
               <span>Users</span>
             </li>
             <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Reports" ? styles.activeSidebarItem : ""
-              }`}
+              className={`${styles.sidebarItem} ${activeComponent === "Reports" ? styles.activeSidebarItem : ""
+                }`}
               onClick={() => setActiveComponent("Reports")}
             >
               <FilePenLine size={20} color="#f2f8ff" />
               <span>Reports</span>
             </li>
             <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "History" ? styles.activeSidebarItem : ""
-              }`}
+              className={`${styles.sidebarItem} ${activeComponent === "History" ? styles.activeSidebarItem : ""
+                }`}
               onClick={() => setActiveComponent("History")}
             >
-              <FilePenLine size={20} color="#f2f8ff" />
+              <FaHistory size={20} color="#f2f8ff" />
               <span>History</span>
             </li>
           </ul>

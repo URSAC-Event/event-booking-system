@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './Admin.module.css';
+import { FaSearch } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 
 const EventTableApproved = () => {
   const [events, setEvents] = useState([]);
@@ -62,9 +64,9 @@ const EventTableApproved = () => {
       alert('Failed to delete event');
     }
   };
-  
-  
-  
+
+
+
 
   // Filter events based on the search term
   const filteredEvents = events.filter(event =>
@@ -74,65 +76,78 @@ const EventTableApproved = () => {
   );
 
   return (
-    <div>
-      <h2>Approved Events</h2>
-      
-      <input
-        type="text"
-        placeholder="Search events..."
-        className={styles.searchBar}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.tableHeader}>
-            <th className={styles.tableCell}>Name</th>
-            <th className={styles.tableCell}>Organization</th>
-            <th className={styles.tableCell}>Date</th>
-            <th className={styles.tableCell}>Duration</th>
-            <th className={styles.tableCell}>Documents</th>
-            <th className={styles.tableCell}>Photo</th>
-            <th className={styles.tableCell}>Venue</th>
-            <th className={styles.tableCell}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
-              <tr key={event.id} className={styles.tableRow}>
-                <td className={styles.tableCell}>{event.name}</td>
-                <td className={styles.tableCell}>{event.organization}</td>
-                <td className={styles.tableCell}>{formatDate(event.date)} to {formatDate(event.datefrom)}</td>
-                <td className={styles.tableCell}>{event.duration}</td>
-                <td className={styles.tableCell}>
-                  {event.documents && (
-                    <button className={styles.button} onClick={() => handleViewDocument(event.documents)}>
-                      View Document
-                    </button>
-                  )}
-                </td>
-                <td className={styles.tableCell}>
-                  {event.photo && (
-                    <button className={styles.button} onClick={() => handleViewImage(event.photo)}>
-                      View Image
-                    </button>
-                  )}
-                </td>
-                <td className={styles.tableCell}>{event.venue}</td>
-                <td className={styles.tableCell}>
-                  <button className={styles.button} onClick={() => handleDeleteApproved(event.id)}>❌</button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="8" className={styles.noEvents}>No events available</td>
+    <div className={styles.upcomingEventsCont}>
+      <h2>Upcoming Events</h2>
+      <p>Check documents, view banners, cancel, and search upcoming events.</p>
+      <div className={styles.searchWrap}>
+        <input
+          type="text"
+          placeholder="Search events..."
+          className={styles.searchBar}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <FaSearch className={styles.searchIcon} />
+      </div>
+      <div className={styles.sectionBox}>
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.tableHeader}>
+              <th className={styles.tableCell}>Name</th>
+              <th className={styles.tableCell}>Organization</th>
+              <th className={styles.tableCell}>Date</th>
+              <th className={styles.tableCell}>Duration</th>
+              <th className={styles.tableCell}>Documents</th>
+              <th className={styles.tableCell}>Photo</th>
+              <th className={styles.tableCell}>Venue</th>
+              <th className={styles.tableCell}>Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <tr key={event.id} className={styles.tableRow}>
+                  <td className={styles.tableCell}>{event.name}</td>
+                  <td className={styles.tableCell}>{event.organization}</td>
+                  <td className={styles.tableCell}>{formatDate(event.date)} to {formatDate(event.datefrom)}</td>
+                  <td className={styles.tableCell}>{event.duration}</td>
+                  <td className={styles.tableCell}>
+                    {event.documents && (
+                      <a className={styles.viewDocs} href={`http://localhost:5000/uploads/${event.documents}`}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        View Document
+                      </a>
+                    )}
+                  </td>
+                  <td className={styles.tableCell}>
+                    {event.photo && (
+                      <a className={styles.viewDocs} href={`http://localhost:5000/uploads/${event.photo}`}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        View Image
+                      </a>
+                    )}
+                  </td>
+                  <td className={styles.tableCell}>{event.venue}</td>
+                  <td className={styles.tableCell}>
+                    <div className={styles.actionFlex}>
+                      <button className={styles.approvedActions} onClick={() => handleDeleteApproved(event.id)} title='Cancel Eventa'>
+                        <FaTimes />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className={styles.noEvents}>No events available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
 
       {showDocumentModal && (
         <div className={styles.modal}>
