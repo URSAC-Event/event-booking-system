@@ -14,6 +14,7 @@ import CouncilDisplayedit from "./CouncilDisplayedit";
 import ReportForm from "./ReportForm";
 import eventsVector from "../assets/Events-pana.svg";
 import reportVector from "../assets/report.svg";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const loggedInUser = { id: 1 };
@@ -147,7 +148,10 @@ const Dashboard = () => {
         (userFrom.hours < minTime.hours || (userFrom.hours === minTime.hours && userFrom.minutes < minTime.minutes)) ||
         (userTo.hours > maxTime.hours || (userTo.hours === maxTime.hours && userTo.minutes > maxTime.minutes))
       ) {
-        setError("Time must be between 5:00 AM and 7:00 PM.");
+        // setError("Time must be between 5:00 AM and 7:00 PM.");
+        toast.error("Time must be between 7:00 AM and 5:00 PM.", {
+          duration: 4000, // Time before it disappears
+        })
         return;
       }
 
@@ -170,7 +174,10 @@ const Dashboard = () => {
         if (userToDate && userToDate < userFromDate) {
           const errorMessage = "`To Date` cannot be earlier than `From Date`.";
           console.error(errorMessage);
-          setError(errorMessage); // Update the error state
+          // setError(errorMessage); // Update the error state
+          toast.error("`To Date` cannot be earlier than `From Date`.", {
+            duration: 4000, // Time before it disappears
+          })
           return; // Prevent submission
         }
 
@@ -210,7 +217,10 @@ const Dashboard = () => {
                 const errorMessage =
                   "The selected time overlaps with an existing event at the same venue.";
                 console.error(errorMessage, event);
-                setError(errorMessage); // Update the error state
+                // setError(errorMessage); // Update the error state
+                toast.error(errorMessage, {
+                  duration: 4000, // Time before it disappears
+                })
                 return; // Prevent submission
               }
             }
@@ -250,21 +260,32 @@ const Dashboard = () => {
               "Event successfully saved to the database:",
               postResponse.data
             );
-            alert("Event added successfully!");
+            toast.success("Event successfully added", {
+              duration: 4000, // Time before it disappears
+            });
             setError(null); // Clear the error state
             setModalOpen(false); // Close the modal after successful submission
           }
         } catch (postError) {
           console.error("Error saving event to database:", postError);
-          setError("Failed to add the event.");
+          // setError("Failed to add the event.");
+          toast.error("Error saving event added", {
+            duration: 4000, // Time before it disappears
+          });
         }
       } catch (fetchError) {
         console.error("Error during validation:", fetchError);
-        setError("Failed to validate the event details.");
+        // setError("Failed to validate the event details.");
+        toast.error("Failed to validate event details", {
+          duration: 4000, // Time before it disappears
+        });
       }
     } else {
       console.warn("Incomplete time fields provided by the user.");
       setError("Please fill in all time fields correctly.");
+      toast.error("Please fill in all time fields correctly", {
+        duration: 4000, // Time before it disappears
+      });
     }
   };
 

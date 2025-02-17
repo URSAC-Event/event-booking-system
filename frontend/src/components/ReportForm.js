@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styles from "./Addcouncils.module.css"; // Adjust the path if necessary
+import { toast } from "sonner";
 
 const ReportForm = () => {
   const [message, setMessage] = useState("");
@@ -9,12 +10,19 @@ const ReportForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    const trimmedMessage = message.trim();
+
+    if (trimmedMessage === "") {
+      toast.error("Report cannot be empty or just spaces", { duration: 4000 });
+      return; // Prevent submission if message is empty or just spaces
+    }
+
     const userId = 1; // Static user ID, replace with actual logic for logged-in user
-  
+
     // Log the data before sending it to the backend
     console.log("Sending data:", { userId, message, name, org });
-  
+
     try {
       await axios.post("http://localhost:5000/submitReport", {
         userId,
@@ -22,16 +30,19 @@ const ReportForm = () => {
         name,
         org,
       });
-    
+      toast.success("Report submitted successfully", {
+        duration: 4000, // Time before it disappears
+      });
+
       setMessage(""); // Reset the message field after submission
       setName(""); // Reset the name field after submission
       setOrg(""); // Reset the organization field after submission
     } catch (error) {
       console.error("Error submitting report:", error);
-      alert("Failed to submit report");
+      toast.error("Failed to submit report", { duration: 4000 });
     }
   };
-  
+
 
   return (
     <form onSubmit={handleSubmit} className={styles.reportContent}>
