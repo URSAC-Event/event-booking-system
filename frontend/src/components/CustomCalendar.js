@@ -3,6 +3,9 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Customcal.module.css";
+import eventsVector from "../assets/calendarvector.svg";
+import { FaCalendarTimes } from "react-icons/fa";
+
 
 const CustomCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(null); // Store selected date
@@ -83,87 +86,97 @@ const CustomCalendar = () => {
 
   return (
     <div className={styles.calendarContainer}>
-      <div className={styles.MonthSelection}>
-        <button className={styles.arrows} onClick={() => changeMonth(-1)}>
-          <FontAwesomeIcon icon={faCaretLeft} className={styles.icon} />
-        </button>
-        <h3>
-          {calendarDate.toLocaleString("default", { month: "long" })}{" "}
-          {calendarDate.getFullYear()}
-        </h3>
-        <button className={styles.arrows} onClick={() => changeMonth(1)}>
-          <FontAwesomeIcon icon={faCaretRight} className={styles.icon} />
-        </button>
+      <div className={styles.calendar}>
+        <div className={styles.MonthSelection}>
+          <button className={styles.arrows} onClick={() => changeMonth(-1)}>
+            <FontAwesomeIcon icon={faCaretLeft} className={styles.icon} />
+          </button>
+          <h3>
+            {calendarDate.toLocaleString("default", { month: "long" })}{" "}
+            {calendarDate.getFullYear()}
+          </h3>
+          <button className={styles.arrows} onClick={() => changeMonth(1)}>
+            <FontAwesomeIcon icon={faCaretRight} className={styles.icon} />
+          </button>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
+            gap: "5px",
+          }}
+        >
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <div key={day} style={{ textAlign: "center" }}>
+              {day}
+            </div>
+          ))}
+          {generateCalendarDays().map((date, index) => (
+            <div
+              key={index}
+              style={{
+                textAlign: "center",
+                padding: "8px",
+                cursor: "pointer",
+                backgroundColor:
+                  selectedDate?.toISOString().split("T")[0] ===
+                    date?.toISOString().split("T")[0]
+                    ? "#0e4296"
+                    : "transparent",
+                color:
+                  selectedDate?.toISOString().split("T")[0] ===
+                    date?.toISOString().split("T")[0]
+                    ? "#fff"
+                    : "#000",
+                position: "relative",
+                visibility: date ? "visible" : "hidden",
+              }}
+              onClick={() => date && handleDateChange(date)}
+            >
+              {date ? date.getDate() : ""}
+              {date && hasEvents(date) && (
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "5px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    backgroundColor: "red",
+                    borderRadius: "50%",
+                    width: "6px",
+                    height: "6px",
+                  }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "5px",
-        }}
-      >
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} style={{ textAlign: "center" }}>
-            {day}
-          </div>
-        ))}
-        {generateCalendarDays().map((date, index) => (
-          <div
-            key={index}
-            style={{
-              textAlign: "center",
-              padding: "10px",
-              cursor: "pointer",
-              backgroundColor:
-                selectedDate?.toISOString().split("T")[0] ===
-                date?.toISOString().split("T")[0]
-                  ? "#0e4296"
-                  : "transparent",
-              color:
-                selectedDate?.toISOString().split("T")[0] ===
-                date?.toISOString().split("T")[0]
-                  ? "#fff"
-                  : "#000",
-              position: "relative",
-              visibility: date ? "visible" : "hidden",
-            }}
-            onClick={() => date && handleDateChange(date)}
-          >
-            {date ? date.getDate() : ""}
-            {date && hasEvents(date) && (
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "5px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  backgroundColor: "red",
-                  borderRadius: "50%",
-                  width: "6px",
-                  height: "6px",
-                }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
+      {filteredEvents.length > 0 ? (
+        <div className={styles.listOfEvents}>
+          <h3>Scheduled Events</h3>
+          <ul>
+            {filteredEvents.length > 0 ?
+              filteredEvents.map((event) => (
+                <li key={`${event.name}-${event.date}`}>
+                  <strong>{event.name}</strong> - {event.organization} -{" "}
+                  {event.duration} hours - {event.venue}
+                </li>
+              ))
+              : (
+                <></>
+              )}
+          </ul>
+        </div>
+      ) : (
+        <div className={styles.imgCont}>
+          {/* <img src={eventsVector} alt="No events image" className={styles.calendarPlaceholder} /> */}
+          <FaCalendarTimes className={styles.noEvents} />
+          <p>No event scheduled</p>
+        </div>)}
 
-      <div className={styles.listOfEvents}>
-        <h3>Scheduled Events</h3>
-        <ul>
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
-              <li key={`${event.name}-${event.date}`}>
-                <strong>{event.name}</strong> - {event.organization} -{" "}
-                {event.duration} hours - {event.venue}
-              </li>
-            ))
-          ) : (
-            <li>No events for this date</li>
-          )}
-        </ul>
-      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "./PublicPage.module.css";
+import placeholder from "../assets/placeholder.png";
 
 const Slideshow = () => {
   const [imageFiles, setImageFiles] = useState([]);
@@ -29,17 +30,17 @@ const Slideshow = () => {
       setTimeout(() => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
         setIsFading(false);
-      }, 900); // Duration of fade-out matches CSS
-    }, 6000); // Change slides every 6 seconds
+      }, 300); // Duration of fade-out matches CSS
+    }, 8000); // Change slides every 6 seconds
 
     return () => clearInterval(interval);
   }, [images.length]);
 
   return (
+    <div className={styles.slideshowCont}>
       <div
-        className={`${styles.upcomingEventsImageContainer} ${
-          isFading ? styles.fade : ""
-        }`}
+        className={`${styles.upcomingEventsImageContainer} ${isFading ? styles.fade : ""
+          }`}
       >
         {images.length > 0 ? (
           <img
@@ -48,9 +49,14 @@ const Slideshow = () => {
             className={styles.upcomingEventImage}
           />
         ) : (
-          <p>No upcoming events</p> // Fallback if no images are available
+          <img
+            src={placeholder}
+            alt="Placeholder Image"
+            className={styles.upcomingEventImage}
+          />
         )}
       </div>
+    </div>
   );
 };
 

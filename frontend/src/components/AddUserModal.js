@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './Addusermodal.css';  // Assuming you have styles for the modal
+import styles from './Addusermodal.module.css';  // Assuming you have styles for the modal
 
 const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const [name, setName] = useState('');
@@ -85,11 +85,11 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // If password is valid and username doesn't exist
         if (!passwordError && !usernameError) {
             const user = { name, username, email, password, organizationz };
-    
+
             try {
                 const response = await fetch('http://localhost:5000/api/users', {
                     method: 'POST',
@@ -98,7 +98,7 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                     },
                     body: JSON.stringify(user),
                 });
-    
+
                 const data = await response.json();
                 if (response.ok) {
                     addUser(data);  // Add the user to the state in Admin.js
@@ -113,7 +113,7 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
             }
         }
     };
-    
+
 
     return (
         isOpen && (
@@ -121,7 +121,7 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                 <div className={styles.modalContent}>
                     <span className={styles.close} onClick={closeModal}>×</span>
                     <h2>Add User</h2>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className={styles.form}>
                         <div className={styles.inputGroup}>
                             <label>Name</label>
                             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />

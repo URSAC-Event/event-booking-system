@@ -44,7 +44,7 @@ const EditCouncilModal = ({ showModal, setShowModal, selectedCouncil, handleUpda
       <div className={styles.modalWrapper}>
         <div className={styles.modalContent}>
           <form onSubmit={handleSubmit} className={styles.form}>
-            <h2>Edit Council</h2>
+            <h2 className={styles.header}> Edit Council</h2>
             <div className={styles.formGroup}>
               <label>Organization:</label>
               <input
@@ -176,7 +176,7 @@ const EditCouncilModal = ({ showModal, setShowModal, selectedCouncil, handleUpda
               />
             </div>
             <div className={styles.formButtons}>
-              <button type="submit" className={styles.submitButton}>Save</button>
+              
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
@@ -184,6 +184,7 @@ const EditCouncilModal = ({ showModal, setShowModal, selectedCouncil, handleUpda
               >
                 Cancel
               </button>
+              <button type="submit" className={styles.submitButton}>Save</button>
             </div>
           </form>
         </div>

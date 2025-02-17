@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import EditCouncilModal from "./EditCouncilModal";
 import Addcouncils from "./Addcouncils";
 import styles from "./Admin.module.css";
+import { FaSearch } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
+
+
 
 const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, setShowAddCouncilForm, handleAddCouncil }) => {
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -62,23 +68,23 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
   );
 
   return (
-    <div>
+    <div className={styles.councilsCont}>
       <h2>Councils and Organizations</h2>
-      
+      <p>View, add, edit, search, and delete councils and organizations.</p>
       {/* Search Bar */}
       <div className={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Search councils..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
-
-      <div className={styles.addCouncilButtonContainer}>
+        <div className={styles.searchWrap}>
+          <input
+            type="text"
+            placeholder="Search councils..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchBar}
+          />
+          <FaSearch className={styles.searchIcon} />
+        </div>
         <button className={styles.addCouncilButton} onClick={() => setShowAddCouncilForm(true)}>
-          Add New Council
+          <FaPlus /><span>Add Council / Organization </span>
         </button>
       </div>
 
@@ -89,17 +95,16 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
               <th className={styles.tableCell}>Organization</th>
               <th className={styles.tableCell}>Adviser</th>
               <th className={styles.tableCell}>President</th>
-              <th className={styles.tableCell}>Vice-President</th>
+              <th className={styles.tableCell}>Vice President</th>
               <th className={styles.tableCell}>Secretary</th>
               <th className={styles.tableCell}>Treasurer</th>
               <th className={styles.tableCell}>Auditor</th>
               <th className={styles.tableCell}>P.R.O</th>
-              <th className={styles.tableCell}>First year representative</th>
-              <th className={styles.tableCell}>Second year representative</th>
-              <th className={styles.tableCell}>Third year representative</th>
-              <th className={styles.tableCell}>Fourth year representative</th>
+              <th className={styles.tableCell}>1st Year Representative</th>
+              <th className={styles.tableCell}>2nd Year Representative</th>
+              <th className={styles.tableCell}>3rd Year Representative</th>
+              <th className={styles.tableCell}>4th Year Representative</th>
               <th className={styles.tableCell}>Actions</th>
-              <th className={styles.tableCell}>Edit</th>
             </tr>
           </thead>
           <tbody>
@@ -119,14 +124,14 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
                   <td className={styles.tableCell}>{council.trdrepresentative}</td>
                   <td className={styles.tableCell}>{council.frthrepresentative}</td>
                   <td className={styles.tableCell}>
-                    <button className={styles.deleteButton} onClick={() => handleDelete(council.id)}>
-                      Delete
-                    </button>
-                  </td>
-                  <td className={styles.tableCell}>
-                    <button className={styles.editButton} onClick={() => handleEdit(council)}>
-                      Edit
-                    </button>
+                    <div className={styles.actions}>
+                      <button className={styles.editButton} onClick={() => handleEdit(council)}>
+                        <FaPen className={styles.pen} />
+                      </button>
+                      <button className={styles.deleteButton} onClick={() => handleDelete(council.id)}>
+                        <FaTrash className={styles.trash} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

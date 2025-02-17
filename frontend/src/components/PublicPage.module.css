@@ -3,10 +3,80 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 48px;
   padding: 30px 0px;
   padding: 48px 96px;
   background-color: #f5f5f5;
   margin-top: 96px;
+}
+
+.SecondContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.heroSection {
+  min-height: 200px;
+  display: flex;
+  gap: 48px;
+}
+
+
+.welcomeCont {
+  width: 600px;
+  border-radius: 12px;
+  padding: 48px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  flex-shrink: 1;
+}
+
+.headers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headers h1 {
+  font-size: 28px;
+  max-width: 300px;
+}
+
+.getStartedBtn {
+  font-size: 1em;
+  padding: 10px 24px;
+  width: 150px;
+  background-color: #0e4296;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  transition: 0.15s;
+  cursor: pointer;
+}
+
+.getStartedBtn:hover {
+  opacity: 0.5;
+}
+
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 64px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar h1 {
+  font-size: 24px;
+  color: #0e4296;
+  margin-bottom: 16px;
 }
 
 .sidebar {
@@ -107,25 +177,44 @@
 /* Adjust container layout for responsiveness */
 .firstContainer {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping for smaller screens */
-  gap: 36px; /* Reduced gap for smaller screens */
-  justify-content: space-between; /* Space out items */
+  flex-wrap: wrap;
+  /* Allow wrapping for smaller screens */
+  gap: 36px;
+  /* Reduced gap for smaller screens */
+  justify-content: space-between;
+  /* Space out items */
 }
 
+.slideshowCont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* Full width of the screen */
+  aspect-ratio: 16 / 9;
+  /* Maintain 16:9 ratio */
+  max-width: 892px;
+  /* Optional: limit maximum width if needed */
+  margin: 0 auto;
+  /* Center it horizontally */
+}
 
 .upcomingEventsImageContainer {
   position: relative;
   overflow: hidden;
-  padding-top: 56.25% !important; /* (9/16) * 100 */
-  width: 100%; /* Take full width of its grid column */
+  height: 100%;
+  /* Take the full height of slideshowCont */
+  aspect-ratio: 16 / 9;
+  /* Maintain the 16:9 ratio */
   opacity: 1;
-  transition: opacity 0.5s ease-in-out; /* Smooth transition effect */
-  border-radius: 16px; 
+  transition: opacity 0.3s;
+  border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .upcomingEventsImageContainer.fade {
-  opacity: 0; /* Transparent during fade-out */
+  opacity: 0;
+  /* Transparent during fade-out */
 }
 
 .upcomingEventImage {
@@ -135,8 +224,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center; 
+  object-position: center;
 }
+
 
 /* Gradient Overlay */
 .gradientOverlay {
@@ -147,18 +237,20 @@
   left: 0;
   width: 100%;
   padding: 36px;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+  background: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent dark overlay */
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  
+
 }
 
 .upcomingEventsText {
   font-size: 36px;
   font-weight: bold;
-  margin-bottom: 8px; /* Adjusted for spacing */
+  margin-bottom: 8px;
+  /* Adjusted for spacing */
 
 }
 
@@ -183,64 +275,35 @@
   border-radius: 8px;
 }
 
-/* Calendar container styles */
-.calendar {
-  border: none;
-  margin-bottom: 16px;
-}
-
-.calendarSection {
-  flex: 1 1 45%; /* Allow it to take remaining space */
-  max-width: 400px;
-  min-width: 300px;
-  max-height: 500px;
-  padding: 48px;
-  border-radius: 16px;
-  background-color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow-y: scroll ;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.calendarSection h1{
-  font-size: 24px;
-  color: #0e4296;
-}
-
-.calendarTitle {
-  font-size: 20px;
-  margin-bottom: 16px;
-  text-align: left;
-}
-
 .bold {
   font-weight: bold;
 }
 
 
 .horizontalLine {
-  border-top: 2px solid #0e4296; /* Horizontal line with color */
-  width: 100%; /* Make the line span the full width */
-  margin-top: 20px; /* Add space above the line */
+  border-top: 2px solid #0e4296;
+  /* Horizontal line with color */
+  width: 100%;
+  /* Make the line span the full width */
+  margin-top: 20px;
+  /* Add space above the line */
 }
 
 /* Merged section styles */
 .mergedSection {
   background-color: white;
-  margin-top: 48px;
   display: flex;
   flex-direction: column;
   text-align: center;
   border-radius: 16px;
   padding: 64px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
 }
 
 .vgmoHeader {
   color: #154c79;
   margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
 .vgmo:not(:last-child) {
@@ -283,7 +346,7 @@
 
 /* Header and footer styles */
 
-.subFooter{
+.subFooter {
   padding: 40px;
   font-size: 12px;
   background-color: #121518;
@@ -294,19 +357,20 @@
   gap: 24px;
 }
 
-.aboutTitle{
+.aboutTitle {
   font-size: 16px;
   margin-bottom: 8px;
 }
 
-.aboutSubtitle{
+.aboutSubtitle {
   font-size: 12px;
   max-width: 500px;
   min-width: 200px;
   width: 100%;
   white-space: normal;
 }
-.connectTitle{
+
+.connectTitle {
   font-size: 16px;
 }
 
@@ -326,21 +390,21 @@
   flex-wrap: wrap;
 }
 
-.newsItem {
- 
+/* .newsItem {
+
   margin: 10px 0;
   padding: 15px;
   border-radius: 8px;
-}
+} */
 
 .rightSection {
-  padding: 0px 20px 20px 20px;
+  padding: 64px 64px 64px 64px;
   position: relative;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
+  background-color: white;
   border-radius: 12px;
-  max-height: 640px;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  transition: 0.3s;
+  /* Allow scrolling if content overflows */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header {
@@ -348,9 +412,8 @@
   color: #0e4296;
   position: sticky;
   top: 0;
-  background-color: #f9f9f9;
-  padding-top: 20px;
-  padding-bottom:16px;
+  padding-bottom: 16px;
+  background-color: white;
 }
 
 .itemHeader {
@@ -361,22 +424,57 @@
 }
 
 .upcomingCont {
-  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
-.newsItem {
-  margin-bottom: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
+.imgCont {
+  width: 100%;
+  /* Adjust as needed */
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(211, 211, 211, 0.37);
 }
 
 .newsImage {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  transition: 0.3s;
+  /* Ensures the image covers the area */
+}
+
+.newsImage:hover {
+  transform: scale(1.04);
+}
+
+.newsItem {
+  border-radius: 12px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.itemInfo {
+  padding: 16px;
+}
+
+.itemInfo h4 {
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.itemInfo p {
+  font-size: 14px;
+  color: #606060;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
 }
 
 .documentLink {
@@ -388,34 +486,37 @@
 }
 
 .pagination {
+  margin-top: 24px;
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
+  align-items: center;
+  gap: 16px;
 }
 
 .pagination button {
-  padding: 5px 10px;
-  background-color: #0e4296;
-  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: #0e4296;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
+  font-size: 18px;
 }
 
 .pagination button:disabled {
-  background-color: #ddd;
+  color: gray;
   cursor: not-allowed;
 }
 
-.layoutContainer {
-  margin-top: 48px;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
-  gap: 36px;
+/* .layoutContainer {
+  display: ; */
+/* Two columns */
+/* gap: 48px;
   width: 100%;
-  position: relative; /* Set the parent container to relative positioning */
-}
+  position: relative; */
+/* Set the parent container to relative positioning */
+/* } */
 
 
 
@@ -455,220 +556,224 @@
 
 .sidebar button:hover {
   background-color: #0e4296bc;
-  
+
 }
 
-.sSection{
-  
+.sSection {
+
   text-align: center;
   font-size: 100px;
 }
-.members{
+
+.members {
   padding: 12px;
   font-size: 12px;
   background-color: #dcdbdb;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 0px;
-}
-::-webkit-scrollbar-track {
-  background-color: rgb(255, 255, 255);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: #063970;
-  transition: 0.15s;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: #0e4296bc;
-}
 
-/* Media query for small screens */
-@media (max-width: 1400px) {
+
+@media all and (max-width: 1024px) {
   .navbar {
-    padding: 24px 48px;
-  }
-  
-  .mainContent {
-    grid-template-columns: 1fr; /* Stack columns for smaller screens */
-    gap: 36px;
+    padding: 24px 64px;
   }
 
-  .calendarContainer {
-    max-width: 300px;
-    padding: 24px;
+  .container {
+    padding: 48px 64px;
   }
-/* 
-  .upcomingEventsCard {
-    max-width: 100%;
-    height: auto;
-  } */
+
+  .heroSection {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 48px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    gap: 24px;
+  }
+
+  .welcomeCont {
+    width: 100%;
+    box-shadow: none;
+    order: 2;
+    padding: 0;
+  }
+
+  .headers h1 {
+    font-size: 28px;
+    max-width: none;
+  }
+
+  .calendar {
+    padding: 48px;
+  }
 
   .layoutContainer {
     display: flex;
     flex-direction: column;
-    gap: 36px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .navbar {
-    padding: 16px 12px;
+    gap: 48px;
   }
 
-  .firstContainer {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .calendarContainer {
-    padding: 16px;
-    max-width: 100%;
-    box-shadow: none; /* Simplify styles for smaller screens */
-  }
-/* 
-  .upcomingEventsCard {
-    height: auto;
-    max-width: 100%;
-  } */
 }
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 16px;
+    padding: 12px 32px;
     flex-direction: row;
+  }
+
+  .logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .titleflex {
+    margin-left: 8px;
   }
 
   .title {
     font-size: 16px;
-    text-align: center;
   }
 
   .subtitle {
     font-size: 12px;
   }
 
-  /* .calendarContainer,
-  .upcomingEventsCard {
-    width: 100%;
-    padding: 12px;
-    box-shadow: none;
-    border-radius: 8px;
-  } */
+  .container {
+    margin-top: 56px;
+    padding: 32px;
+  }
+
+  .calendar {
+    padding: 48px;
+    max-height: none;
+  }
+
+  .welcomeCont {
+    padding: 0;
+  }
 
   .loginButton {
     font-size: 12px;
   }
+
+  .leftSection {
+    padding: 48px;
+    max-height: none;
+  }
+
+  .rightSection {
+    padding: 48px;
+  }
+
+  .mergedSection {
+    padding: 48px;
+  }
+
+  .upcomingCont {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+
 }
+
 /* General styles for small screens */
 @media (max-width: 426px) {
-  .navbar{
-    padding: 8px 4px;
 
-  }
-  .container {
-    padding: 8px 4px;
-  }
-
-  /* Navbar adjustments */
   .navbar {
+    padding: 16px;
     flex-direction: row;
-    padding: 18px 16px;
   }
 
-  .loginButton {
-    font-size: 12px;
-    padding: 8px;
+  .logo {
+    height: 32px;
+    width: 32px;
+  }
+
+  .titleflex {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    gap: 4px;
   }
 
   .loginButton p {
     display: none;
   }
 
-  /* Sidebar adjustments */
-  .sidebar {
-    max-height: auto;
-    overflow-y: visible;
-  }
 
-  .sidebar button {
-    padding: 12px;
-    font-size: 14px;
-  }
-
-  /* Layout adjustments */
-  .firstContainer {
-    flex-direction: column;
-    gap: 20px;
-    align-items: stretch;
-    height: auto;
-  }
-
-  .calendarContainer {
-    width: 100%;
+  .container {
     padding: 16px;
+    margin-top: 67px;
   }
 
-  .upcomingEventsCard {
-    width: 100%;
-    min-width: auto;
-    max-height: none;
-    margin-bottom: 20px;
-  }
-/* 
-  .upcomingEventImage {
-    height: auto; 
-  } */
-
-  /* Merged section adjustments */
-  .mergedSection {
-    width: 100%;
-    padding: 16px;
-  }
-
-  /* Officer items */
-  .officerItem {
+  .SecondContainer {
+    display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    gap: 24px;
   }
 
-  .officerImage {
-    width: 40px;
-    height: 40px;
+  .leftSection {
+    padding: 24px;
   }
 
-  /* News and Information section */
   .rightSection {
-    padding: 16px;
+    padding: 24px;
+  }
+
+  .heroSection {
+    padding: 24px;
+    gap: 12px;
+  }
+
+  .getStartedBtn {
+    width: 150px;
+    align-items: flex-end;
+  }
+
+
+  .layoutContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .mergedSection {
+    padding: 24px;
+    text-align: left;
+    line-height: 1.8;
+  }
+
+  .rightSection {
     max-height: none;
-    overflow-y: visible;
-    
+    overflow-y: auto;
   }
 
-  .newsItem {
-    font-size: 14px;
-    padding: 12px;
+  .calendar {
+    max-height: none;
+    padding: 24px;
   }
 
-  .newsImage {
-    width: 80px;
-    height: 80px;
+  .vgmoHeader {
+    font-size: 24px;
+    text-transform: capitalize;
   }
 
-  /* Pagination adjustments */
-  .pagination button {
-    padding: 8px 12px;
-    font-size: 14px;
-  }
-
-  /* Footer adjustments */
   .footer {
-    font-size: 10px;
-    padding: 8px;
+    margin-top: 24px;
   }
+
+  .footer p {
+    font-size: 12px;
+  }
+
+  .upcomingCont {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+
+  }
+
 }

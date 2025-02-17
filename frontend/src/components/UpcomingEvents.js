@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./PublicPage.module.css";
+import { FaAngleRight } from "react-icons/fa";
+import { FaAngleLeft } from "react-icons/fa";
+
 
 const UpcomingEvents = () => {
   const [news, setNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(3);
 
   useEffect(() => {
     const fetchApprovedData = async () => {
@@ -31,56 +34,48 @@ const UpcomingEvents = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div><h3 className={styles.header}>Upcoming Events</h3>
-    <div className={styles.upcomingCont}>
-      
-      {currentUpcomingEvents.length > 0 ? (
-        currentUpcomingEvents.map((item) => (
-          <div key={item.id} className={styles.newsItem}>
-            <div className={styles.itemHeader}>
-              <img
-                src={`http://localhost:5000/uploads/${item.photo}`}
-                alt={item.name}
-                className={styles.newsImage}
-              />
-              <h4>{item.name}</h4>
-            </div>  
-            <p>
-              Venue: {item.venue} <br />
-              Organization: {item.organization} <br />
-              Duration: {item.duration} hours <br />
-              Date: {new Date(item.date).toLocaleDateString()} -{" "}
-              {new Date(item.datefrom).toLocaleDateString()}
-            </p>
-            <a
-              href={`http://localhost:5000/uploads/${item.documents}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.documentLink}
-            >
-              View Document
-            </a>
-          </div>
-        ))
-      ) : (
-        <p>No upcoming events available at the moment.</p>
-      )}
+    <div>
+      <h3 className={styles.header}>Upcoming Events</h3>
+      <div className={styles.upcomingCont}>
+        {currentUpcomingEvents.length > 0 ? (
+          currentUpcomingEvents.map((item) => (
+            <div key={item.id} className={styles.newsItem}>
+              <div className={styles.imgCont}>
+                <a className={styles.imgCont} href={`http://localhost:5000/uploads/${item.documents}`}
+                  target="_blank"
+                  rel="noopener noreferrer"><img
+                    src={`http://localhost:5000/uploads/${item.photo}`}
+                    alt={item.name}
+                    className={styles.newsImage}
+                  /></a>
+              </div>
+              <div className={styles.itemInfo}>
+                <h4>{item.name}</h4>
+                <p>{item.organization}</p>
+                <p>{item.duration} • {new Date(item.date).toLocaleDateString()} -{" "}
+                  {new Date(item.datefrom).toLocaleDateString()}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No upcoming events available at the moment.</p>
+        )}
+      </div>
       <div className={styles.pagination}>
         <button
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Previous
+          <FaAngleLeft />
         </button>
-        <span>Page {currentPage}</span>
+        <span>{currentPage}</span>
         <button
           onClick={() => paginate(currentPage + 1)}
           disabled={indexOfLastItem >= upcomingEvents.length}
         >
-          Next
+          <FaAngleRight />
         </button>
       </div>
-    </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dashboard from "./Dashboard";
@@ -22,10 +22,22 @@ import {
 import AdminPanel from "./AdminPanel";
 import EventHistory from "./EventHistory";
 import ReportForm from "./ReportForm";
+import { FaHistory } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
+import logout from "../assets/logout.svg";
+import { FaBars } from "react-icons/fa";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FaRegTimesCircle } from "react-icons/fa";
+
+
+
 
 const Admin = () => {
   const [showAddCouncilForm, setShowAddCouncilForm] = useState(false);
-  const [activeComponent, setActiveComponent] = useState("Dashboard");
+  const [activeComponent, setActiveComponent] = useState("Events");
   const [events, setEvents] = useState([]);
   const [councils, setCouncils] = useState([]);
   const [users, setUsers] = useState([]);
@@ -34,8 +46,21 @@ const Admin = () => {
   const [selectedDocumentName, setSelectedDocumentName] = useState(null);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [mobile, setMobile] = useState("")
   const navigate = useNavigate();
+
+  const modalRef = useRef(null); //Pang approve
+  const dialogRef = useRef(); //Pang delete
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const handleOpenMenu = () => {
+    setMobile("mobile")
+  }
+
+  const handleCloseMenu = () => {
+    setMobile("")
+  }
 
   useEffect(() => {
     if (activeComponent === "Events") {
@@ -153,44 +178,38 @@ const Admin = () => {
     }
   };
 
-  // para sa delete button
-  const handleDelete = async (eventId, organization) => {
-    console.log("Attempting to delete event with ID:", eventId);
+  const openDeleteModal = (eventId, organization) => {
+    setSelectedEvent({ eventId, organization });
+    dialogRef.current.showModal();
+  };
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this event?"
-    );
-    if (!confirmed) return;
+  // para sa delete button
+  const handleDelete = async () => {
+    if (!selectedEvent) return;
+
+    const { eventId, organization } = selectedEvent;
+    dialogRef.current.close();
 
     try {
-      // Step 1: Delete the event
-      const response = await fetch(
-        `http://localhost:5000/api/events/${eventId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      console.log("Attempting to delete event with ID:", eventId);
+
+      const response = await fetch(`http://localhost:5000/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
 
       const responseBody = await response.json();
       console.log("Response body:", responseBody);
 
       if (response.ok) {
-        // Step 2: Notify the organization about the deletion
         console.log(`Notifying organization: ${organization}`);
-        await sendEventNotification(organization, eventId); // Send email notification
+        await sendEventNotification(organization, eventId);
 
         alert("Event deleted successfully");
-        setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== eventId)
-        ); // Remove event from the UI
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
       } else {
         console.error("Delete failed:", responseBody);
-        alert(
-          `Failed to delete event: ${responseBody.message || "Unknown error"}`
-        );
+        alert(`Failed to delete event: ${responseBody.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -224,46 +243,48 @@ const Admin = () => {
     }
   };
 
-  // para sa approve button
-  const handleConfirm = async (eventId) => {
-    console.log("Attempting to approve event with ID:", eventId);
+  const openApproveModal = (eventId) => {
+    setSelectedEventId(eventId);
+    modalRef.current?.showModal(); // Open the modal
+  };
 
-    const confirmed = window.confirm(
-      "Are you sure you want to approve this event?"
-    );
-    if (!confirmed) return;
+  const closeApproveModal = () => {
+    modalRef.current?.close(); // Close the modal
+    setSelectedEventId(null);
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedEventId) return;
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/events/approve/${eventId}`,
+        `http://localhost:5000/api/events/approve/${selectedEventId}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
-      const responseBody = await response.json(); // Get the response body
-      console.log("Response body:", responseBody); // Log the response body
+      const responseBody = await response.json();
+      console.log("Response body:", responseBody);
 
       if (response.ok) {
-        console.log("Approve response:", responseBody);
         alert("Event approved successfully!");
         setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== eventId)
+          prevEvents.filter((event) => event.id !== selectedEventId)
         );
       } else {
-        console.error("Approval failed:", responseBody);
-        alert(
-          `Failed to approve event: ${responseBody.message || "Unknown error"}`
-        );
+        alert(`Failed to approve event: ${responseBody.message || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error approving event:", error);
       alert("Error approving event");
+      console.error("Error approving event:", error);
     }
+
+    closeApproveModal();
   };
+
+
   const handleLogout = () => {
     sessionStorage.clear();
 
@@ -300,9 +321,9 @@ const Admin = () => {
   };
   const handleButtonHover = (event, isHovering) => {
     if (isHovering) {
-      event.target.style.backgroundColor = "#034d8c"; // Darker shade on hover
+
     } else {
-      event.target.style.backgroundColor = "#0e4296"; // Original color
+
     }
   };
 
@@ -315,6 +336,8 @@ const Admin = () => {
             <div className={styles.eventtablecontainer}>
               <EventTable
                 events={events}
+                openApproveModal={openApproveModal}
+                openDeleteModal={openDeleteModal}
                 handleViewDocument={handleViewDocument}
                 handleViewImage={handleViewImage}
                 handleConfirm={handleConfirm}
@@ -356,6 +379,26 @@ const Admin = () => {
                 </div>
               </div>
             )}
+            <dialog ref={modalRef} className={styles.modal}>
+              <div className={styles.modalBox}>
+                <FaRegCheckCircle className={styles.modalIcon} />
+                <p>Are you sure you want to approve this event?</p>
+                <div className={styles.modalButtons}>
+                  <button onClick={closeApproveModal}>Cancel</button>
+                  <button onClick={handleConfirm}>Confirm</button>
+                </div>
+              </div>
+            </dialog>
+            <dialog ref={dialogRef} className={styles.modal}>
+              <div className={styles.modalBox}>
+                <FaRegTimesCircle className={`${styles.modalIcon} ${styles.deleteIcon}`} />
+                <p>Are you sure you want to delete this event?</p>
+                <div className={`${styles.modalButtons} ${styles.deleteBtn}`}>
+                  <button onClick={() => dialogRef.current.close()}>Cancel</button>
+                  <button onClick={handleDelete}>Delete</button>
+                </div>
+              </div>
+            </dialog>
           </div>
         );
       case "ApproveEvents":
@@ -374,37 +417,37 @@ const Admin = () => {
         );
       case "Users":
         return (
-          <div>
+          <div className={styles.usersCont}>
             <h2>Users</h2>
+            <p>Create and manage accounts.</p>
 
             {/* Search Bar */}
             <div className={styles.searchContainer}>
-              <input
-                type="text"
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={styles.searchInput}
+              <div className={styles.searchWrap}>
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={styles.searchBar}
+                />
+                <FaSearch className={styles.searchIcon} />
+              </div>
+              <button className={styles.addCouncilButton} onClick={() => setIsModalOpen(true)}>
+                <FaPlus /><span>Create New User</span>
+              </button>
+            </div>
+
+            <div>
+              <AddUserModal
+                isOpen={isModalOpen}
+                closeModal={() => setIsModalOpen(false)}
+                addUser={handleAddUser}
               />
             </div>
 
-            <button
-              className={styles.addButton}
-              onClick={() => setIsModalOpen(true)}
-            >
-              Add User
-            </button>
-
             <div className={styles.sectionBox}>
               <table className={styles.table}>
-                <div>
-                  <AddUserModal
-                    isOpen={isModalOpen}
-                    closeModal={() => setIsModalOpen(false)}
-                    addUser={handleAddUser}
-                  />
-                </div>
-
                 <thead>
                   <tr className={styles.tableHeader}>
                     <th className={styles.tableCell}>Name</th>
@@ -412,10 +455,7 @@ const Admin = () => {
                     <th className={styles.tableCell}>Username</th>
                     <th className={styles.tableCell}>Email</th>
                     <th className={styles.tableCell}>Password</th>
-                    <th className={styles.tableCell}>Action</th>{" "}
-                    {/* New Action Column */}
-                    <th className={styles.tableCell}>Edit</th>{" "}
-                    {/* Edit Column */}
+                    <th className={styles.tableCell}>Action</th>
                   </tr>
                 </thead>
 
@@ -431,22 +471,16 @@ const Admin = () => {
                         <td className={styles.tableCell}>{user.email}</td>
                         <td className={styles.tableCell}>{user.password}</td>
                         <td className={styles.tableCell}>
-                          <button
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteUser(user)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                        <td className={styles.tableCell}>
-                          <button
-                            className={styles.editButton}
-                            onClick={() =>
+                          <div className={styles.actions}>
+                            <button className={styles.editButton} onClick={() =>
                               alert("Edit functionality coming soon!")
-                            } // Edit button without function
-                          >
-                            Edit
-                          </button>
+                            }>
+                              <FaPen className={styles.pen} />
+                            </button>
+                            <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
+                              <FaTrash className={styles.trash} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -465,24 +499,15 @@ const Admin = () => {
 
       case "Reports":
         return (
-          <div className={styles.sectionBox}>
-            <div>
-              <div>
-                <h1>Admin Dashboard</h1>
-                <AdminPanel />
-              </div>
-            </div>
+          <div className={styles.queriesCont}>
+            <h2>Queries</h2>
+            <p>Review user queries, feedbacks, or reports.</p>
+            <AdminPanel />
           </div>
         );
       case "History":
         return (
-          <div className={styles.sectionBox}>
-            <div>
-              <div>
-                <EventHistory />
-              </div>
-            </div>
-          </div>
+          <EventHistory />
         );
       default:
         return (
@@ -549,75 +574,83 @@ const Admin = () => {
             <h1 className={styles.subtitle}>Event Booking System</h1>
           </div>
         </div>
+        <FaBars className={styles.menuBtn} onClick={handleOpenMenu} />
+
         <button className={styles.logoutButton} onClick={handleLogout}>
-          Logout
+          <img src={logout} className={styles.logoutIcon} />
+          <p>Logout</p>
         </button>
       </nav>
 
       {/* Sidebar and main content */}
       <div className={styles.main}>
         {/* Sidebar */}
-        <aside className={styles.sidebar}>
-          <ul className={styles.sidebarList}>
-            <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Events" ? styles.activeSidebarItem : ""
-              }`}
-              onClick={() => setActiveComponent("Events")}
-            >
-              <CalendarPlus size={20} color="#f2f8ff" />
-              <span>Pending Events</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "ApproveEvents"
+        <div className={`${styles.sidenavOverlay} ${styles[mobile]}`} onClick={handleCloseMenu}>
+          <aside className={styles.sidebar}>
+            <div className={styles.logoMobileCont}>
+              <img src={logo} alt="Logo" className={styles.logoMobile} />
+              <div className={styles.titleflex}>
+                <h1 className={styles.title}>
+                  University of Rizal System
+                </h1>
+                <h1 className={styles.subtitle}>Event Booking System</h1>
+              </div>
+            </div>
+            <ul className={styles.sidebarList}>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Events" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Events")}
+              >
+                <CalendarPlus size={20} color="#f2f8ff" />
+                <span>Event Requests</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "ApproveEvents"
                   ? styles.activeSidebarItem
                   : ""
-              }`}
-              onClick={() => setActiveComponent("ApproveEvents")}
-            >
-              <CalendarCheck size={20} color="#f2f8ff" />
-              <span>Approved Events</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Councils" ? styles.activeSidebarItem : ""
-              }`}
-              onClick={() => setActiveComponent("Councils")}
-            >
-              <Users size={20} color="#f2f8ff" />
-              <span>Councils and Organizations</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Users" ? styles.activeSidebarItem : ""
-              }`}
-              onClick={() => setActiveComponent("Users")}
-            >
-              <User size={20} color="#f2f8ff" />
-              <span>Users</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "Reports" ? styles.activeSidebarItem : ""
-              }`}
-              onClick={() => setActiveComponent("Reports")}
-            >
-              <FilePenLine size={20} color="#f2f8ff" />
-              <span>Reports</span>
-            </li>
-            <li
-              className={`${styles.sidebarItem} ${
-                activeComponent === "History" ? styles.activeSidebarItem : ""
-              }`}
-              onClick={() => setActiveComponent("History")}
-            >
-              <FilePenLine size={20} color="#f2f8ff" />
-              <span>History</span>
-            </li>
-          </ul>
-        </aside>
+                  }`}
+                onClick={() => setActiveComponent("ApproveEvents")}
+              >
+                <CalendarCheck size={20} color="#f2f8ff" />
+                <span>Upcoming Events</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Councils" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Councils")}
+              >
+                <Users size={20} color="#f2f8ff" />
+                <span>Councils and Organizations</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Users" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Users")}
+              >
+                <User size={20} color="#f2f8ff" />
+                <span>Users</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "Reports" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("Reports")}
+              >
+                <FilePenLine size={20} color="#f2f8ff" />
+                <span>Reports</span>
+              </li>
+              <li
+                className={`${styles.sidebarItem} ${activeComponent === "History" ? styles.activeSidebarItem : ""
+                  }`}
+                onClick={() => setActiveComponent("History")}
+              >
+                <FaHistory size={20} color="#f2f8ff" />
+                <span>History</span>
+              </li>
+            </ul>
+          </aside>
 
+        </div>
         {/* Main Content Area */}
         <main className={styles.content}>{renderContent()}</main>
       </div>

@@ -383,23 +383,23 @@ app.get('/api/users', (req, res) => {
 //Adding user for council 
 
 app.post('/api/users', (req, res) => {
-    const { name, username, email, password, organizationz } = req.body;
+  const { name, username, email, password, organizationz } = req.body;
 
-    // Simple validation
-    if (!name || !username || !email || !password || !organizationz) {
-        return res.status(400).json({ message: 'All fields are required' });
+  // Simple validation
+  if (!name || !username || !email || !password || !organizationz) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  // Hash the password before inserting into the database
+  // You can use bcrypt.js for password hashing, for now we are storing it as plain text (but it's not recommended for production)
+  const query = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?,?)';
+  connection.query(query, [name, username, email, password, organizationz], (err, results) => {
+    if (err) {
+      console.error('Error inserting user:', err);
+      return res.status(500).json({ message: 'Error adding user' });
     }
-
-    // Hash the password before inserting into the database
-    // You can use bcrypt.js for password hashing, for now we are storing it as plain text (but it's not recommended for production)
-    const query = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?,?)';
-    connection.query(query, [name, username, email, password, organizationz], (err, results) => {
-        if (err) {
-            console.error('Error inserting user:', err);
-            return res.status(500).json({ message: 'Error adding user' });
-        }
-        res.status(201).json({ id: results.insertId, name, email, username, organizationz });
-    });
+    res.status(201).json({ id: results.insertId, name, email, username, organizationz });
+  });
 });
 
 
@@ -410,19 +410,19 @@ app.post('/login', (req, res) => {
   const query = 'SELECT * FROM users WHERE username = ?';
 
   connection.query(query, [username], (err, results) => {
-      if (err) {
-          console.error('Database error:', err);
-          return res.status(500).json({ success: false, message: 'Database error' });
-      }
-      if (results.length > 0) {
-          if (results[0].password === password) {
-              return res.json({ success: true, message: 'Login successful' });
-          } else {
-              return res.status(401).json({ success: false, message: 'Incorrect password' });
-          }
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+    if (results.length > 0) {
+      if (results[0].password === password) {
+        return res.json({ success: true, message: 'Login successful' });
       } else {
-          return res.status(404).json({ success: false, message: 'User not found' });
+        return res.status(401).json({ success: false, message: 'Incorrect password' });
       }
+    } else {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
   });
 });
 
@@ -478,7 +478,7 @@ app.get('/api/approved', (req, res) => {
   } else {
     // Convert the provided date to YYYY/MM/DD format for comparison
     const formattedDate = new Date(date).toISOString().split("T")[0].replace(/-/g, "/");
-    
+
     // Fetch events for the specific date range
     connection.query(
       'SELECT * FROM approved WHERE DATE_FORMAT(date, "%Y/%m/%d") <= ? AND DATE_FORMAT(datefrom, "%Y/%m/%d") >= ?',
@@ -509,7 +509,7 @@ app.get('/api/approvedhistory', (req, res) => {
   } else {
     // Convert the provided date to YYYY-MM-DD format for comparison
     const formattedDate = new Date(date).toISOString().split("T")[0];
-    
+
     // Fetch events for the specific date range
     connection.query(
       'SELECT * FROM approved WHERE DATE(date) <= ? AND DATE(datefrom) >= ?',
@@ -580,16 +580,16 @@ app.delete('/api/events/:id', (req, res) => {
   const sql = 'DELETE FROM events WHERE id = ?';
 
   connection.query(sql, [id], (err, result) => {
-      if (err) {
-          console.error('Error deleting event:', err);
-          return res.status(500).json({ message: 'Error deleting event', error: err });
-      }
+    if (err) {
+      console.error('Error deleting event:', err);
+      return res.status(500).json({ message: 'Error deleting event', error: err });
+    }
 
-      if (result.affectedRows > 0) {
-          res.status(200).json({ message: 'Event deleted successfully' });
-      } else {
-          res.status(404).json({ message: 'Event not found' });
-      }
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: 'Event deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Event not found' });
+    }
   });
 });
 
@@ -631,7 +631,7 @@ app.post('/api/events/approve/:id', (req, res) => {
     if (results.length > 0) {
       const event = results[0];
       const uploadsDir = path.join(__dirname, 'uploads');
-      
+
       // Get the next available image name
       const newImageName = getNextEventImageName(uploadsDir);
       const oldImagePath = path.join(uploadsDir, event.photo);
@@ -707,7 +707,7 @@ app.get('/api/councilsdisplay', (req, res) => {
 // Update council details endpoint
 app.put('/api/councilsedit/:id', (req, res) => {
   const councilId = req.params.id; // ID from the URL
-  const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative } = req.body;
+  const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative } = req.body;
 
   // Ensure created_at is never included
   const updateQuery = `
@@ -721,11 +721,13 @@ app.put('/api/councilsedit/:id', (req, res) => {
         auditor = ?, 
         pro = ?, 
         rep = ?, 
-        representative = ? 
+        representative = ?,
+        trdrepresentative = ?,
+        frthrepresentative = ?
     WHERE id = ?
   `;
 
-  const values = [adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, councilId];
+  const values = [adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative, councilId];
 
   connection.query(updateQuery, values, (err, result) => {
     if (err) {
@@ -739,7 +741,7 @@ app.put('/api/councilsedit/:id', (req, res) => {
   });
 });
 
-  
+
 
 
 const storageForAdviserPic = multer.diskStorage({
@@ -841,16 +843,16 @@ app.delete('/api/delete-user/:id', (req, res) => {
   const query = 'DELETE FROM users WHERE id = ?';
 
   connection.query(query, [userId], (err, result) => {
-      if (err) {
-          console.error("Error deleting user:", err);
-          return res.status(500).send('Failed to delete user');
-      }
+    if (err) {
+      console.error("Error deleting user:", err);
+      return res.status(500).send('Failed to delete user');
+    }
 
-      if (result.affectedRows === 0) {
-          return res.status(404).send('User not found');
-      }
+    if (result.affectedRows === 0) {
+      return res.status(404).send('User not found');
+    }
 
-      res.status(200).send('User deleted successfully');
+    res.status(200).send('User deleted successfully');
   });
 });
 
@@ -862,12 +864,12 @@ app.delete('/users-delete/:username', (req, res) => {
   // Perform the deletion in your database, e.g. MySQL or MongoDB
   // Example SQL query (using MySQL):
   const query = 'DELETE FROM users WHERE username = ?';
-  
+
   connection.query(query, [username], (err, result) => {
-      if (err) {
-          return res.status(500).json({ error: 'Failed to delete user' });
-      }
-      res.status(200).json({ message: 'User deleted successfully' });
+    if (err) {
+      return res.status(500).json({ error: 'Failed to delete user' });
+    }
+    res.status(200).json({ message: 'User deleted successfully' });
   });
 });
 
@@ -901,17 +903,17 @@ app.post('/api/users', (req, res) => {
 
   // Input validation (basic example)
   if (!name || !username || !email || !password || !organizationz) {
-      return res.status(400).json({ message: 'All fields are required.' });
+    return res.status(400).json({ message: 'All fields are required.' });
   }
 
   // Query to insert user into the database
   const query = 'INSERT INTO users (name, username, email, password, organization) VALUES (?, ?, ?, ?, ?)';
   connection.query(query, [name, username, email, password, organizationz], (err, results) => {
-      if (err) {
-          console.error('Error inserting user:', err);
-          return res.status(500).json({ message: 'Error adding user' });
-      }
-      res.status(201).json({ id: results.insertId, name, username, email, organizationz });
+    if (err) {
+      console.error('Error inserting user:', err);
+      return res.status(500).json({ message: 'Error adding user' });
+    }
+    res.status(201).json({ id: results.insertId, name, username, email, organizationz });
   });
 });
 

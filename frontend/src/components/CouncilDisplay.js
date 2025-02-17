@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./Dashboard.module.css"; // Adjust path as needed
+import { FaAngleDown } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
+
 
 const CouncilDisplay = () => {
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -91,80 +94,111 @@ const CouncilDisplay = () => {
           {councilsAndOrganizations.map((item) => (
             <button
               key={item.organization}
-              onClick={() => handleCouncilSelect(item.organization)}
-              className={`${styles.sidebarButton} ${
-                selectedCouncil?.organization === item.organization ? styles.selected : ''
-              }`}
+              onClick={() => setSelectedCouncil(item)}
+              className={`${styles.sidebarButton} ${selectedCouncil?.organization === item.organization
+                ? styles.selected
+                : ""
+                }`}
             >
               {item.organization}
             </button>
           ))}
         </div>
 
-        <div className={styles.sidebarContent}>
-          <h3>{selectedCouncil ? selectedCouncil.organization : 'Select a Council/Organization'}</h3>
+        <div className={styles.mobileDropdownCont}>
+          <select
+            id="council"
+            value={selectedCouncil?.organization || ""}
+            onChange={(e) => {
+              const selected = councilsAndOrganizations.find(
+                (org) => org.organization === e.target.value
+              );
+              setSelectedCouncil(selected);
+            }}
+            className={styles.mobileDropdown}
+          >
+            <option value="" disabled>
+              Select a Council
+            </option>
+            {councilsAndOrganizations.map((item) => (
+              <option key={item.organization} value={item.organization}>
+                {item.organization}
+              </option>
+            ))}
+          </select>
+          <FaAngleDown className={styles.downIcon} />
+        </div>
 
+        <div className={styles.sidebarContent}>
+          {selectedCouncil
+            ? ""
+            : <div className={styles.placeholderCont}>
+              <FaUsers className={styles.placholderIcon} />
+              <p>Select a Council/Organization</p>
+            </div>}
           {selectedCouncil && (
             <div className={styles.details}>
-              <table>
-              <tbody>
-                <tr>
-              
-              <td>
-                <a href={selectedCouncil.link} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
-                    alt="Adviser"
-                    className={styles.adviserImage}
-                  />
-                </a>
-              </td>
-            </tr>
-                  <tr>
-                    <td><strong>Adviser:</strong></td>
-                    <td>{selectedCouncil.adviser}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>President:</strong></td>
-                    <td>{selectedCouncil.president}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Vice President:</strong></td>
-                    <td>{selectedCouncil.vicePresident}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Secretary:</strong></td>
-                    <td>{selectedCouncil.secretary}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Treasurer:</strong></td>
-                    <td>{selectedCouncil.treasurer}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Auditor:</strong></td>
-                    <td>{selectedCouncil.auditor}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>PRO:</strong></td>
-                    <td>{selectedCouncil.pro}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Representative:</strong></td>
-                    <td>{selectedCouncil.rep}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Representative (Alternate):</strong></td>
-                    <td>{selectedCouncil.representative}</td>
-                  </tr>
-                </tbody>
+              <div className={styles.profileCont}>
+                <div className={styles.profile}>
+                  <a
+                    href={selectedCouncil.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
+                      alt="Adviser"
+                      className={styles.adviserImage}
+                    />
+                  </a>
+                  <h3 className={styles.councilSubheader}>
+                    {selectedCouncil
+                      ? selectedCouncil.organization
+                      : ""}
+                  </h3>
+                  <h3 className={styles.councilSubheaderMobile}>
+                    {selectedCouncil ? selectedCouncil.organization : ""}
+                  </h3>
 
-              </table>
+                </div>
+              </div>
+              <div className={styles.membersCont}>
+                <p>
+                  <strong>Adviser:</strong> {selectedCouncil.adviser}
+                </p>
+                <p>
+                  <strong>President:</strong> {selectedCouncil.president}
+                </p>
+                <p>
+                  <strong>Vice President:</strong> {selectedCouncil.vicePresident}
+                </p>
+                <p>
+                  <strong>Secretary:</strong> {selectedCouncil.secretary}
+                </p>
+                <p>
+                  <strong>Treasurer:</strong> {selectedCouncil.treasurer}
+                </p>
+                <p>
+                  <strong>Auditor:</strong> {selectedCouncil.auditor}
+                </p>
+                <p>
+                  <strong>PRO:</strong> {selectedCouncil.pro}
+                </p>
+                <p>
+                  <strong>First Year Representative:</strong>{" "}
+                  {selectedCouncil.rep}
+                </p>
+                <p>
+                  <strong>Second Year Representative (Alternate):</strong>{" "}
+                  {selectedCouncil.representative}
+                </p>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Conditionally render the floating display */}
+      {/* Conditionally render the floating display
       {approvedData && approvedData.length > 0 && (
         <div className={styles.floatingDisplay}>
           {selectedCouncil && approvedData && (
@@ -202,7 +236,7 @@ const CouncilDisplay = () => {
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };
