@@ -282,7 +282,7 @@ const Dashboard = () => {
       }
     } else {
       console.warn("Incomplete time fields provided by the user.");
-      setError("Please fill in all time fields correctly.");
+      // setError("Please fill in all time fields correctly.");
       toast.error("Please fill in all time fields correctly", {
         duration: 4000, // Time before it disappears
       });
