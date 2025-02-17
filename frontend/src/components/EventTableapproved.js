@@ -4,6 +4,7 @@ import styles from './Admin.module.css';
 import { FaSearch } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
+import { toast } from "sonner";
 
 const EventTableApproved = () => {
   const [events, setEvents] = useState([]);
@@ -64,11 +65,15 @@ const EventTableApproved = () => {
       const response = await axios.delete(`http://localhost:5000/api/approved-table/${eventToDelete}`);
       if (response.status === 200) {
         setEvents((prevEvents) => prevEvents.filter(event => event.id !== eventToDelete));
-        alert('Event deleted successfully');
+        toast.success('Event deleted successfully', {
+          duration: 4000, // Time before it disappears
+        });
       }
     } catch (error) {
       console.error("Error deleting event:", error.response?.data || error);
-      alert('Failed to delete event');
+      toast.error('Failed to delete event', {
+        duration: 4000, // Time before it disappears
+      });
     } finally {
       dialogRef.current.close();
     }

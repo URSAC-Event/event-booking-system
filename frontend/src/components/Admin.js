@@ -32,6 +32,7 @@ import { FaBars } from "react-icons/fa";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
 import UserEdit from "./UserEdit";
+import { toast } from "sonner";
 
 
 
@@ -177,16 +178,22 @@ const Admin = () => {
           setUsers((prevUsers) =>
             prevUsers.filter((u) => u.username !== selectedUser.username)
           );
-
+          toast.success("User deleted successfully!", {
+            duration: 4000, // Time before it disappears
+          })
           setSelectedUser(null);
           deleteRef.current?.close();
         } else {
-          alert("Failed to delete user");
+          toast.error("Failed to delete user", {
+            duration: 4000, // Time before it disappears
+          });
         }
       })
       .catch((error) => {
         console.error("Error deleting user:", error);
-        alert("An error occurred while deleting the user");
+        toast.error("An error occurred while deleting the user", {
+          duration: 4000, // Time before it disappears
+        });
       });
   };
 
@@ -219,15 +226,22 @@ const Admin = () => {
         console.log(`Notifying organization: ${organization}`);
         await sendEventNotification(organization, eventId);
 
-        alert("Event deleted successfully");
+        toast.success("Event deleted successfully", {
+          duration: 4000, // Time before it disappears
+        });
+
         setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
       } else {
         console.error("Delete failed:", responseBody);
-        alert(`Failed to delete event: ${responseBody.message || "Unknown error"}`);
+        toast.error(`Failed to delete event: ${responseBody.message || "Unknown error"}`, {
+          duration: 4000, // Time before it disappears
+        });
       }
     } catch (error) {
       console.error("Error deleting event:", error);
-      alert("Error deleting event");
+      toast.error("Error deleting event", {
+        duration: 4000, // Time before it disappears
+      });
     }
   };
 
@@ -271,14 +285,13 @@ const Admin = () => {
     if (!selectedEventId) return;
 
     const eventToApprove = events.find((event) => event.id === selectedEventId);
-    const { date, datefrom, duration } = eventToApprove;  // Assuming these are the fields
+    const { date, datefrom, duration } = eventToApprove;
 
-    // Check if event overlaps with an approved event
     try {
-      const response = await fetch('http://localhost:5000/api/events/check-overlap', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/events/check-overlap", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           startDate: date,
@@ -290,7 +303,6 @@ const Admin = () => {
       const responseBody = await response.json();
 
       if (response.ok) {
-        // If no overlap, proceed with approving the event
         const approveResponse = await fetch(
           `http://localhost:5000/api/events/approve/${selectedEventId}`,
           {
@@ -303,25 +315,31 @@ const Admin = () => {
         console.log("Response body:", responseBodyApprove);
 
         if (approveResponse.ok) {
-          alert("Event approved successfully!");
+          toast.success("Event approved successfully!", {
+            duration: 4000, // Time before it disappears
+          });
           setEvents((prevEvents) =>
             prevEvents.filter((event) => event.id !== selectedEventId)
           );
           closeApproveModal();
         } else {
-          alert(`Failed to approve event: ${responseBodyApprove.message || "Unknown error"}`);
+          toast.error(`Failed to approve event: ${responseBodyApprove.message || "Unknown error"}`, {
+            duration: 4000, // Time before it disappears
+          });
         }
       } else {
-        // If there's an overlap, close modal and show alert
-        alert(responseBody.message);  // Display overlap error message
+        toast.error(responseBody.message, {
+          duration: 4000, // Time before it disappears
+        });
         closeApproveModal();
       }
     } catch (error) {
-      alert("Error approving event");
+      toast.error("Error approving event", {
+        duration: 4000, // Time before it disappears
+      });
       console.error("Error approving event:", error);
     }
   };
-
 
 
   const handleLogout = () => {

@@ -3,6 +3,7 @@ import EditCouncilModal from "./EditCouncilModal";
 import Addcouncils from "./Addcouncils";
 import styles from "./Admin.module.css";
 import { FaSearch, FaPlus, FaPen, FaTrash, FaRegTimesCircle } from "react-icons/fa";
+import { toast } from "sonner";
 
 const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, setShowAddCouncilForm, handleAddCouncil }) => {
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -24,11 +25,16 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
 
       if (response.ok) {
         setCouncils(councils.filter((council) => council.id !== councilToDelete));
-        alert("Council deleted successfully");
+        toast.success("Council deleted successfully", {
+          duration: 4000, // Time before it disappears
+        });
       } else {
         console.error("Failed to delete council");
       }
     } catch (error) {
+      toast.error("Error deleting council", {
+        duration: 4000, // Time before it disappears
+      })
       console.error("Error deleting council:", error);
     } finally {
       dialogRef.current.close(); // Close the modal
@@ -55,10 +61,19 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
           )
         );
         setShowEditModal(false);
+        toast.success("Council updated successfully", {
+          duration: 4000, // Time before it disappears
+        });
       } else {
+        toast.error("Error updating council", {
+          duration: 4000, // Time before it disappears
+        });
         console.error("Failed to update council");
       }
     } catch (error) {
+      toast.error("Error updating council", {
+        duration: 4000, // Time before it disappears
+      });
       console.error("Error updating council:", error);
     }
   };
