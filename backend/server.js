@@ -193,11 +193,14 @@ app.post('/submitReportadmin', (req, res) => {
 
 // Route to submit a report (User side)
 app.post('/submitReport', (req, res) => {
-  const { userId, message } = req.body;
+  const { userId, message, name, org } = req.body;
+  
+  // Log the data to ensure it's being passed correctly
+  console.log("Received data:", { userId, message, name, org });
 
-  // Insert the report into the database
-  const query = 'INSERT INTO reports (user_id, message, status) VALUES (?, ?, "pending")';
-  connection.query(query, [userId, message], (err, result) => {
+  // Insert the report into the database with the additional fields for name and organization
+  const query = 'INSERT INTO reports (user_id, message, status, name, org) VALUES (?, ?, "pending", ?, ?)';
+  connection.query(query, [userId, message, name, org], (err, result) => {
     if (err) {
       console.error('Error inserting report:', err);
       return res.status(500).json({ error: 'Failed to submit report' });
@@ -207,6 +210,8 @@ app.post('/submitReport', (req, res) => {
     res.status(200).json({ message: 'Report submitted successfully', reportId: result.insertId });
   });
 });
+
+
 
 // Route to fetch all reports (Admin side)
 app.get('/api/reports', (req, res) => {
@@ -402,7 +407,16 @@ app.post('/api/users', (req, res) => {
   });
 });
 
-
+//COUNCILSS SLIDEBAR SELECTION and display
+app.get('/api/councilsdisplay', (req, res) => {
+  connection.query('SELECT * FROM councils', (err, results) => {
+    if (err) {
+      console.error('Error querying database:', err);
+      return res.status(500).json({ message: 'Database query error' });
+    }
+    res.json(results); // Send all council details to the frontend
+  });
+});
 
 // Login route for users
 app.post('/login', (req, res) => {
@@ -410,21 +424,29 @@ app.post('/login', (req, res) => {
   const query = 'SELECT * FROM users WHERE username = ?';
 
   connection.query(query, [username], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ success: false, message: 'Database error' });
-    }
-    if (results.length > 0) {
-      if (results[0].password === password) {
-        return res.json({ success: true, message: 'Login successful' });
-      } else {
-        return res.status(401).json({ success: false, message: 'Incorrect password' });
+      if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ success: false, message: 'Database error' });
       }
-    } else {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
+      if (results.length > 0) {
+          if (results[0].password === password) {
+              console.log('Login Response:', results[0]); // Debugging: See what is fetched from DB
+              return res.json({
+                  success: true,
+                  message: 'Login successful',
+                  userId: results[0].id,
+                  role: results[0].role,
+                  organization: results[0].organizationz // Ensure this is correct
+              });
+          } else {
+              return res.status(401).json({ success: false, message: 'Incorrect password' });
+          }
+      } else {
+          return res.status(404).json({ success: false, message: 'User not found' });
+      }
   });
 });
+
 
 // Login route for admin
 app.post('/adminlogin', (req, res) => {
@@ -692,19 +714,6 @@ app.post('/api/events/approve/:id', (req, res) => {
 
 
 //COUNCILSS SLIDEBAR SELECTION and display
-app.get('/api/councilsdisplay', (req, res) => {
-  connection.query('SELECT * FROM councils', (err, results) => {
-    if (err) {
-      console.error('Error querying database:', err);
-      return res.status(500).json({ message: 'Database query error' });
-    }
-    res.json(results); // Send all council details to the frontend
-  });
-});
-
-
-//edit council on council display 
-// Update council details endpoint
 app.put('/api/councilsedit/:id', (req, res) => {
   const councilId = req.params.id; // ID from the URL
   const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative } = req.body;
@@ -740,7 +749,6 @@ app.put('/api/councilsedit/:id', (req, res) => {
     res.status(200).json({ message: 'Council updated successfully' });
   });
 });
-
 
 
 
@@ -944,7 +952,17 @@ app.get('/api/getApprovedData', async (req, res) => {
 
 
 
+app.get('/api/date-timecheck', (req, res) => {
+  const sql = 'SELECT id, date, datefrom, duration FROM approved';
 
+  connection.query(sql, (err, result) => {
+      if (err) {
+          console.error('Error fetching data:', err);
+          return res.status(500).json({ error: 'Database error' });
+      }
+      res.json(result); 
+  });
+});
 
 
 // Start server
