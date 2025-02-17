@@ -55,9 +55,11 @@ const Admin = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   const modalRef = useRef(null); //Pang approve
-  const dialogRef = useRef(); //Pang delete
+  const dialogRef = useRef(); //Pang delete ng event
+  const deleteRef = useRef(null);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const handleOpenMenu = () => {
     setMobile("mobile")
@@ -149,44 +151,51 @@ const Admin = () => {
       .catch((error) => console.error("Error fetching events:", error));
   }, []);
 
+  const openDeleteUserModal = (user) => {
+    setSelectedUser(user);
+    deleteRef.current?.showModal();
+  };
+
+  const closeDeleteUserModal = () => {
+    setSelectedUser(null);
+    deleteRef.current?.close();
+  };
+
   //user delete button
-  const handleDeleteUser = (user) => {
-    // Show a confirmation dialog before proceeding with the deletion
-    const isConfirmed = window.confirm(
-      `Do you really want to delete the account of user: ${user.username}? This action cannot be undone.`
-    );
+  const handleDeleteUser = () => {
 
-    if (isConfirmed) {
-      console.log("User to be deleted:", user.username);
+    console.log("User to be deleted:", selectedUser.username);
 
-      // Send DELETE request to the backend with the username
-      fetch(`http://localhost:5000/users-delete/${user.username}`, {
-        method: "DELETE",
+    // Send DELETE request to the backend with the username
+    fetch(`http://localhost:5000/users-delete/${selectedUser.username}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log(`User ${selectedUser.username} deleted successfully`);
+          // Remove the deleted user from the UI by filtering it out from the users array
+          setUsers((prevUsers) =>
+            prevUsers.filter((u) => u.username !== selectedUser.username)
+          );
+
+          setSelectedUser(null);
+          deleteRef.current?.close();
+        } else {
+          alert("Failed to delete user");
+        }
       })
-        .then((response) => {
-          if (response.ok) {
-            console.log(`User ${user.username} deleted successfully`);
-            // Remove the deleted user from the UI by filtering it out from the users array
-            setUsers((prevUsers) =>
-              prevUsers.filter((u) => u.username !== user.username)
-            );
-          } else {
-            alert("Failed to delete user");
-          }
-        })
-        .catch((error) => {
-          console.error("Error deleting user:", error);
-          alert("An error occurred while deleting the user");
-        });
-    } else {
-      console.log("User deletion canceled");
-    }
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+        alert("An error occurred while deleting the user");
+      });
   };
 
   const openDeleteModal = (eventId, organization) => {
     setSelectedEvent({ eventId, organization });
     dialogRef.current.showModal();
   };
+
+
 
   // para sa delete button
   const handleDelete = async () => {
@@ -261,33 +270,58 @@ const Admin = () => {
   const handleConfirm = async () => {
     if (!selectedEventId) return;
 
+    const eventToApprove = events.find((event) => event.id === selectedEventId);
+    const { date, datefrom, duration } = eventToApprove;  // Assuming these are the fields
+
+    // Check if event overlaps with an approved event
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/events/approve/${selectedEventId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch('http://localhost:5000/api/events/check-overlap', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          startDate: date,
+          endDate: datefrom,
+          duration: duration,
+        }),
+      });
 
       const responseBody = await response.json();
-      console.log("Response body:", responseBody);
 
       if (response.ok) {
-        alert("Event approved successfully!");
-        setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== selectedEventId)
+        // If no overlap, proceed with approving the event
+        const approveResponse = await fetch(
+          `http://localhost:5000/api/events/approve/${selectedEventId}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          }
         );
+
+        const responseBodyApprove = await approveResponse.json();
+        console.log("Response body:", responseBodyApprove);
+
+        if (approveResponse.ok) {
+          alert("Event approved successfully!");
+          setEvents((prevEvents) =>
+            prevEvents.filter((event) => event.id !== selectedEventId)
+          );
+          closeApproveModal();
+        } else {
+          alert(`Failed to approve event: ${responseBodyApprove.message || "Unknown error"}`);
+        }
       } else {
-        alert(`Failed to approve event: ${responseBody.message || "Unknown error"}`);
+        // If there's an overlap, close modal and show alert
+        alert(responseBody.message);  // Display overlap error message
+        closeApproveModal();
       }
     } catch (error) {
       alert("Error approving event");
       console.error("Error approving event:", error);
     }
-
-    closeApproveModal();
   };
+
 
 
   const handleLogout = () => {
@@ -420,98 +454,104 @@ const Admin = () => {
             />
           </div>
         );
-        case "Users":
-          return (
-            <div className={styles.usersCont}>
-              <h2>Users</h2>
-              <p>Create and manage accounts.</p>
-        
-              {/* Search Bar */}
-              <div className={styles.searchContainer}>
-                <div className={styles.searchWrap}>
-                  <input
-                    type="text"
-                    placeholder="Search users..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className={styles.searchBar}
-                  />
-                  <FaSearch className={styles.searchIcon} />
-                </div>
-                <button className={styles.addCouncilButton} onClick={() => setIsModalOpen(true)}>
-                  <FaPlus /><span>Create New User</span>
-                </button>
+      case "Users":
+        return (
+          <><div className={styles.usersCont}>
+            <h2>Users</h2>
+            <p>Create and manage accounts.</p>
+
+            {/* Search Bar */}
+            <div className={styles.searchContainer}>
+              <div className={styles.searchWrap}>
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={styles.searchBar} />
+                <FaSearch className={styles.searchIcon} />
               </div>
-        
-              <div>
-                <AddUserModal
-                  isOpen={isModalOpen}
-                  closeModal={() => setIsModalOpen(false)}
-                  addUser={handleAddUser}
-                />
-              </div>
-        
-              {/* User Edit Modal */}
-              {isEditModalOpen && (
-                <UserEdit
-                  isOpen={isEditModalOpen}
-                  closeModal={() => setIsEditModalOpen(false)}
-                  userData={currentUser}
-                />
-              )}
-        
-              <div className={styles.sectionBox}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr className={styles.tableHeader}>
-                      <th className={styles.tableCell}>Name</th>
-                      <th className={styles.tableCell}>Organization</th>
-                      <th className={styles.tableCell}>Username</th>
-                      <th className={styles.tableCell}>Email</th>
-                      <th className={styles.tableCell}>Password</th>
-                      <th className={styles.tableCell}>Action</th>
-                    </tr>
-                  </thead>
-        
-                  <tbody>
-                    {filteredUsers.length > 0 ? (
-                      filteredUsers.map((user) => (
-                        <tr key={user.id} className={styles.tableRow}>
-                          <td className={styles.tableCell}>{user.name}</td>
-                          <td className={styles.tableCell}>{user.organizationz}</td>
-                          <td className={styles.tableCell}>{user.username}</td>
-                          <td className={styles.tableCell}>{user.email}</td>
-                          <td className={styles.tableCell}>{user.password}</td>
-                          <td className={styles.tableCell}>
-                            <div className={styles.actions}>
-                              <button
-                                className={styles.editButton}
-                                onClick={() => {
-                                  setCurrentUser(user); // Set current user
-                                  setIsEditModalOpen(true); // Open the edit modal
-                                }}
-                              >
-                                <FaPen className={styles.pen} />
-                              </button>
-                              <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
-                                <FaTrash className={styles.trash} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className={styles.noEvents}>
-                          No users available
+              <button className={styles.addCouncilButton} onClick={() => setIsModalOpen(true)}>
+                <FaPlus /><span>Create New User</span>
+              </button>
+            </div>
+
+            <div>
+              <AddUserModal
+                isOpen={isModalOpen}
+                closeModal={() => setIsModalOpen(false)}
+                addUser={handleAddUser} />
+            </div>
+
+            {/* User Edit Modal */}
+            {isEditModalOpen && (
+              <UserEdit
+                isOpen={isEditModalOpen}
+                closeModal={() => setIsEditModalOpen(false)}
+                userData={currentUser} />
+            )}
+
+            <div className={styles.sectionBox}>
+              <table className={styles.table}>
+                <thead>
+                  <tr className={styles.tableHeader}>
+                    <th className={styles.tableCell}>Name</th>
+                    <th className={styles.tableCell}>Organization</th>
+                    <th className={styles.tableCell}>Username</th>
+                    <th className={styles.tableCell}>Email</th>
+                    <th className={styles.tableCell}>Password</th>
+                    <th className={styles.tableCell}>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map((user) => (
+                      <tr key={user.id} className={styles.tableRow}>
+                        <td className={styles.tableCell}>{user.name}</td>
+                        <td className={styles.tableCell}>{user.organizationz}</td>
+                        <td className={styles.tableCell}>{user.username}</td>
+                        <td className={styles.tableCell}>{user.email}</td>
+                        <td className={styles.tableCell}>{user.password}</td>
+                        <td className={styles.tableCell}>
+                          <div className={styles.actions}>
+                            <button
+                              className={styles.editButton}
+                              onClick={() => {
+                                setCurrentUser(user); // Set current user
+                                setIsEditModalOpen(true); // Open the edit modal
+                              }}
+                            >
+                              <FaPen className={styles.pen} />
+                            </button>
+                            <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
+                              <FaTrash className={styles.trash} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className={styles.noEvents}>
+                        No users available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-          );
+          </div><dialog ref={deleteRef} className={styles.modal}>
+              <div className={styles.modalBox}>
+                <FaRegTimesCircle className={`${styles.modalIcon} ${styles.deleteIcon}`} />
+                <p>Are you sure you want to delete this user?</p>
+                <div className={`${styles.modalButtons} ${styles.deleteBtn}`}>
+                  <button onClick={closeDeleteUserModal}>Cancel</button>
+                  <button onClick={handleDeleteUser}>Delete</button>
+                </div>
+              </div>
+            </dialog></>
+        );
 
       case "Reports":
         return (

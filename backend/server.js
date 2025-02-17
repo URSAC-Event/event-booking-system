@@ -241,6 +241,21 @@ app.delete('/api/reports/:id', (req, res) => {
   });
 });
 
+// Delete all reports (admin)
+
+// app.delete('/api/reports/deleteall', (req, res) => {
+//   const query = 'DELETE FROM reports'; // Delete all rows from the reports table
+
+//   connection.query(query, (err, result) => {
+//     if (err) {
+//       console.error('Error deleting all reports:', err);
+//       return res.status(500).json({ error: 'Failed to delete all reports' });
+//     }
+
+//     res.status(200).json({ message: 'All reports deleted successfully' });
+//   });
+// });
+
 
 
 
@@ -949,6 +964,71 @@ app.get('/api/getApprovedData', async (req, res) => {
     res.status(500).send('Error fetching approved data');
   }
 });
+
+
+//Validation sa admin
+app.post('/api/events/check-overlap', async (req, res) => {
+  const { startDate, endDate, duration } = req.body; // New event details
+  const [newStartTime, newEndTime] = duration.split(" to "); // Extract start & end times
+
+  console.log(`Checking overlap for event: ${startDate} to ${endDate} (${newStartTime} - ${newEndTime})`);
+
+  try {
+    // Fetch all approved events
+    const query = `SELECT date, datefrom, duration FROM approved`;
+
+    connection.query(query, [], (error, results) => {
+      if (error) {
+        console.error("Error fetching approved events:", error);
+        return res.status(500).json({ message: "Error fetching approved events." });
+      }
+
+      console.log(`Found ${results.length} approved events.`);
+
+      // Convert new event dates to YYYY-MM-DD
+      const normalizedStartDate = new Date(startDate).toISOString().split("T")[0];
+      const normalizedEndDate = new Date(endDate).toISOString().split("T")[0];
+
+      for (let event of results) {
+        const [existingStartTime, existingEndTime] = event.duration.split(" to ");
+
+        // Convert approved event dates to YYYY-MM-DD
+        const approvedStartDate = new Date(event.date).toISOString().split("T")[0];
+        const approvedEndDate = new Date(event.datefrom).toISOString().split("T")[0];
+
+        console.log(`Checking against approved event: ${approvedStartDate} to ${approvedEndDate} (${existingStartTime} - ${existingEndTime})`);
+
+        // **Date Overlap Check**
+        const isDateOverlap = !(normalizedEndDate < approvedStartDate || normalizedStartDate > approvedEndDate);
+
+        // **Time Overlap Check**
+        const isTimeOverlap =
+          (newStartTime >= existingStartTime && newStartTime < existingEndTime) ||  // New start falls inside existing
+          (newEndTime > existingStartTime && newEndTime <= existingEndTime) ||  // New end falls inside existing
+          (newStartTime <= existingStartTime && newEndTime >= existingEndTime); // New event completely overlaps existing
+
+        if (isDateOverlap && isTimeOverlap) {
+          console.log("❌ Overlap detected! Rejecting event.");
+          return res.status(400).json({
+            message: 'There is already an event approved for the selected date and time range.'
+          });
+        }
+      }
+
+      console.log("✅ No overlap detected. Event can be approved.");
+      return res.status(200).json({ message: 'No overlap found. Event can be approved.' });
+    });
+  } catch (error) {
+    console.error("Error checking overlap:", error);
+    res.status(500).json({ message: "Error checking event overlap." });
+  }
+});
+
+
+
+
+
+
 
 
 

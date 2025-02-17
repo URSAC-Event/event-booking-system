@@ -363,7 +363,6 @@
     opacity: 0.3;
 }
 
-.queriesCont {}
 
 /* Modal styles */
 .modalBackdrop {
@@ -402,6 +401,12 @@
 .menuBtn {
     display: none;
     font-size: 20px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.menuBtn:hover {
+    transform: scale(1.05);
 }
 
 .logoMobileCont {

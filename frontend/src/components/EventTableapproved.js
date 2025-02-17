@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import styles from './Admin.module.css';
 import { FaSearch } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
+import { FaRegTimesCircle } from "react-icons/fa";
 
 const EventTableApproved = () => {
   const [events, setEvents] = useState([]);
@@ -10,6 +11,8 @@ const EventTableApproved = () => {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [selectedDocumentName, setSelectedDocumentName] = useState(null);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
+  const dialogRef = useRef(null);
 
   // Fetch events function
   const fetchEvents = async () => {
@@ -52,21 +55,24 @@ const EventTableApproved = () => {
   };
 
   const handleDeleteApproved = async (id) => {
-    console.log("Sending delete request for ID:", id); // Debugging
+    setEventToDelete(id);
+    dialogRef.current.showModal();
+  };
+
+  const confirmDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/approved-table/${id}`);
+      const response = await axios.delete(`http://localhost:5000/api/approved-table/${eventToDelete}`);
       if (response.status === 200) {
-        setEvents((prevEvents) => prevEvents.filter(event => event.id !== id));
+        setEvents((prevEvents) => prevEvents.filter(event => event.id !== eventToDelete));
         alert('Event deleted successfully');
       }
     } catch (error) {
       console.error("Error deleting event:", error.response?.data || error);
       alert('Failed to delete event');
+    } finally {
+      dialogRef.current.close();
     }
   };
-
-
-
 
   // Filter events based on the search term
   const filteredEvents = events.filter(event =>
@@ -148,7 +154,6 @@ const EventTableApproved = () => {
         </table>
       </div>
 
-
       {showDocumentModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -158,6 +163,17 @@ const EventTableApproved = () => {
           </div>
         </div>
       )}
+
+      <dialog ref={dialogRef} className={styles.modal}>
+        <div className={styles.modalBox}>
+          <FaRegTimesCircle className={`${styles.modalIcon} ${styles.deleteIcon}`} />
+          <p>Are you sure you want to cancel this event?</p>
+          <div className={`${styles.modalButtons} ${styles.deleteBtn}`}>
+            <button onClick={() => dialogRef.current.close()}>Cancel</button>
+            <button onClick={confirmDelete}>Delete</button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };
