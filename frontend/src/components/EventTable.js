@@ -7,7 +7,7 @@ import { FaTimes } from "react-icons/fa";
 
 
 
-const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm, handleDelete, handleButtonHover }) => {
+const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocument, handleViewImage, handleConfirm, handleDelete, handleButtonHover }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Function to format the date as YYYY-MM-DD
@@ -96,13 +96,13 @@ const EventTable = ({ events, handleViewDocument, handleViewImage, handleConfirm
                     <div className={styles.actionFlex}>
                       <button
                         className={styles.requestActions}
-                        onClick={() => handleConfirm(event.id)} title='Accept Event'
+                        onClick={() => openApproveModal(event.id)} title='Accept Event'
                       >
                         <FaCheck />
                       </button>
                       <button
                         className={styles.requestActions}
-                        onClick={() => handleDelete(event.id, event.organization)} title='Reject Event'
+                        onClick={() => openDeleteModal(event.id, event.organization)} title='Reject Event'
                       >
                         <FaTimes />
                       </button>

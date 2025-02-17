@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dashboard from "./Dashboard";
@@ -29,6 +29,9 @@ import { FaPen } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import logout from "../assets/logout.svg";
 import { FaBars } from "react-icons/fa";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FaRegTimesCircle } from "react-icons/fa";
+
 
 
 
@@ -45,6 +48,11 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobile, setMobile] = useState("")
   const navigate = useNavigate();
+
+  const modalRef = useRef(null); //Pang approve
+  const dialogRef = useRef(); //Pang delete
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const handleOpenMenu = () => {
     setMobile("mobile")
@@ -170,44 +178,38 @@ const Admin = () => {
     }
   };
 
-  // para sa delete button
-  const handleDelete = async (eventId, organization) => {
-    console.log("Attempting to delete event with ID:", eventId);
+  const openDeleteModal = (eventId, organization) => {
+    setSelectedEvent({ eventId, organization });
+    dialogRef.current.showModal();
+  };
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this event?"
-    );
-    if (!confirmed) return;
+  // para sa delete button
+  const handleDelete = async () => {
+    if (!selectedEvent) return;
+
+    const { eventId, organization } = selectedEvent;
+    dialogRef.current.close();
 
     try {
-      // Step 1: Delete the event
-      const response = await fetch(
-        `http://localhost:5000/api/events/${eventId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      console.log("Attempting to delete event with ID:", eventId);
+
+      const response = await fetch(`http://localhost:5000/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
 
       const responseBody = await response.json();
       console.log("Response body:", responseBody);
 
       if (response.ok) {
-        // Step 2: Notify the organization about the deletion
         console.log(`Notifying organization: ${organization}`);
-        await sendEventNotification(organization, eventId); // Send email notification
+        await sendEventNotification(organization, eventId);
 
         alert("Event deleted successfully");
-        setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== eventId)
-        ); // Remove event from the UI
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
       } else {
         console.error("Delete failed:", responseBody);
-        alert(
-          `Failed to delete event: ${responseBody.message || "Unknown error"}`
-        );
+        alert(`Failed to delete event: ${responseBody.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -241,46 +243,48 @@ const Admin = () => {
     }
   };
 
-  // para sa approve button
-  const handleConfirm = async (eventId) => {
-    console.log("Attempting to approve event with ID:", eventId);
+  const openApproveModal = (eventId) => {
+    setSelectedEventId(eventId);
+    modalRef.current?.showModal(); // Open the modal
+  };
 
-    const confirmed = window.confirm(
-      "Are you sure you want to approve this event?"
-    );
-    if (!confirmed) return;
+  const closeApproveModal = () => {
+    modalRef.current?.close(); // Close the modal
+    setSelectedEventId(null);
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedEventId) return;
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/events/approve/${eventId}`,
+        `http://localhost:5000/api/events/approve/${selectedEventId}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
-      const responseBody = await response.json(); // Get the response body
-      console.log("Response body:", responseBody); // Log the response body
+      const responseBody = await response.json();
+      console.log("Response body:", responseBody);
 
       if (response.ok) {
-        console.log("Approve response:", responseBody);
         alert("Event approved successfully!");
         setEvents((prevEvents) =>
-          prevEvents.filter((event) => event.id !== eventId)
+          prevEvents.filter((event) => event.id !== selectedEventId)
         );
       } else {
-        console.error("Approval failed:", responseBody);
-        alert(
-          `Failed to approve event: ${responseBody.message || "Unknown error"}`
-        );
+        alert(`Failed to approve event: ${responseBody.message || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error approving event:", error);
       alert("Error approving event");
+      console.error("Error approving event:", error);
     }
+
+    closeApproveModal();
   };
+
+
   const handleLogout = () => {
     sessionStorage.clear();
 
@@ -332,6 +336,8 @@ const Admin = () => {
             <div className={styles.eventtablecontainer}>
               <EventTable
                 events={events}
+                openApproveModal={openApproveModal}
+                openDeleteModal={openDeleteModal}
                 handleViewDocument={handleViewDocument}
                 handleViewImage={handleViewImage}
                 handleConfirm={handleConfirm}
@@ -373,6 +379,26 @@ const Admin = () => {
                 </div>
               </div>
             )}
+            <dialog ref={modalRef} className={styles.modal}>
+              <div className={styles.modalBox}>
+                <FaRegCheckCircle className={styles.modalIcon} />
+                <p>Are you sure you want to approve this event?</p>
+                <div className={styles.modalButtons}>
+                  <button onClick={closeApproveModal}>Cancel</button>
+                  <button onClick={handleConfirm}>Confirm</button>
+                </div>
+              </div>
+            </dialog>
+            <dialog ref={dialogRef} className={styles.modal}>
+              <div className={styles.modalBox}>
+                <FaRegTimesCircle className={`${styles.modalIcon} ${styles.deleteIcon}`} />
+                <p>Are you sure you want to delete this event?</p>
+                <div className={`${styles.modalButtons} ${styles.deleteBtn}`}>
+                  <button onClick={() => dialogRef.current.close()}>Cancel</button>
+                  <button onClick={handleDelete}>Delete</button>
+                </div>
+              </div>
+            </dialog>
           </div>
         );
       case "ApproveEvents":

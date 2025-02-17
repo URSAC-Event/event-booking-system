@@ -132,7 +132,7 @@ const EventTableApproved = () => {
                   <td className={styles.tableCell}>{event.venue}</td>
                   <td className={styles.tableCell}>
                     <div className={styles.actionFlex}>
-                      <button className={styles.approvedActions} onClick={() => handleDeleteApproved(event.id)} title='Cancel Eventa'>
+                      <button className={styles.approvedActions} onClick={() => handleDeleteApproved(event.id)} title='Cancel Events'>
                         <FaTimes />
                       </button>
                     </div>
