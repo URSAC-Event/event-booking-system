@@ -31,6 +31,7 @@ import logout from "../assets/logout.svg";
 import { FaBars } from "react-icons/fa";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
+import UserEdit from "./UserEdit";
 
 
 
@@ -48,6 +49,10 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobile, setMobile] = useState("")
   const navigate = useNavigate();
+
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const modalRef = useRef(null); //Pang approve
   const dialogRef = useRef(); //Pang delete
@@ -415,87 +420,98 @@ const Admin = () => {
             />
           </div>
         );
-      case "Users":
-        return (
-          <div className={styles.usersCont}>
-            <h2>Users</h2>
-            <p>Create and manage accounts.</p>
-
-            {/* Search Bar */}
-            <div className={styles.searchContainer}>
-              <div className={styles.searchWrap}>
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={styles.searchBar}
-                />
-                <FaSearch className={styles.searchIcon} />
+        case "Users":
+          return (
+            <div className={styles.usersCont}>
+              <h2>Users</h2>
+              <p>Create and manage accounts.</p>
+        
+              {/* Search Bar */}
+              <div className={styles.searchContainer}>
+                <div className={styles.searchWrap}>
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className={styles.searchBar}
+                  />
+                  <FaSearch className={styles.searchIcon} />
+                </div>
+                <button className={styles.addCouncilButton} onClick={() => setIsModalOpen(true)}>
+                  <FaPlus /><span>Create New User</span>
+                </button>
               </div>
-              <button className={styles.addCouncilButton} onClick={() => setIsModalOpen(true)}>
-                <FaPlus /><span>Create New User</span>
-              </button>
-            </div>
-
-            <div>
-              <AddUserModal
-                isOpen={isModalOpen}
-                closeModal={() => setIsModalOpen(false)}
-                addUser={handleAddUser}
-              />
-            </div>
-
-            <div className={styles.sectionBox}>
-              <table className={styles.table}>
-                <thead>
-                  <tr className={styles.tableHeader}>
-                    <th className={styles.tableCell}>Name</th>
-                    <th className={styles.tableCell}>Organization</th>
-                    <th className={styles.tableCell}>Username</th>
-                    <th className={styles.tableCell}>Email</th>
-                    <th className={styles.tableCell}>Password</th>
-                    <th className={styles.tableCell}>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
-                      <tr key={user.id} className={styles.tableRow}>
-                        <td className={styles.tableCell}>{user.name}</td>
-                        <td className={styles.tableCell}>
-                          {user.organizationz}
-                        </td>
-                        <td className={styles.tableCell}>{user.username}</td>
-                        <td className={styles.tableCell}>{user.email}</td>
-                        <td className={styles.tableCell}>{user.password}</td>
-                        <td className={styles.tableCell}>
-                          <div className={styles.actions}>
-                            <button className={styles.editButton} onClick={() =>
-                              alert("Edit functionality coming soon!")
-                            }>
-                              <FaPen className={styles.pen} />
-                            </button>
-                            <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
-                              <FaTrash className={styles.trash} />
-                            </button>
-                          </div>
+        
+              <div>
+                <AddUserModal
+                  isOpen={isModalOpen}
+                  closeModal={() => setIsModalOpen(false)}
+                  addUser={handleAddUser}
+                />
+              </div>
+        
+              {/* User Edit Modal */}
+              {isEditModalOpen && (
+                <UserEdit
+                  isOpen={isEditModalOpen}
+                  closeModal={() => setIsEditModalOpen(false)}
+                  userData={currentUser}
+                />
+              )}
+        
+              <div className={styles.sectionBox}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr className={styles.tableHeader}>
+                      <th className={styles.tableCell}>Name</th>
+                      <th className={styles.tableCell}>Organization</th>
+                      <th className={styles.tableCell}>Username</th>
+                      <th className={styles.tableCell}>Email</th>
+                      <th className={styles.tableCell}>Password</th>
+                      <th className={styles.tableCell}>Action</th>
+                    </tr>
+                  </thead>
+        
+                  <tbody>
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map((user) => (
+                        <tr key={user.id} className={styles.tableRow}>
+                          <td className={styles.tableCell}>{user.name}</td>
+                          <td className={styles.tableCell}>{user.organizationz}</td>
+                          <td className={styles.tableCell}>{user.username}</td>
+                          <td className={styles.tableCell}>{user.email}</td>
+                          <td className={styles.tableCell}>{user.password}</td>
+                          <td className={styles.tableCell}>
+                            <div className={styles.actions}>
+                              <button
+                                className={styles.editButton}
+                                onClick={() => {
+                                  setCurrentUser(user); // Set current user
+                                  setIsEditModalOpen(true); // Open the edit modal
+                                }}
+                              >
+                                <FaPen className={styles.pen} />
+                              </button>
+                              <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
+                                <FaTrash className={styles.trash} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" className={styles.noEvents}>
+                          No users available
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className={styles.noEvents}>
-                        No users available
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        );
+          );
 
       case "Reports":
         return (

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./AdminPanel.module.css"; // Adjust the path if necessary
-import ReportFormadmin from "./ReportFormadmin";
 import { FaTrash } from "react-icons/fa";
 
 const AdminPanel = () => {
@@ -36,19 +35,22 @@ const AdminPanel = () => {
       {reports.length > 0 ? (
         <ul className={styles.reportList}>
           {reports.map((report) => (
-            <li key={report.id}>
+            <li key={report.id} className={styles.reportItem}>
               <div className={styles.reportHead}>
                 <p>
-                  <strong>Message:</strong>
+                  <strong>Name:</strong> {report.name}
+                </p>
+                <p>
+                  <strong>Organization:</strong> {report.org}
+                </p>
+                <p>
+                  <strong>Message:</strong> {report.message}
                 </p>
                 <button onClick={() => handleDelete(report.id)}>
                   <FaTrash className={styles.trash} />
                 </button>
               </div>
-              <p>{report.message}</p>
-
             </li>
-
           ))}
         </ul>
       ) : (
