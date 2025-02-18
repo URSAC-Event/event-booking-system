@@ -15,7 +15,7 @@ import ResetPassword from './components/ResetPassword';
 import ResetPasswordadmin from './components/ResetPasswordadmin';
 import EnterCodeadmin from './components/Entercodeadmin';
 import { useEffect } from "react";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 
 
 const App = () => {
@@ -23,6 +23,10 @@ const App = () => {
     useEffect(() => {
         document.title = "URSAC Event Booking System"; // Set browser tab title
     }, []);
+
+    toast.options = {
+        style: { padding: "1rem" }
+    };
 
     return (
         <>
