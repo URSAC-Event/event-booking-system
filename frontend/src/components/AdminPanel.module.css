@@ -8,9 +8,24 @@
   gap: 24px;
 }
 
+.orgName {
+  font-weight: 600;
+  white-space: nowrap !important;
+  /* Prevents text from wrapping */
+  overflow: hidden !important;
+  /* Hides overflowing text */
+  text-overflow: ellipsis !important;
+  /* Adds "..." when text overflows */
+  max-width: 100% !important;
+  /* background-color: aliceblue;
+  padding: 8px 8px;
+  border-radius: 8px; */
+  /* Ensures it respects the parent's width */
+}
+
 
 .reportHead p {
-  margin: 5px 0;
+  margin: 0px 0;
 }
 
 .reportItem {
@@ -24,6 +39,11 @@
   cursor: pointer;
   color: red;
   margin-left: 10px;
+  transition: 0.15s;
+}
+
+.trash:hover {
+  transform: scale(1.15);
 }
 
 .noReports {

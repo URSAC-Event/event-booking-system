@@ -71,19 +71,17 @@ const AdminPanel = () => {
       {reports.length > 0 ? (
         <ul className={styles.reportList}>
           {reports.map((report) => (
-            <li key={report.id} className={styles.reportItem}>
+            <li key={report.id}>
+
               <div className={styles.reportHead}>
-                <p>
-                  <strong>Organization:</strong> {report.org}
-                </p>
-                <p>
-                  <strong>Message:</strong> {report.message}
-                </p>
+                <p title={report.org} className={styles.orgName}>{report.org}</p>
                 <button onClick={() => handleDelete(report.id)}>
                   <FaTrash className={styles.trash} />
                 </button>
               </div>
+              <p>{report.message}</p>
             </li>
+
           ))}
         </ul>
       ) : (
