@@ -490,6 +490,7 @@
     .main {
         margin-top: 56px;
         height: calc(100vh - 56px);
+        grid-template-columns: 1fr;
     }
 
     .sidenavOverlay {
