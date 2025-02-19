@@ -513,6 +513,7 @@
 
 /* Modal footer */
 .modalFooter {
+    margin-top: 16px;
     display: flex;
     justify-content: space-between;
 }
