@@ -9,8 +9,6 @@ import { FaTimes } from "react-icons/fa";
 
 const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocument, handleViewImage, handleConfirm, handleDelete, handleButtonHover }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [errorMessage, setErrorMessage] = useState(""); 
-  const [verifiedEvents, setVerifiedEvents] = useState({}); 
 
   // Function to format the date as YYYY-MM-DD
   const formatDate = (date) => {
@@ -25,76 +23,6 @@ const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocum
     event.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.venue.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-
-  const handleCheckDateAndTimeExists = async (selectedEvent) => {
-    console.log('📝 Selected event:', selectedEvent);
-    console.log('📅 Checking for overlapping dates:', formatDate(selectedEvent.date), 'to', formatDate(selectedEvent.datefrom));
-    console.log('⏳ Selected row duration:', selectedEvent.duration || 'N/A'); 
-
-    try {
-        const response = await fetch('http://localhost:5000/api/date-timecheck');
-        const approvedEvents = await response.json();
-
-        const overlappingEvent = approvedEvents.find(approvedEvent => 
-            selectedEvent.date <= approvedEvent.datefrom && selectedEvent.datefrom >= approvedEvent.date
-        );
-
-        if (overlappingEvent) {
-            console.log(`✅ Overlap found! Approved event: ${formatDate(overlappingEvent.date)} to ${formatDate(overlappingEvent.datefrom)}`);
-            console.log(`⏳ Approved event duration: ${overlappingEvent.duration || 'N/A'}`);
-
-            if (selectedEvent.duration && overlappingEvent.duration) {
-                const [start1, end1] = convertTo24Hour(selectedEvent.duration);
-                const [start2, end2] = convertTo24Hour(overlappingEvent.duration);
-
-                if (isValidTimeRange(start1, end1) && isValidTimeRange(start2, end2)) {
-                    if ((start1 < end2 && end1 > start2)) {
-                       setErrorMessage(`⚠️ Time overlap detected: ${start1}-${end1} conflicts with ${start2}-${end2}`);
-    return;
-                    } else {
-                        console.log('✅ No time overlap.');
-                    }
-                } else {
-                    console.log('⚠️ One or both events have times outside 07:00-18:00.');
-                    return;
-                }
-            } else {
-                console.log('⚠️ Could not parse one or both event durations.');
-                return;
-            }
-        } 
-
-        console.log('✅ No overlapping events.');
-
-        // If no overlap, mark this event as verified
-        setVerifiedEvents(prev => ({ ...prev, [selectedEvent.id]: true }));
-
-    } catch (error) {
-        console.error('❌ Error fetching approved events:', error);
-    }
-  };
-
-  const convertTo24Hour = (duration) => {
-    try {
-        const [start, end] = duration.split(' to ');
-        return [convertSingleTime(start), convertSingleTime(end)];
-    } catch {
-        return [null, null];
-    }
-  };
-
-  const convertSingleTime = (time) => {
-    const [hour, minute] = time.match(/\d+/g);
-    const isPM = time.includes('PM');
-    let convertedHour = isPM && hour !== "12" ? parseInt(hour) + 12 : hour;
-    if (!isPM && hour === "12") convertedHour = "00";
-    return `${convertedHour}:${minute}`;
-  };
-
-  const isValidTimeRange = (start, end) => {
-    return start >= "07:00" && end <= "18:00";
-  };
 
   return (
     <div className={styles.eventReqCont}>
@@ -165,28 +93,21 @@ const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocum
                   </td>
                   <td className={styles.tableCell}>{event.venue}</td>
                   <td className={styles.tableCell}>
-                  {!verifiedEvents[event.id] ? (
-                    <button 
-                      className={styles.button} 
-                      onClick={() => handleCheckDateAndTimeExists(event)}
-                    >
-                      Verify
-                    </button>
-                  ) : (
-                    <button
-                      className={styles.button}
-                      onClick={() => handleConfirm(event.id)}
-                    >
-                      ✔ Confirm
-                    </button>
-                  )}
-                  <button
-                    className={styles.button}
-                    onClick={() => handleDelete(event.id, event.organization)}
-                  >
-                    ❌
-                  </button>
-                </td>
+                    <div className={styles.actionFlex}>
+                      <button
+                        className={styles.requestActions}
+                        onClick={() => openApproveModal(event.id)} title='Accept Event'
+                      >
+                        <FaCheck />
+                      </button>
+                      <button
+                        className={styles.requestActions}
+                        onClick={() => openDeleteModal(event.id, event.organization)} title='Reject Event'
+                      >
+                        <FaTimes />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             ) : (
