@@ -74,9 +74,6 @@ const AdminPanel = () => {
             <li key={report.id} className={styles.reportItem}>
               <div className={styles.reportHead}>
                 <p>
-                  <strong>Name:</strong> {report.name}
-                </p>
-                <p>
                   <strong>Organization:</strong> {report.org}
                 </p>
                 <p>

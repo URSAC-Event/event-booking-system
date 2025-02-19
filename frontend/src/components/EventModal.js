@@ -246,7 +246,7 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal}>
-        <h3>Add Event</h3>
+        <h3 className={styles.modalHeader}>Add Event</h3>
         <form onSubmit={handleModalSubmit} encType="multipart/form-data">
           <div className={styles.formGroup}>
             <label>Venue:</label>
@@ -257,9 +257,7 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
               required
               className={styles.input}
             >
-              <option value="">Select Venue</option>
               <option value="Court">Court</option>
-
             </select>
           </div>
           <div className={styles.formGroup}>
@@ -312,7 +310,7 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
           </div>
 
           <div className={styles.formGroup}>
-            <label>To Date (Optional):</label>
+            <label>To Date</label>
             <input
               type="date"
               name="toDate"
@@ -323,12 +321,13 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
               }}
               className={styles.input}
               min={minDate}
+              required
             />
             {/* {toDateError && <p className={styles.error}>{toDateError}</p>} */}
           </div>
 
           <div className={styles.formGroup}>
-            <label>Time Duration:</label>
+            {/* <label>Time Duration:</label> */}
             <div className={styles.timeGroup}>
               <span>From:</span>
               <div className={styles.timeFromGroup}>
@@ -442,38 +441,17 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
           )} */}
 
           <div className={styles.modalFooter}>
-
-            <button type="submit" className={styles.submitButton}>
-              Submit
-            </button>
             <button
               onClick={() => setModalOpen(false)}
               className={styles.cancelButton}
             >
               Cancel
             </button>
-
-
-
+            <button type="submit" className={styles.submitButton}>
+              Submit
+            </button>
           </div>
-
-
-
-
-
-
-
-
         </form>
-
-
-
-
-
-
-
-
-
       </div>
     </div>
   );

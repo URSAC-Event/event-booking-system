@@ -29,6 +29,7 @@ const Dashboard = () => {
   const [selectedSidebar, setSelectedSidebar] = useState("New Booking");
   const [newSidebarSelection, setNewSidebarSelection] =
     useState("Dashboard Overview");
+  const [organization, setOrganization] = useState('');
   const [eventData, setEventData] = useState({
     fromHour: "",
     fromMinute: "00",
@@ -45,6 +46,30 @@ const Dashboard = () => {
     document: null,
     poster: null,
   });
+
+
+  useEffect(() => {
+    const storedOrganization = localStorage.getItem("userOrganization");
+    if (storedOrganization) {
+      setOrganization(storedOrganization);
+    }
+  }, []);
+
+  useEffect(() => {
+    setEventData((prev) => ({
+      ...prev,
+      organization: organization, // Update eventData with the organization
+    }));
+  }, [organization]);
+
+  useEffect(() => {
+    setEventData((prev) => ({
+      ...prev,
+      venue: "Court", // Update eventData with the organization
+    }));
+  }, []);
+
+
 
   const handleLogout = () => {
     sessionStorage.clear();

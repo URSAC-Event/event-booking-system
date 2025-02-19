@@ -25,13 +25,13 @@ const Login = () => {
                 username,
                 password,
             });
-    
+
             if (response.data.success) {
                 // Store user details in localStorage
                 localStorage.setItem('userId', response.data.userId);
                 localStorage.setItem('userRole', response.data.role);
                 localStorage.setItem('userOrganization', response.data.organization); // Store organization
-    
+
                 navigate('/dashboard');
             } else {
                 setErrorMessage(response.data.message);
@@ -41,61 +41,67 @@ const Login = () => {
             setErrorMessage('Login failed. Please try again.');
         }
     };
-    
-    
+
+
 
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
-                <img className={styles.backButton} src={back} onClick={() => navigate('/')}/>
-                <img src={logo} className={styles.logo}/>
+                <img
+                    className={styles.backButton}
+                    src={back}
+                    onClick={() => navigate("/")}
+                />
+                <img src={logo} className={styles.logo} />
                 <h2 className={styles.title}>Welcome Back</h2>
                 <p className={styles.subtext}>Please enter your details to sign in</p>
                 <form onSubmit={handleLogin} className={styles.form}>
-                    <p className={styles.label}>Your Username</p>
                     <div className={styles.inputContainer}>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        className={styles.input}
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                    <p className={styles.label}>Password</p>
-                    <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
-                className={styles.input}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-            />
-            {/* Eye Icon Button Inside the Input */}
-            <button
-                type="button"
-                className={styles.eyeButton}
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button> </div>
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            className={styles.input}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            className={styles.input}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        {/* Eye Icon Button Inside the Input */}
+                        <button
+                            type="button"
+                            className={styles.eyeButton}
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>{" "}
+                    </div>
+                    <div className={styles.linksContainer}>
+                        <p
+                            className={styles.forgotPassword}
+                            onClick={() => navigate("/forgotpassword")} // Navigate to Forgot Password
+                        >
+                            Forgot Password?
+                        </p>
+                    </div>
                     {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-                    <button type="submit" className={styles.button}>Login</button>
+                    <button type="submit" className={styles.button}>
+                        Login
+                    </button>
                 </form>
-                <div className={styles.linksContainer}>
-                    <p
-                        className={styles.forgotPassword}
-                        onClick={() => navigate('/forgotpassword')} // Navigate to Forgot Password
-                    >
-                        Forgot Password?
-                    </p>
-                </div>
+
                 <div className={styles.adminCont}>
                     <p className={styles.ask}>Are you an admin?</p>
                     <p
                         className={styles.admin}
-                        onClick={() => navigate('/adminlogin')} // Navigate to AdminLogin
+                        onClick={() => navigate("/adminlogin")} // Navigate to AdminLogin
                     >
                         Click Here
                     </p>
