@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './Dashboard.module.css'; // For dashboard styles
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import styles from "./Dashboard.module.css"; // For dashboard styles
+// import styles from "./CouncilDisplayedit.module.css"
+import { FaAngleDown } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
+import { toast } from "sonner";
 
 const CouncilDisplayedit = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
@@ -49,18 +53,24 @@ const CouncilDisplayedit = () => {
   // Handle form submission for editing
   const handleEditCouncil = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.put(`http://localhost:5000/api/councilsedit/${formData.id}`, formData); // formData shouldn't include 'created_at'
       if (response.status === 200) {
-        alert('Council details updated successfully!');
+        toast.success("Council details updated successfully!", {
+          duration: 4000, // Time before it disappears
+        });
         setIsEditModalOpen(false);
       } else {
-        alert('Failed to update council details.');
+        toast.error("Failed to update council details.", {
+          duration: 4000, // Time before it disappears
+        });
       }
     } catch (error) {
-      console.error('Error updating council:', error);
-      alert('An error occurred while updating council details.');
+      console.error("Error updating council:", error);
+      toast.error("An error occurred while updating council details.", {
+        duration: 4000, // Time before it disappears
+      });
     }
   };
 
@@ -69,7 +79,7 @@ const CouncilDisplayedit = () => {
       <h2 className={styles.header}>Councils and Organization List</h2>
 
 
-      
+
 
 
       <div className={styles.sidebarContainer}>
@@ -90,22 +100,22 @@ const CouncilDisplayedit = () => {
 
           {selectedCouncil && (
             <div className={styles.details}>
-                {selectedCouncil.organization === organization && (
-              <button className={styles.editButton} onClick={openEditModal}>Edit</button> )}
+              {selectedCouncil.organization === organization && (
+                <button className={styles.editButton} onClick={openEditModal}>Edit</button>)}
               <table>
                 <tbody>
-                <tr>
-              
-              <td>
-                <a href={selectedCouncil.link} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
-                    alt="Adviser"
-                    className={styles.adviserImage}
-                  />
-                </a>
-              </td>
-            </tr>
+                  <tr>
+
+                    <td>
+                      <a href={selectedCouncil.link} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
+                          alt="Adviser"
+                          className={styles.adviserImage}
+                        />
+                      </a>
+                    </td>
+                  </tr>
                   <tr>
                     <td><strong>Adviser:</strong></td>
                     <td>{selectedCouncil.adviser}</td>

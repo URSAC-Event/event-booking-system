@@ -14,6 +14,7 @@ import CouncilDisplayedit from "./CouncilDisplayedit";
 import ReportForm from "./ReportForm";
 import eventsVector from "../assets/Events-pana.svg";
 import reportVector from "../assets/report.svg";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const loggedInUser = { id: 1 };
@@ -28,6 +29,7 @@ const Dashboard = () => {
   const [selectedSidebar, setSelectedSidebar] = useState("New Booking");
   const [newSidebarSelection, setNewSidebarSelection] =
     useState("Dashboard Overview");
+  const [organization, setOrganization] = useState('');
   const [eventData, setEventData] = useState({
     fromHour: "",
     fromMinute: "00",
@@ -44,6 +46,30 @@ const Dashboard = () => {
     document: null,
     poster: null,
   });
+
+
+  useEffect(() => {
+    const storedOrganization = localStorage.getItem("userOrganization");
+    if (storedOrganization) {
+      setOrganization(storedOrganization);
+    }
+  }, []);
+
+  useEffect(() => {
+    setEventData((prev) => ({
+      ...prev,
+      organization: organization, // Update eventData with the organization
+    }));
+  }, [organization]);
+
+  useEffect(() => {
+    setEventData((prev) => ({
+      ...prev,
+      venue: "Court", // Update eventData with the organization
+    }));
+  }, []);
+
+
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -140,14 +166,45 @@ const Dashboard = () => {
       );
 
       const minTime = { hours: 7, minutes: 0 };  // 7:00 AM
-      const maxTime = { hours: 18, minutes: 0 }; // 6:00 PM
+      const maxTime = { hours: 17, minutes: 0 }; // 5:00 PM
 
+      const userFromDate = new Date(eventData.fromDate); // Convert to Date object
+      const userToDate = eventData.toDate ? new Date(eventData.toDate) : null; // Only set toDate if provided
+
+      const isTwoDayEvent = userToDate && (userToDate.getDate() === userFromDate.getDate() + 1);
+
+      // Validation: Ensure `toDate` is not earlier than `fromDate`
+      if (userToDate && userToDate < userFromDate) {
+        toast.error("`To Date` cannot be earlier than `From Date`.", { duration: 4000 });
+        return; // Prevent submission
+      }
+
+      // Validate the time range
+      if (
+        userFrom.hours < minTime.hours ||
+        (userFrom.hours === minTime.hours && userFrom.minutes < minTime.minutes)
+      ) {
+        toast.error("Start time must be 7:00 AM or later.", { duration: 4000 });
+        return;
+      }
 
       if (
-        (userFrom.hours < minTime.hours || (userFrom.hours === minTime.hours && userFrom.minutes < minTime.minutes)) ||
-        (userTo.hours > maxTime.hours || (userTo.hours === maxTime.hours && userTo.minutes > maxTime.minutes))
+        userTo.hours > maxTime.hours ||
+        (userTo.hours === maxTime.hours && userTo.minutes > maxTime.minutes)
       ) {
-        setError("Time must be between 5:00 AM and 7:00 PM.");
+        toast.error("End time must be 5:00 PM or earlier.", { duration: 4000 });
+        return;
+      }
+
+      // If it's not a two-day event, the end time must not be earlier than the start time
+      if (
+        !isTwoDayEvent &&
+        (userTo.hours < userFrom.hours ||
+          (userTo.hours === userFrom.hours && userTo.minutes < userFrom.minutes))
+      ) {
+        toast.error("End time cannot be earlier than start time unless it's a two-day event.", {
+          duration: 4000,
+        });
         return;
       }
 
@@ -163,17 +220,6 @@ const Dashboard = () => {
       console.log("Event Duration:", duration);
 
       try {
-        const userFromDate = new Date(eventData.fromDate); // Convert to Date object
-        const userToDate = eventData.toDate ? new Date(eventData.toDate) : null; // Only set toDate if provided
-
-        // Validation: Ensure `toDate` is not earlier than `fromDate`
-        if (userToDate && userToDate < userFromDate) {
-          const errorMessage = "`To Date` cannot be earlier than `From Date`.";
-          console.error(errorMessage);
-          setError(errorMessage); // Update the error state
-          return; // Prevent submission
-        }
-
         console.log("Checking for overlapping events...");
 
         // Fetch all approved events from the server
@@ -210,7 +256,7 @@ const Dashboard = () => {
                 const errorMessage =
                   "The selected time overlaps with an existing event at the same venue.";
                 console.error(errorMessage, event);
-                setError(errorMessage); // Update the error state
+                toast.error(errorMessage, { duration: 4000 });
                 return; // Prevent submission
               }
             }
@@ -238,35 +284,29 @@ const Dashboard = () => {
           const postResponse = await axios.post(
             "http://localhost:5000/api/events",
             formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
+            { headers: { "Content-Type": "multipart/form-data" } }
           );
 
           if (postResponse.status === 200) {
-            console.log(
-              "Event successfully saved to the database:",
-              postResponse.data
-            );
-            alert("Event added successfully!");
+            console.log("Event successfully saved to the database:", postResponse.data);
+            toast.success("Event successfully added", { duration: 4000 });
             setError(null); // Clear the error state
             setModalOpen(false); // Close the modal after successful submission
           }
         } catch (postError) {
           console.error("Error saving event to database:", postError);
-          setError("Failed to add the event.");
+          toast.error("Error saving event.", { duration: 4000 });
         }
       } catch (fetchError) {
         console.error("Error during validation:", fetchError);
-        setError("Failed to validate the event details.");
+        toast.error("Failed to validate event details", { duration: 4000 });
       }
     } else {
       console.warn("Incomplete time fields provided by the user.");
-      setError("Please fill in all time fields correctly.");
+      toast.error("Please fill in all time fields correctly", { duration: 4000 });
     }
   };
+
 
   return (
     <div>

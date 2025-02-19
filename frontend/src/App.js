@@ -15,39 +15,46 @@ import ResetPassword from './components/ResetPassword';
 import ResetPasswordadmin from './components/ResetPasswordadmin';
 import EnterCodeadmin from './components/Entercodeadmin';
 import { useEffect } from "react";
+import { Toaster, toast } from "sonner";
 
 
 const App = () => {
-
     // Title
     useEffect(() => {
         document.title = "URSAC Event Booking System"; // Set browser tab title
     }, []);
 
+    toast.options = {
+        style: { padding: "1rem" }
+    };
+
     return (
-        <Router>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<PublicPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgotpassword" element={<ForgotPassword />} /> {/* Add this route */}
-                <Route path="/forgotpasswordadmin" element={<ForgotPasswordadmin />}/>
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/verifyemailadmin" element={<Verifyemailadmin />} />
-                <Route path="/enter-code" element={<EnterCode />} />
-                <Route path="/enter-codeadmin" element={<EnterCodeadmin />} />
-                {/* Admin Routes */}
-                <Route path="/adminlogin" element={<AdminLogin />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/reset-passwordadmin" element={<ResetPasswordadmin />} />
-                {/* Protected Route Example */}
-                <Route path="/dashboard" element={<Dashboard />} />
-                
-            </Routes>
-        </Router>
+        <>
+            <Toaster position="top-center" />  {/* Place Toaster here */}
+            <Router>
+                <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<PublicPage />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/forgotpassword" element={<ForgotPassword />} />
+                    <Route path="/forgotpasswordadmin" element={<ForgotPasswordadmin />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+                    <Route path="/verifyemailadmin" element={<Verifyemailadmin />} />
+                    <Route path="/enter-code" element={<EnterCode />} />
+                    <Route path="/enter-codeadmin" element={<EnterCodeadmin />} />
+                    {/* Admin Routes */}
+                    <Route path="/adminlogin" element={<AdminLogin />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/reset-passwordadmin" element={<ResetPasswordadmin />} />
+                    {/* Protected Route Example */}
+                    <Route path="/dashboard" element={<Dashboard />} />
+                </Routes>
+            </Router>
+        </>
     );
 };
+
 
 export default App;

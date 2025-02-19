@@ -193,14 +193,14 @@ app.post('/submitReportadmin', (req, res) => {
 
 // Route to submit a report (User side)
 app.post('/submitReport', (req, res) => {
-  const { userId, message, name, org } = req.body;
-  
+  const { userId, message, org } = req.body;
+
   // Log the data to ensure it's being passed correctly
-  console.log("Received data:", { userId, message, name, org });
+  console.log("Received data:", { userId, message, org });
 
   // Insert the report into the database with the additional fields for name and organization
-  const query = 'INSERT INTO reports (user_id, message, status, name, org) VALUES (?, ?, "pending", ?, ?)';
-  connection.query(query, [userId, message, name, org], (err, result) => {
+  const query = 'INSERT INTO reports (user_id, message, status, org) VALUES (?, ?, "pending", ?)';
+  connection.query(query, [userId, message, org], (err, result) => {
     if (err) {
       console.error('Error inserting report:', err);
       return res.status(500).json({ error: 'Failed to submit report' });
@@ -240,6 +240,21 @@ app.delete('/api/reports/:id', (req, res) => {
     res.status(200).json({ message: 'Report deleted successfully' });
   });
 });
+
+// Delete all reports (admin)
+
+// app.delete('/api/reports/deleteall', (req, res) => {
+//   const query = 'DELETE FROM reports'; // Delete all rows from the reports table
+
+//   connection.query(query, (err, result) => {
+//     if (err) {
+//       console.error('Error deleting all reports:', err);
+//       return res.status(500).json({ error: 'Failed to delete all reports' });
+//     }
+
+//     res.status(200).json({ message: 'All reports deleted successfully' });
+//   });
+// });
 
 
 
@@ -424,26 +439,26 @@ app.post('/login', (req, res) => {
   const query = 'SELECT * FROM users WHERE username = ?';
 
   connection.query(query, [username], (err, results) => {
-      if (err) {
-          console.error('Database error:', err);
-          return res.status(500).json({ success: false, message: 'Database error' });
-      }
-      if (results.length > 0) {
-          if (results[0].password === password) {
-              console.log('Login Response:', results[0]); // Debugging: See what is fetched from DB
-              return res.json({
-                  success: true,
-                  message: 'Login successful',
-                  userId: results[0].id,
-                  role: results[0].role,
-                  organization: results[0].organizationz // Ensure this is correct
-              });
-          } else {
-              return res.status(401).json({ success: false, message: 'Incorrect password' });
-          }
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+    if (results.length > 0) {
+      if (results[0].password === password) {
+        console.log('Login Response:', results[0]); // Debugging: See what is fetched from DB
+        return res.json({
+          success: true,
+          message: 'Login successful',
+          userId: results[0].id,
+          role: results[0].role,
+          organization: results[0].organizationz // Ensure this is correct
+        });
       } else {
-          return res.status(404).json({ success: false, message: 'User not found' });
+        return res.status(401).json({ success: false, message: 'Incorrect password' });
       }
+    } else {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
   });
 });
 
@@ -951,16 +966,81 @@ app.get('/api/getApprovedData', async (req, res) => {
 });
 
 
+//Validation sa admin
+app.post('/api/events/check-overlap', async (req, res) => {
+  const { startDate, endDate, duration } = req.body; // New event details
+  const [newStartTime, newEndTime] = duration.split(" to "); // Extract start & end times
+
+  console.log(`Checking overlap for event: ${startDate} to ${endDate} (${newStartTime} - ${newEndTime})`);
+
+  try {
+    // Fetch all approved events
+    const query = `SELECT date, datefrom, duration FROM approved`;
+
+    connection.query(query, [], (error, results) => {
+      if (error) {
+        console.error("Error fetching approved events:", error);
+        return res.status(500).json({ message: "Error fetching approved events." });
+      }
+
+      console.log(`Found ${results.length} approved events.`);
+
+      // Convert new event dates to YYYY-MM-DD
+      const normalizedStartDate = new Date(startDate).toISOString().split("T")[0];
+      const normalizedEndDate = new Date(endDate).toISOString().split("T")[0];
+
+      for (let event of results) {
+        const [existingStartTime, existingEndTime] = event.duration.split(" to ");
+
+        // Convert approved event dates to YYYY-MM-DD
+        const approvedStartDate = new Date(event.date).toISOString().split("T")[0];
+        const approvedEndDate = new Date(event.datefrom).toISOString().split("T")[0];
+
+        console.log(`Checking against approved event: ${approvedStartDate} to ${approvedEndDate} (${existingStartTime} - ${existingEndTime})`);
+
+        // **Date Overlap Check**
+        const isDateOverlap = !(normalizedEndDate < approvedStartDate || normalizedStartDate > approvedEndDate);
+
+        // **Time Overlap Check**
+        const isTimeOverlap =
+          (newStartTime >= existingStartTime && newStartTime < existingEndTime) ||  // New start falls inside existing
+          (newEndTime > existingStartTime && newEndTime <= existingEndTime) ||  // New end falls inside existing
+          (newStartTime <= existingStartTime && newEndTime >= existingEndTime); // New event completely overlaps existing
+
+        if (isDateOverlap && isTimeOverlap) {
+          console.log("❌ Overlap detected! Rejecting event.");
+          return res.status(400).json({
+            message: 'There is already an event approved for the selected date and time range.'
+          });
+        }
+      }
+
+      console.log("✅ No overlap detected. Event can be approved.");
+      return res.status(200).json({ message: 'No overlap found. Event can be approved.' });
+    });
+  } catch (error) {
+    console.error("Error checking overlap:", error);
+    res.status(500).json({ message: "Error checking event overlap." });
+  }
+});
+
+
+
+
+
+
+
+
 
 app.get('/api/date-timecheck', (req, res) => {
   const sql = 'SELECT id, date, datefrom, duration FROM approved';
 
   connection.query(sql, (err, result) => {
-      if (err) {
-          console.error('Error fetching data:', err);
-          return res.status(500).json({ error: 'Database error' });
-      }
-      res.json(result); 
+    if (err) {
+      console.error('Error fetching data:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(result);
   });
 });
 

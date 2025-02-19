@@ -1,34 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import EditCouncilModal from "./EditCouncilModal";
 import Addcouncils from "./Addcouncils";
 import styles from "./Admin.module.css";
-import { FaSearch } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa";
-import { FaPen } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa";
-
-
+import { FaSearch, FaPlus, FaPen, FaTrash, FaRegTimesCircle } from "react-icons/fa";
+import { toast } from "sonner";
 
 const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, setShowAddCouncilForm, handleAddCouncil }) => {
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  const [searchQuery, setSearchQuery] = useState("");
+  const [councilToDelete, setCouncilToDelete] = useState(null); // State to store the council ID to delete
+  const dialogRef = useRef(null); // Ref for the confirmation modal
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this council?")) return;
+    setCouncilToDelete(id); // Store the council ID to delete
+    dialogRef.current.showModal(); // Show the confirmation modal
+  };
 
+  const confirmDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/delete-council/${id}`, {
+      const response = await fetch(`http://localhost:5000/delete-council/${councilToDelete}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setCouncils(councils.filter((council) => council.id !== id));
+        setCouncils(councils.filter((council) => council.id !== councilToDelete));
+        toast.success("Council deleted successfully", {
+          duration: 4000, // Time before it disappears
+        });
       } else {
         console.error("Failed to delete council");
       }
     } catch (error) {
+      toast.error("Error deleting council", {
+        duration: 4000, // Time before it disappears
+      })
       console.error("Error deleting council:", error);
+    } finally {
+      dialogRef.current.close(); // Close the modal
     }
   };
 
@@ -52,10 +61,19 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
           )
         );
         setShowEditModal(false);
+        toast.success("Council updated successfully", {
+          duration: 4000, // Time before it disappears
+        });
       } else {
+        toast.error("Error updating council", {
+          duration: 4000, // Time before it disappears
+        });
         console.error("Failed to update council");
       }
     } catch (error) {
+      toast.error("Error updating council", {
+        duration: 4000, // Time before it disappears
+      });
       console.error("Error updating council:", error);
     }
   };
@@ -64,8 +82,7 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
   const filteredCouncils = councils.filter((council) =>
     Object.values(council).some((value) =>
       value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+    ));
 
   return (
     <div className={styles.councilsCont}>
@@ -137,12 +154,24 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
               ))
             ) : (
               <tr>
-                <td colSpan="11" className={styles.noEvents}>No council available</td>
+                <td colSpan="13" className={styles.noEvents}>No council available</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Confirmation Modal */}
+      <dialog ref={dialogRef} className={styles.modal}>
+        <div className={styles.modalBox}>
+          <FaRegTimesCircle className={`${styles.modalIcon} ${styles.deleteIcon}`} />
+          <p>Are you sure you want to delete this council?</p>
+          <div className={`${styles.modalButtons} ${styles.deleteBtn}`}>
+            <button onClick={() => dialogRef.current.close()}>Cancel</button>
+            <button onClick={confirmDelete}>Delete</button>
+          </div>
+        </div>
+      </dialog>
 
       <EditCouncilModal
         showModal={showEditModal}

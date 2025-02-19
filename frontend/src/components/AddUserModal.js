@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Addusermodal.module.css';  // Assuming you have styles for the modal
+import { toast } from "sonner";
 
 const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const [name, setName] = useState('');
@@ -102,14 +103,21 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                 const data = await response.json();
                 if (response.ok) {
                     addUser(data);  // Add the user to the state in Admin.js
+                    toast.success("User added successfully", {
+                        duration: 4000, // Time before it disappears
+                    })
                     closeModal();  // Close the modal after successful addition
                 } else {
                     console.error('Failed to add user:', data.message);
-                    alert(`Failed to add user: ${data.message}`);  // Show the error message
+                    toast.error(`Failed to add user: ${data.message}`, {
+                        duration: 4000, // Time before it disappears
+                    });  // Show the error message
                 }
             } catch (error) {
                 console.error('Error adding user:', error);
-                alert(`Error adding user: ${error.message}`);  // Show the error message
+                toast.error(`Error adding user: ${error.message}`, {
+                    duration: 4000, // Time before it disappears
+                });  // Show the error message
             }
         }
     };

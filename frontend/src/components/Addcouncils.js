@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./Addcouncils.module.css"; // Import the styles
+import { toast } from "sonner";
 
 const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
   const [councilFormData, setCouncilFormData] = useState({
@@ -39,14 +40,20 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
 
       const data = await response.json();
       if (response.ok) {
-        alert('Council data saved successfully!');
+        toast.success("Council added successfully", {
+          duration: 4000, // Time before it disappears
+        });
         setShowAddCouncilForm(false);
       } else {
-        alert('Error saving council data: ' + data.message);
+        toast.error('Error saving council data: ' + data.message, {
+          duration: 4000, // Time before it disappears
+        });
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Error submitting form');
+      toast.error('Error submitting form', {
+        duration: 4000, // Time before it disappears
+      });
     }
   };
 

@@ -458,12 +458,20 @@
     border-radius: 8px;
     width: 400px;
     height: 600px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 /* Form group styles */
 .formGroup {
     margin-bottom: 0px;
+}
+
+.formGroup:first-child {
+    display: none;
+}
+
+.formGroup:nth-child(3) {
+    display: none;
 }
 
 .input {
@@ -505,6 +513,7 @@
 
 /* Modal footer */
 .modalFooter {
+    margin-top: 16px;
     display: flex;
     justify-content: space-between;
 }
