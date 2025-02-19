@@ -194,7 +194,7 @@ app.post('/submitReportadmin', (req, res) => {
 // Route to submit a report (User side)
 app.post('/submitReport', (req, res) => {
   const { userId, message, name, org } = req.body;
-  
+
   // Log the data to ensure it's being passed correctly
   console.log("Received data:", { userId, message, name, org });
 
@@ -439,26 +439,26 @@ app.post('/login', (req, res) => {
   const query = 'SELECT * FROM users WHERE username = ?';
 
   connection.query(query, [username], (err, results) => {
-      if (err) {
-          console.error('Database error:', err);
-          return res.status(500).json({ success: false, message: 'Database error' });
-      }
-      if (results.length > 0) {
-          if (results[0].password === password) {
-              console.log('Login Response:', results[0]); // Debugging: See what is fetched from DB
-              return res.json({
-                  success: true,
-                  message: 'Login successful',
-                  userId: results[0].id,
-                  role: results[0].role,
-                  organization: results[0].organizationz // Ensure this is correct
-              });
-          } else {
-              return res.status(401).json({ success: false, message: 'Incorrect password' });
-          }
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ success: false, message: 'Database error' });
+    }
+    if (results.length > 0) {
+      if (results[0].password === password) {
+        console.log('Login Response:', results[0]); // Debugging: See what is fetched from DB
+        return res.json({
+          success: true,
+          message: 'Login successful',
+          userId: results[0].id,
+          role: results[0].role,
+          organization: results[0].organizationz // Ensure this is correct
+        });
       } else {
-          return res.status(404).json({ success: false, message: 'User not found' });
+        return res.status(401).json({ success: false, message: 'Incorrect password' });
       }
+    } else {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
   });
 });
 
@@ -1036,11 +1036,11 @@ app.get('/api/date-timecheck', (req, res) => {
   const sql = 'SELECT id, date, datefrom, duration FROM approved';
 
   connection.query(sql, (err, result) => {
-      if (err) {
-          console.error('Error fetching data:', err);
-          return res.status(500).json({ error: 'Database error' });
-      }
-      res.json(result); 
+    if (err) {
+      console.error('Error fetching data:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(result);
   });
 });
 

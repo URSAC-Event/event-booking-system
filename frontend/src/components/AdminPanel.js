@@ -1,15 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import styles from "./AdminPanel.module.css"; // Adjust the path if necessary
-<<<<<<< HEAD
-import { FaTrash } from "react-icons/fa";
-=======
 import { FaTrash, FaRegTimesCircle } from "react-icons/fa";
-<<<<<<< HEAD
->>>>>>> e845f60 (Delete Confirmation Modals + Admin Request Validation)
-=======
-import { toast } from "sonner";
->>>>>>> dd16fa8 (Replaced alerts with toast in admin)
 
 const AdminPanel = () => {
   const [reports, setReports] = useState([]);
@@ -42,13 +34,8 @@ const AdminPanel = () => {
     try {
       await axios.delete(`http://localhost:5000/api/reports/${reportToDelete}`);
       setReports(reports.filter((report) => report.id !== reportToDelete)); // Remove deleted report from the UI
-      toast.success("Report deleted successfully", {
-        duration: 4000, // Time before it disappears
-      });
+      alert("Report deleted successfully");
     } catch (error) {
-      toast.error("Error deleting report", {
-        duration: 4000, // Time before it disappears
-      })
       console.error("Error deleting report:", error);
     } finally {
       deleteSingleRef.current.close(); // Close the modal
@@ -99,10 +86,6 @@ const AdminPanel = () => {
                   <FaTrash className={styles.trash} />
                 </button>
               </div>
-<<<<<<< HEAD
-=======
-              <p>{report.message}</p>
->>>>>>> e845f60 (Delete Confirmation Modals + Admin Request Validation)
             </li>
           ))}
         </ul>
