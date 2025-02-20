@@ -543,7 +543,7 @@ const Admin = () => {
                             >
                               <FaPen className={styles.pen} />
                             </button>
-                            <button className={styles.deleteButton} onClick={() => handleDeleteUser(user)}>
+                            <button className={styles.deleteButton} onClick={() => openDeleteUserModal(user)}>
                               <FaTrash className={styles.trash} />
                             </button>
                           </div>
