@@ -11,20 +11,20 @@ const transporter = nodemailer.createTransport({
 });
 
 // Function to send an event deletion email
-const sendEventDeletionEmail = (email, eventName) => {
-    const mailOptions = {
-        from: 'testemailmailtest45@gmail.com', // Sender's email
-        to: email, // Recipient's email
-        subject: 'Event Deletion Notification',
-        text: `Dear user,\n\nThe event "${eventName}" has been deleted from the system.\n\nIf this was not intentional or you have any questions, please contact us.\n\nBest regards,\nEvent Management Team`,
-    };
-  
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log('Error sending event deletion email:', error);
-        } else {
-            console.log('Event deletion email sent:', info.response);
-        }
-    });
+const sendEventDeletionEmail = (email, eventName, organization) => {
+  const mailOptions = {
+    from: 'testemailmailtest45@gmail.com', // Sender's email
+    to: email, // Recipient's email
+    subject: 'Event Deletion Notification',
+    text: `Dear ${organization},\n\nThe event "${eventName}" has been deleted from the system. If this was not intentional or you have any questions, please contact us.\n\nBest regards,\nEvent Management Team`,
   };
-  module.exports = { sendEventDeletionEmail }; // Export the function
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error sending event deletion email:', error);
+    } else {
+      console.log('Event deletion email sent:', info.response);
+    }
+  });
+};
+module.exports = { sendEventDeletionEmail }; // Export the function

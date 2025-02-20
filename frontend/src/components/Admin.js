@@ -197,8 +197,8 @@ const Admin = () => {
       });
   };
 
-  const openDeleteModal = (eventId, organization) => {
-    setSelectedEvent({ eventId, organization });
+  const openDeleteModal = (eventId, organization, name) => {
+    setSelectedEvent({ eventId, organization, name });
     dialogRef.current.showModal();
   };
 
@@ -209,7 +209,7 @@ const Admin = () => {
   const handleDelete = async () => {
     if (!selectedEvent) return;
 
-    const { eventId, organization } = selectedEvent;
+    const { eventId, organization, name } = selectedEvent;
     dialogRef.current.close();
 
     try {
@@ -225,7 +225,7 @@ const Admin = () => {
 
       if (response.ok) {
         console.log(`Notifying organization: ${organization}`);
-        await sendEventNotification(organization, eventId);
+        await sendEventNotification(organization, eventId, name);
 
         toast.success("Event deleted successfully", {
           duration: 4000, // Time before it disappears
@@ -247,7 +247,7 @@ const Admin = () => {
   };
 
   // Function to send notification to the organization
-  const sendEventNotification = async (organization, eventId) => {
+  const sendEventNotification = async (organization, eventId, name) => {
     try {
       const response = await fetch(
         "http://localhost:5000/api/send-event-notification",
@@ -256,7 +256,7 @@ const Admin = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ organization, eventId }),
+          body: JSON.stringify({ organization, eventId, name }),
         }
       );
 
@@ -272,8 +272,8 @@ const Admin = () => {
     }
   };
 
-  const openApproveModal = (eventId) => {
-    setSelectedEventId(eventId);
+  const openApproveModal = (eventId, org, name) => {
+    setSelectedEventId({ eventId, org, name });
     modalRef.current?.showModal(); // Open the modal
   };
 
@@ -282,13 +282,29 @@ const Admin = () => {
     setSelectedEventId(null);
   };
 
+  const sendEventApprovalNotification = async (organization, eventId, eventName) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/send-event-approval-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organization, eventId, eventName }),
+      });
+
+      const responseBody = await response.json();
+      console.log("Approval notification response:", responseBody);
+    } catch (error) {
+      console.error("Error sending event approval notification:", error);
+    }
+  };
+
   const handleConfirm = async () => {
     if (!selectedEventId) return;
 
-    const eventToApprove = events.find((event) => event.id === selectedEventId);
+    const eventToApprove = events.find((event) => event.id === selectedEventId.eventId);
     const { date, datefrom, duration } = eventToApprove;
 
     try {
+      // First, check for overlapping events
       const response = await fetch("http://localhost:5000/api/events/check-overlap", {
         method: "POST",
         headers: {
@@ -304,8 +320,9 @@ const Admin = () => {
       const responseBody = await response.json();
 
       if (response.ok) {
+        // Approve the event
         const approveResponse = await fetch(
-          `http://localhost:5000/api/events/approve/${selectedEventId}`,
+          `http://localhost:5000/api/events/approve/${selectedEventId.eventId}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -313,34 +330,39 @@ const Admin = () => {
         );
 
         const responseBodyApprove = await approveResponse.json();
-        console.log("Response body:", responseBodyApprove);
+        console.log("Approval response body:", responseBodyApprove);
 
         if (approveResponse.ok) {
+          // Send notification for approval
+          await sendEventApprovalNotification(
+            selectedEventId.org,
+            selectedEventId.eventId,
+            selectedEventId.name
+          );
+
           toast.success("Event approved successfully!", {
-            duration: 4000, // Time before it disappears
+            duration: 4000,
           });
           setEvents((prevEvents) =>
-            prevEvents.filter((event) => event.id !== selectedEventId)
+            prevEvents.filter((event) => event.id !== selectedEventId.eventId)
           );
           closeApproveModal();
         } else {
-          toast.error(`Failed to approve event: ${responseBodyApprove.message || "Unknown error"}`, {
-            duration: 4000, // Time before it disappears
-          });
+          toast.error(
+            `Failed to approve event: ${responseBodyApprove.message || "Unknown error"}`,
+            { duration: 4000 }
+          );
         }
       } else {
-        toast.error(responseBody.message, {
-          duration: 4000, // Time before it disappears
-        });
+        toast.error(responseBody.message, { duration: 4000 });
         closeApproveModal();
       }
     } catch (error) {
-      toast.error("Error approving event", {
-        duration: 4000, // Time before it disappears
-      });
+      toast.error("Error approving event", { duration: 4000 });
       console.error("Error approving event:", error);
     }
   };
+
 
 
   const handleLogout = () => {

@@ -96,13 +96,13 @@ const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocum
                     <div className={styles.actionFlex}>
                       <button
                         className={styles.requestActions}
-                        onClick={() => openApproveModal(event.id)} title='Accept Event'
+                        onClick={() => openApproveModal(event.id, event.organization, event.name)} title='Accept Event'
                       >
                         <FaCheck />
                       </button>
                       <button
                         className={styles.requestActions}
-                        onClick={() => openDeleteModal(event.id, event.organization)} title='Reject Event'
+                        onClick={() => openDeleteModal(event.id, event.organization, event.name)} title='Reject Event'
                       >
                         <FaTimes />
                       </button>
