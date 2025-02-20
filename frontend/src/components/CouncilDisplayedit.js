@@ -55,24 +55,37 @@ const CouncilDisplayedit = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/councilsedit/${formData.id}`, formData); // formData shouldn't include 'created_at'
+      const response = await axios.put(`http://localhost:5000/api/councilsedit/${formData.id}`, formData);
       if (response.status === 200) {
+        // Update the councils list with the edited data
+        setCouncilsAndOrganizations((prevCouncils) =>
+          prevCouncils.map((council) =>
+            council.id === formData.id ? { ...council, ...formData } : council
+          )
+        );
+
+        // Refresh the selected council
+        setSelectedCouncil((prevCouncil) =>
+          prevCouncil && prevCouncil.id === formData.id ? { ...prevCouncil, ...formData } : prevCouncil
+        );
+
         toast.success("Council details updated successfully!", {
-          duration: 4000, // Time before it disappears
+          duration: 4000,
         });
         setIsEditModalOpen(false);
       } else {
         toast.error("Failed to update council details.", {
-          duration: 4000, // Time before it disappears
+          duration: 4000,
         });
       }
     } catch (error) {
       console.error("Error updating council:", error);
       toast.error("An error occurred while updating council details.", {
-        duration: 4000, // Time before it disappears
+        duration: 4000,
       });
     }
   };
+
 
   return (
     <div className={styles.leftSection}>
@@ -189,7 +202,6 @@ const CouncilDisplayedit = () => {
               ))}
 
               <div className={styles.formButtons}>
-                <button type="submit" className={styles.submitButton}>Save</button>
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
@@ -197,6 +209,7 @@ const CouncilDisplayedit = () => {
                 >
                   Cancel
                 </button>
+                <button type="submit" className={styles.submitButton}>Save</button>
               </div>
             </form>
           </div>

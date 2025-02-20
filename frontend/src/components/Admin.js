@@ -517,7 +517,7 @@ const Admin = () => {
                     <th className={styles.tableCell}>Organization</th>
                     <th className={styles.tableCell}>Username</th>
                     <th className={styles.tableCell}>Email</th>
-                    <th className={styles.tableCell}>Password</th>
+                    {/* <th className={styles.tableCell}>Password</th> */}
                     <th className={styles.tableCell}>Action</th>
                   </tr>
                 </thead>
@@ -530,7 +530,7 @@ const Admin = () => {
                         <td className={styles.tableCell}>{user.organizationz}</td>
                         <td className={styles.tableCell}>{user.username}</td>
                         <td className={styles.tableCell}>{user.email}</td>
-                        <td className={styles.tableCell}>{user.password}</td>
+                        {/* <td className={styles.tableCell}>{user.password}</td> */}
                         <td className={styles.tableCell}>
                           <div className={styles.actions}>
                             <button

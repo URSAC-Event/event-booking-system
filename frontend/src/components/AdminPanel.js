@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import styles from "./AdminPanel.module.css"; // Adjust the path if necessary
 import { FaTrash, FaRegTimesCircle } from "react-icons/fa";
+import { toast } from "sonner";
 
 const AdminPanel = () => {
   const [reports, setReports] = useState([]);
@@ -34,7 +35,7 @@ const AdminPanel = () => {
     try {
       await axios.delete(`http://localhost:5000/api/reports/${reportToDelete}`);
       setReports(reports.filter((report) => report.id !== reportToDelete)); // Remove deleted report from the UI
-      alert("Report deleted successfully");
+      toast.success("Report deleted successfully", { duration: 4000 });
     } catch (error) {
       console.error("Error deleting report:", error);
     } finally {

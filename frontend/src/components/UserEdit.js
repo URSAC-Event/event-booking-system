@@ -66,7 +66,7 @@ const UserEdit = ({ isOpen, closeModal, userData }) => {
             />
           </div>
 
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -75,7 +75,7 @@ const UserEdit = ({ isOpen, closeModal, userData }) => {
               value={editedUser.password}
               onChange={handleInputChange}
             />
-          </div>
+          </div> */}
 
           <button type="submit" className={styles.submitButton}>
             Save Changes
