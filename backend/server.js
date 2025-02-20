@@ -416,7 +416,7 @@ app.post('/api/users', (req, res) => {
   connection.query(query, [name, username, email, password, organizationz], (err, results) => {
     if (err) {
       console.error('Error inserting user:', err);
-      return res.status(500).json({ message: 'Error adding user' });
+      return res.status(500).json({ message: 'Username already exist' });
     }
     res.status(201).json({ id: results.insertId, name, email, username, organizationz });
   });
@@ -692,13 +692,13 @@ app.post('/api/events/approve/:id', (req, res) => {
 
           // Continue with the rest of the process (approving the event)
           const insertQuery = `
-            INSERT INTO approved (id, name, organization, date, datefrom, duration, documents, photo, venue)
-            SELECT id, name, organization, date, datefrom, duration, ?, ?, venue
-            FROM events
-            WHERE id = ?;
-          `;
+          INSERT INTO approved (id, name, organization, date, datefrom, duration, documents, photo, venue)
+          SELECT id, name, organization, date, datefrom, duration, documents, ?, venue
+          FROM events
+          WHERE id = ?;
+        `;
 
-          connection.query(insertQuery, [newImageName, newImageName, id], (err, result) => {
+          connection.query(insertQuery, [newImageName, id], (err, result) => {
             if (err) {
               console.error('Error approving event:', err);
               return res.status(500).json({ message: 'Error approving event', error: err });
