@@ -89,11 +89,9 @@ const CouncilDisplayedit = () => {
 
   return (
     <div className={styles.leftSection}>
-      <h2 className={styles.header}>Councils and Organization List</h2>
-
-
-
-
+      <h2 className={styles.councilMainHeader}>
+        Councils and Organization List
+      </h2>
 
       <div className={styles.sidebarContainer}>
         <div className={styles.sidebar}>
@@ -101,106 +99,253 @@ const CouncilDisplayedit = () => {
             <button
               key={item.organization}
               onClick={() => setSelectedCouncil(item)}
-              className={`${styles.sidebarButton} ${selectedCouncil?.organization === item.organization ? styles.selected : ''}`}
+              className={`${styles.sidebarButton} ${selectedCouncil?.organization === item.organization
+                ? styles.selected
+                : ""
+                }`}
             >
               {item.organization}
             </button>
           ))}
         </div>
 
-        <div className={styles.sidebarContent}>
-          <h3>{selectedCouncil ? selectedCouncil.organization : 'Select a Council/Organization'}</h3>
+        <div className={styles.mobileDropdownCont}>
+          <select
+            id="council"
+            value={selectedCouncil?.organization || ""}
+            onChange={(e) => {
+              const selected = councilsAndOrganizations.find(
+                (org) => org.organization === e.target.value
+              );
+              setSelectedCouncil(selected);
+            }}
+            className={styles.mobileDropdown}
+          >
+            <option value="" disabled>
+              Select a Council
+            </option>
+            {councilsAndOrganizations.map((item) => (
+              <option key={item.organization} value={item.organization}>
+                {item.organization}
+              </option>
+            ))}
+          </select>
+          <FaAngleDown className={styles.downIcon} />
+        </div>
 
+        <div className={styles.sidebarContent}>
+          <h3 className={styles.councilSubheader}>
+            {selectedCouncil ? "" : "Select a Council/Organization"}
+          </h3>
           {selectedCouncil && (
             <div className={styles.details}>
-              {selectedCouncil.organization === organization && (
-                <button className={styles.editButton} onClick={openEditModal}>Edit</button>)}
-              <table>
-                <tbody>
-                  <tr>
-
-                    <td>
-                      <a href={selectedCouncil.link} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
-                          alt="Adviser"
-                          className={styles.adviserImage}
-                        />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><strong>Adviser:</strong></td>
-                    <td>{selectedCouncil.adviser}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>President:</strong></td>
-                    <td>{selectedCouncil.president}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Vice President:</strong></td>
-                    <td>{selectedCouncil.vicePresident}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Secretary:</strong></td>
-                    <td>{selectedCouncil.secretary}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Treasurer:</strong></td>
-                    <td>{selectedCouncil.treasurer}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Auditor:</strong></td>
-                    <td>{selectedCouncil.auditor}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>PRO:</strong></td>
-                    <td>{selectedCouncil.pro}</td>
-                  </tr>
-                  <tr>
-                    <td><strong> First year representative:</strong></td>
-                    <td>{selectedCouncil.rep}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Second year representative :</strong></td>
-                    <td>{selectedCouncil.representative}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Third year representative :</strong></td>
-                    <td>{selectedCouncil.trdrepresentative}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Fourth year representative :</strong></td>
-                    <td>{selectedCouncil.frthrepresentative}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className={styles.profileCont}>
+                <div className={styles.profile}>
+                  <a
+                    href={selectedCouncil.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={`http://localhost:5000/adviserpic/${selectedCouncil.adviserPIC}`}
+                      alt="Adviser"
+                      className={styles.adviserImage}
+                    />
+                  </a>
+                  <h3 className={styles.councilSubheader}>
+                    {selectedCouncil ? selectedCouncil.organization : ""}
+                  </h3>
+                  <h3 className={styles.councilSubheaderMobile}>
+                    {selectedCouncil ? selectedCouncil.organization : ""}
+                  </h3>
+                </div>
+                {selectedCouncil.organization === organization && (<div className={styles.iconCont}>
+                  <FaPen className={styles.editIcon} onClick={openEditModal} />
+                </div>)}
+              </div>
+              <div className={styles.membersCont}>
+                <p>
+                  <strong>Adviser:</strong> {selectedCouncil.adviser}
+                </p>
+                <p>
+                  <strong>President:</strong> {selectedCouncil.president}
+                </p>
+                <p>
+                  <strong>Vice President:</strong>{" "}
+                  {selectedCouncil.vicePresident}
+                </p>
+                <p>
+                  <strong>Secretary:</strong> {selectedCouncil.secretary}
+                </p>
+                <p>
+                  <strong>Treasurer:</strong> {selectedCouncil.treasurer}
+                </p>
+                <p>
+                  <strong>Auditor:</strong> {selectedCouncil.auditor}
+                </p>
+                <p>
+                  <strong>PRO:</strong> {selectedCouncil.pro}
+                </p>
+                <p>
+                  <strong>First Year Representative:</strong>{" "}
+                  {selectedCouncil.rep}
+                </p>
+                <p>
+                  <strong>Second Year Representative:</strong>{" "}
+                  {selectedCouncil.representative}
+                </p>
+                <p>
+                  <strong>Third Year Representative:</strong>{" "}
+                  {selectedCouncil.trdrepresentative}
+                </p>
+                <p>
+                  <strong>Fourth Year Representative:</strong>{" "}
+                  {selectedCouncil.frthrepresentative}
+                </p>
+              </div>
             </div>
           )}
         </div>
       </div>
 
       {/* Edit Modal */}
+
       {isEditModalOpen && selectedCouncil && (
         <div className={styles.modalWrapper}>
           <div className={styles.modalContent}>
-            <h3>Edit Council Details</h3>
+            <h3 className={styles.modalHeader}>Edit Council Details</h3>
             <form onSubmit={handleEditCouncil} className={styles.form}>
-              {Object.keys(formData).map((field) => (
-                field !== 'id' && ( // We already removed 'createdAt' in the previous step
-                  <div key={field} className={styles.formGroup}>
-                    <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
-                    <input
-                      type="text"
-                      name={field}
-                      value={formData[field]}
-                      onChange={handleInputChange}
-                      className={styles.input}
-                    />
-                  </div>
-                )
-              ))}
 
+              {/* Adviser */}
+              <div className={styles.formGroup}>
+                <label>Adviser:</label>
+                <input
+                  type="text"
+                  name="adviser"
+                  value={formData.adviser || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* President */}
+              <div className={styles.formGroup}>
+                <label>President:</label>
+                <input
+                  type="text"
+                  name="president"
+                  value={formData.president || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Vice President */}
+              <div className={styles.formGroup}>
+                <label>Vice President:</label>
+                <input
+                  type="text"
+                  name="vicePresident"
+                  value={formData.vicePresident || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Secretary */}
+              <div className={styles.formGroup}>
+                <label>Secretary:</label>
+                <input
+                  type="text"
+                  name="secretary"
+                  value={formData.secretary || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Treasurer */}
+              <div className={styles.formGroup}>
+                <label>Treasurer:</label>
+                <input
+                  type="text"
+                  name="treasurer"
+                  value={formData.treasurer || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Auditor */}
+              <div className={styles.formGroup}>
+                <label>Auditor:</label>
+                <input
+                  type="text"
+                  name="auditor"
+                  value={formData.auditor || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* PRO */}
+              <div className={styles.formGroup}>
+                <label>Public Relations Officer (PRO):</label>
+                <input
+                  type="text"
+                  name="pro"
+                  value={formData.pro || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Representatives */}
+              <div className={styles.formGroup}>
+                <label>First Year Representative:</label>
+                <input
+                  type="text"
+                  name="rep"
+                  value={formData.rep || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Second Year Representative:</label>
+                <input
+                  type="text"
+                  name="representative"
+                  value={formData.representative || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Third Year Representative:</label>
+                <input
+                  type="text"
+                  name="trdrepresentative"
+                  value={formData.trdrepresentative || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Fourth Year Representative:</label>
+                <input
+                  type="text"
+                  name="frthrepresentative"
+                  value={formData.frthrepresentative || ""}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                />
+              </div>
+
+              {/* Buttons */}
               <div className={styles.formButtons}>
                 <button
                   type="button"
@@ -209,12 +354,16 @@ const CouncilDisplayedit = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className={styles.submitButton}>Save</button>
+
+                <button type="submit" className={styles.submitButton}>
+                  Save
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
     </div>
   );
 };

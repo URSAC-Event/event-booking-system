@@ -403,24 +403,38 @@ app.get('/api/users', (req, res) => {
 //Adding user for council 
 
 app.post('/api/users', (req, res) => {
-  const { name, username, email, password, organizationz } = req.body;
+  let { name, username, email, password, organizationz } = req.body;
+  name = "User";
 
   // Simple validation
   if (!name || !username || !email || !password || !organizationz) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // Hash the password before inserting into the database
-  // You can use bcrypt.js for password hashing, for now we are storing it as plain text (but it's not recommended for production)
-  const query = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?,?)';
-  connection.query(query, [name, username, email, password, organizationz], (err, results) => {
+  // First, check if an account already exists for the given organization
+  const checkOrgQuery = 'SELECT * FROM users WHERE organizationz = ?';
+  connection.query(checkOrgQuery, [organizationz], (err, results) => {
     if (err) {
-      console.error('Error inserting user:', err);
-      return res.status(500).json({ message: 'Username already exist' });
+      console.error('Error checking organization:', err);
+      return res.status(500).json({ message: 'Database error while checking organization' });
     }
-    res.status(201).json({ id: results.insertId, name, email, username, organizationz });
+    if (results.length > 0) {
+      // If there is already a user for this organization, send an error response
+      return res.status(400).json({ message: 'An account for this organization already exists' });
+    }
+
+    // No existing account for this organization, so proceed to insert the new user
+    const insertQuery = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?, ?)';
+    connection.query(insertQuery, [name, username, email, password, organizationz], (err, results) => {
+      if (err) {
+        console.error('Error inserting user:', err);
+        return res.status(500).json({ message: 'Error inserting user' });
+      }
+      res.status(201).json({ id: results.insertId, name, username, email, organizationz });
+    });
   });
 });
+
 
 app.put('/api/users/:id', (req, res) => {
   const { id } = req.params;

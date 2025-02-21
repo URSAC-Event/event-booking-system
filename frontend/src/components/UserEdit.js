@@ -53,7 +53,7 @@ const UserEdit = ({ isOpen, closeModal, userData, setRefreshUser }) => {
       <div className={styles.modalContent}>
         <h2>Edit User</h2>
         <form onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label htmlFor="name">Name</label>
             <input
               type="text"
@@ -62,7 +62,7 @@ const UserEdit = ({ isOpen, closeModal, userData, setRefreshUser }) => {
               value={editedUser.name}
               onChange={handleInputChange}
             />
-          </div>
+          </div> */}
 
           <div className={styles.inputGroup}>
             <label htmlFor="username">Username</label>

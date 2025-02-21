@@ -561,7 +561,7 @@ const Admin = () => {
               <table className={styles.table}>
                 <thead>
                   <tr className={styles.tableHeader}>
-                    <th className={styles.tableCell}>Name</th>
+                    {/* <th className={styles.tableCell}>Name</th> */}
                     <th className={styles.tableCell}>Organization</th>
                     <th className={styles.tableCell}>Username</th>
                     <th className={styles.tableCell}>Email</th>
@@ -574,7 +574,7 @@ const Admin = () => {
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
                       <tr key={user.id} className={styles.tableRow}>
-                        <td className={styles.tableCell}>{user.name}</td>
+                        {/* <td className={styles.tableCell}>{user.name}</td> */}
                         <td className={styles.tableCell}>{user.organizationz}</td>
                         <td className={styles.tableCell}>{user.username}</td>
                         <td className={styles.tableCell}>{user.email}</td>
