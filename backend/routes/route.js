@@ -3,6 +3,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const { sendVerificationCode } = require('./mailer');
 const { sendEventDeletionEmail } = require('./mailerdelete'); // Import the mailer function
+const { sendEventApprovalEmail } = require('./mailerapproval');
+const { sendEventCancellationEmail } = require('./mailercancellation');
 
 const router = express.Router();
 const connection = require('../connection/db');  // import the database connection
@@ -10,7 +12,7 @@ const connection = require('../connection/db');  // import the database connecti
 
 /// Route to handle sending the event deletion email
 router.post('/api/send-event-notification', async (req, res) => {
-  const { organization, eventId } = req.body;
+  const { organization, eventId, name } = req.body;
   console.log('Received request to send notification for event ID:', eventId, 'and organization:', organization); // Debug log
 
   if (!organization) {
@@ -31,8 +33,7 @@ router.post('/api/send-event-notification', async (req, res) => {
         const userEmail = results[0].email; // Get the email from the query result
 
         // Step 2: Send the email notification
-        const eventName = `Event ID ${eventId}`; // Replace with actual event name if needed
-        sendEventDeletionEmail(userEmail, eventName); // Send email using the function
+        sendEventDeletionEmail(userEmail, name, organization); // Send email using the function
 
         res.status(200).send({ message: 'Notification sent to organization email' });
       } else {
@@ -46,6 +47,65 @@ router.post('/api/send-event-notification', async (req, res) => {
   }
 });
 
+router.post('/api/send-event-approval-notification', async (req, res) => {
+  const { organization, eventId, eventName } = req.body;
+  console.log('Received approval notification request for event ID:', eventId, 'and organization:', organization);
+
+  if (!organization) {
+    return res.status(400).send({ message: 'Organization is required' });
+  }
+
+  try {
+    const query = `SELECT email FROM users WHERE organizationz = ?`;
+    connection.query(query, [organization], (err, results) => {
+      if (err) {
+        console.error('Error querying the users table:', err);
+        return res.status(500).send({ message: 'Error querying the users table' });
+      }
+
+      if (results.length > 0) {
+        const userEmail = results[0].email;
+        sendEventApprovalEmail(userEmail, eventName, organization);
+        res.status(200).send({ message: 'Approval notification sent to organization email' });
+      } else {
+        res.status(404).send({ message: 'Organization not found in users table' });
+      }
+    });
+  } catch (error) {
+    console.error('Error during approval notification process:', error);
+    res.status(500).send({ message: 'Error processing request' });
+  }
+});
+
+router.post('/api/send-event-cancellation-notification', async (req, res) => {
+  const { organization, eventId, eventName } = req.body;
+  console.log('Received cancellation notification request for event ID:', eventId, 'and organization:', organization);
+
+  if (!organization) {
+    return res.status(400).send({ message: 'Organization is required' });
+  }
+
+  try {
+    const query = `SELECT email FROM users WHERE organizationz = ?`;
+    connection.query(query, [organization], (err, results) => {
+      if (err) {
+        console.error('Error querying the users table:', err);
+        return res.status(500).send({ message: 'Error querying the users table' });
+      }
+
+      if (results.length > 0) {
+        const userEmail = results[0].email;
+        sendEventCancellationEmail(userEmail, eventName, organization); // Email with cancellation message
+        res.status(200).send({ message: 'Cancellation notification sent to organization email' });
+      } else {
+        res.status(404).send({ message: 'Organization not found in users table' });
+      }
+    });
+  } catch (error) {
+    console.error('Error during cancellation notification process:', error);
+    res.status(500).send({ message: 'Error processing request' });
+  }
+});
 
 
 
@@ -91,16 +151,16 @@ router.delete('/api/usersdel/:id', (req, res) => {
 
   const query = 'DELETE FROM users WHERE id = ?';
   connection.query(query, [id], (err, result) => {
-      if (err) {
-          console.error('Error deleting user:', err);
-          return res.status(500).json({ error: 'Failed to delete user' });
-      }
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).json({ error: 'Failed to delete user' });
+    }
 
-      if (result.affectedRows === 0) {
-          return res.status(404).json({ error: 'User not found' });
-      }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-      res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: 'User deleted successfully' });
   });
 });
 

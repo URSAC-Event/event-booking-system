@@ -40,9 +40,10 @@
 .formButtons {
   display: flex;
   justify-content: space-between;
+  margin-top: 16px;
 }
 
-.header{
+.header {
   color: #154c79;
   font-size: 1.5em;
   margin-bottom: 10px
@@ -51,22 +52,35 @@
 .submitButton {
   background-color: #0e4296;
   color: white;
-  padding: 8px 16px;
+  padding: 8px 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: 0.15s;
   cursor: pointer;
+  order: 2;
 }
 
 .cancelButton {
-  padding: 8px 16px;
+  padding: 8px 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   transition: 0.15s;
 }
 
 
-.submitButton:hover, .cancelButton:hover {
+.submitButton:hover,
+.cancelButton:hover {
   opacity: 0.5;
+}
+
+@media all and (max-width: 426px) {
+  .modalContent {
+    background: white;
+    padding: 24px;
+    border-radius: 0px;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
+  }
 }

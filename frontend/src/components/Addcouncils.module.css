@@ -56,6 +56,7 @@
 }
 
 .formButtons {
+  margin-top: 16px;
   display: flex;
   justify-content: space-between;
 }
@@ -63,10 +64,10 @@
 .submitButton {
   background-color: #0e4296;
   color: white;
-  padding: 8px 16px;
+  padding: 8px 24px;
   /* Reduced padding */
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: 0.15s;
   cursor: pointer;
 }
@@ -77,10 +78,10 @@
 }
 
 .cancelButton {
-  padding: 8px 16px;
+  padding: 8px 24px;
   /* Reduced padding */
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   transition: 0.15s;
 }
@@ -188,3 +189,14 @@ Container for the report form
     height: 80px;
   }
 } */
+
+@media all and (max-width: 426px) {
+  .sectionBox {
+    background: white;
+    padding: 24px;
+    border-radius: 0px;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
+  }
+}

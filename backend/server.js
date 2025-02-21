@@ -390,7 +390,7 @@ app.get('/api/councils', (req, res) => {
 
 // GET route to fetch all user
 app.get('/api/users', (req, res) => {
-  const query = 'SELECT name, username, email, password, organizationz FROM users';
+  const query = 'SELECT id, name, username, email, password, organizationz FROM users';
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -403,22 +403,68 @@ app.get('/api/users', (req, res) => {
 //Adding user for council 
 
 app.post('/api/users', (req, res) => {
-  const { name, username, email, password, organizationz } = req.body;
+  let { name, username, email, password, organizationz } = req.body;
+  name = "User";
 
   // Simple validation
   if (!name || !username || !email || !password || !organizationz) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // Hash the password before inserting into the database
-  // You can use bcrypt.js for password hashing, for now we are storing it as plain text (but it's not recommended for production)
-  const query = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?,?)';
-  connection.query(query, [name, username, email, password, organizationz], (err, results) => {
+  // First, check if an account already exists for the given organization
+  const checkOrgQuery = 'SELECT * FROM users WHERE organizationz = ?';
+  connection.query(checkOrgQuery, [organizationz], (err, results) => {
     if (err) {
-      console.error('Error inserting user:', err);
-      return res.status(500).json({ message: 'Error adding user' });
+      console.error('Error checking organization:', err);
+      return res.status(500).json({ message: 'Database error while checking organization' });
     }
-    res.status(201).json({ id: results.insertId, name, email, username, organizationz });
+    if (results.length > 0) {
+      // If there is already a user for this organization, send an error response
+      return res.status(400).json({ message: 'An account for this organization already exists' });
+    }
+
+    // No existing account for this organization, so proceed to insert the new user
+    const insertQuery = 'INSERT INTO users (name, username, email, password, organizationz) VALUES (?, ?, ?, ?, ?)';
+    connection.query(insertQuery, [name, username, email, password, organizationz], (err, results) => {
+      if (err) {
+        console.error('Error inserting user:', err);
+        return res.status(500).json({ message: 'Error inserting user' });
+      }
+      res.status(201).json({ id: results.insertId, name, username, email, organizationz });
+    });
+  });
+});
+
+
+app.put('/api/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, username, email } = req.body;
+
+  // Validate email format
+  if (!email.includes('@') || !email.includes('.')) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  // Check if the username already exists (excluding the current user)
+  const checkUsernameQuery = 'SELECT id FROM users WHERE username = ? AND id != ?';
+  connection.query(checkUsernameQuery, [username, id], (err, results) => {
+    if (err) {
+      console.error('Error checking username:', err);
+      return res.status(500).json({ message: 'Error checking username' });
+    }
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
+    // Update user details
+    const updateQuery = 'UPDATE users SET name = ?, username = ?, email = ? WHERE id = ?';
+    connection.query(updateQuery, [name, username, email, id], (err, updateResults) => {
+      if (err) {
+        console.error('Error updating user:', err);
+        return res.status(500).json({ message: 'Error updating user' });
+      }
+      res.status(200).json({ message: 'User updated successfully' });
+    });
   });
 });
 
@@ -692,13 +738,13 @@ app.post('/api/events/approve/:id', (req, res) => {
 
           // Continue with the rest of the process (approving the event)
           const insertQuery = `
-            INSERT INTO approved (id, name, organization, date, datefrom, duration, documents, photo, venue)
-            SELECT id, name, organization, date, datefrom, duration, ?, ?, venue
-            FROM events
-            WHERE id = ?;
-          `;
+          INSERT INTO approved (id, name, organization, date, datefrom, duration, documents, photo, venue)
+          SELECT id, name, organization, date, datefrom, duration, documents, ?, venue
+          FROM events
+          WHERE id = ?;
+        `;
 
-          connection.query(insertQuery, [newImageName, newImageName, id], (err, result) => {
+          connection.query(insertQuery, [newImageName, id], (err, result) => {
             if (err) {
               console.error('Error approving event:', err);
               return res.status(500).json({ message: 'Error approving event', error: err });
@@ -895,6 +941,7 @@ app.delete('/users-delete/:username', (req, res) => {
     res.status(200).json({ message: 'User deleted successfully' });
   });
 });
+
 
 
 

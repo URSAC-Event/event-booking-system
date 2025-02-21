@@ -60,14 +60,36 @@ const EventTableApproved = () => {
     dialogRef.current.showModal();
   };
 
+  const sendCancelEventNotification = async (organization, eventId, eventName) => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/send-event-cancellation-notification", {
+        organization,
+        eventId,
+        eventName,
+      });
+      console.log("Cancellation notification response:", response.data);
+    } catch (error) {
+      console.error("Error sending cancellation notification:", error);
+    }
+  };
+
+
   const confirmDelete = async () => {
     try {
       const response = await axios.delete(`http://localhost:5000/api/approved-table/${eventToDelete}`);
       if (response.status === 200) {
+        // Find the event details (for notification) before removing it from state
+        const eventCanceled = events.find((event) => event.id === eventToDelete);
+
         setEvents((prevEvents) => prevEvents.filter(event => event.id !== eventToDelete));
         toast.success('Event deleted successfully', {
           duration: 4000, // Time before it disappears
         });
+
+        // Send cancellation notification if event details are available
+        if (eventCanceled) {
+          await sendCancelEventNotification(eventCanceled.organization, eventCanceled.id, eventCanceled.name);
+        }
       }
     } catch (error) {
       console.error("Error deleting event:", error.response?.data || error);
@@ -78,6 +100,7 @@ const EventTableApproved = () => {
       dialogRef.current.close();
     }
   };
+
 
   // Filter events based on the search term
   const filteredEvents = events.filter(event =>

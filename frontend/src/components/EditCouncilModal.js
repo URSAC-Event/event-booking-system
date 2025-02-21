@@ -176,7 +176,7 @@ const EditCouncilModal = ({ showModal, setShowModal, selectedCouncil, handleUpda
               />
             </div>
             <div className={styles.formButtons}>
-              
+
               <button
                 type="button"
                 onClick={() => setShowModal(false)}

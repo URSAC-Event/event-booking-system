@@ -10,7 +10,6 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
   const [organization, setOrganization] = useState('');
 
 
-
   useEffect(() => {
     const storedOrganization = localStorage.getItem('userOrganization');
     if (storedOrganization) {
@@ -20,147 +19,6 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
 
   //testing start
   // Function to convert 12-hour format (AM/PM) to 24-hour format
-
-  const convertTo24Hour = (time, ampm) => {
-    let [hours, minutes] = time.split(':');
-    hours = parseInt(hours);
-    minutes = parseInt(minutes);
-
-    if (ampm === "PM" && hours !== 12) {
-      hours += 12;
-    } else if (ampm === "AM" && hours === 12) {
-      hours = 0;
-    }
-
-    return { hours, minutes };
-  };
-
-  const handleCheckConflict = async () => {
-    try {
-      // Convert user's from and to times to 24-hour format
-      const userFrom = convertTo24Hour(eventData.fromHour + ":" + eventData.fromMinute, eventData.fromAmPm);
-      const userTo = convertTo24Hour(eventData.toHour + ":" + eventData.toMinute, eventData.toAmPm);
-
-      // Log the user input time in 24-hour format
-      console.log("User Input Time (From - 24hr):", `${userFrom.hours}:${String(userFrom.minutes).padStart(2, '0')}`);
-      console.log("User Input Time (To - 24hr):", `${userTo.hours}:${String(userTo.minutes).padStart(2, '0')}`);
-
-      // Fetch saved durations from the database
-      const response = await axios.get('http://localhost:5000/api/approved');
-      const approvedEvents = response.data;
-
-      // Loop through the approved events and check for conflicts
-      for (let event of approvedEvents) {
-        // Convert saved event duration to 24-hour format
-        const [savedFrom, savedTo] = event.duration.split(' to ');
-
-        const savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[1]);
-        const savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[1]);
-
-        // Log the saved event time in 24-hour format
-        console.log("Saved Event Time (From - 24hr):", `${savedFromTime.hours}:${String(savedFromTime.minutes).padStart(2, '0')}`);
-        console.log("Saved Event Time (To - 24hr):", `${savedToTime.hours}:${String(savedToTime.minutes).padStart(2, '0')}`);
-
-        // Compare times
-        if (
-          (userFrom.hours < savedToTime.hours || (userFrom.hours === savedToTime.hours && userFrom.minutes < savedToTime.minutes)) &&
-          (userTo.hours > savedFromTime.hours || (userTo.hours === savedFromTime.hours && userTo.minutes > savedFromTime.minutes))
-        ) {
-          setError('The selected time overlaps with an existing event.');
-          return;
-        }
-      }
-
-      setError(''); // No conflict found
-    } catch (error) {
-      console.error('Error checking time conflict:', error);
-    }
-  };
-
-
-
-  // Helper function to convert a date in ISO format (e.g. 2025-11-05T16:00:00.000Z) to yyyy/mm/dd
-  const convertDatabaseDateToFormattedDate = (date) => {
-    const newDate = new Date(date);  // Convert to JavaScript Date object
-    const day = String(newDate.getDate()).padStart(2, '0');
-    const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const year = newDate.getFullYear();
-    return `${year}/${month}/${day}`;
-  };
-
-  const handleCheckDateOverlap = async () => {
-    try {
-      // Normalize user input dates
-      const userFromDate = eventData.fromDate.replace(/-/g, '/');
-      const userToDate = eventData.toDate ? eventData.toDate.replace(/-/g, '/') : userFromDate;
-
-      // Fetch saved events from the database
-      const response = await axios.get('http://localhost:5000/api/approved');
-      const approvedEvents = response.data;
-
-      const formattedEvents = approvedEvents.map(event => {
-        const savedStartDate = convertDatabaseDateToFormattedDate(event.date);
-        const savedEndDate = convertDatabaseDateToFormattedDate(event.datefrom);
-        return { ...event, savedStartDate, savedEndDate };
-      });
-
-      // Check for date overlap
-      for (let event of formattedEvents) {
-        if (userFromDate <= event.savedEndDate && userToDate >= event.savedStartDate) {
-          console.log("Date Overlap Found");
-          setError('The selected dates overlap with an existing event.');
-          return true;  // Return true if date overlap is found
-        }
-      }
-
-      // If no date overlap found, clear the error
-      console.log("No Date Overlap Found");
-      setError('');
-      return false;  // Return false if no date overlap is found
-    } catch (error) {
-      console.error('Error checking date conflict:', error);
-      return false;  // Return false in case of any error
-    }
-  };
-
-
-
-
-
-  const eventHandleCheck = async () => {
-    try {
-      const venue = eventData.venue;  // Get the selected venue from the form
-
-      // Fetch existing venues from the database
-      const response = await axios.get('http://localhost:5000/api/approved');  // Replace with your API endpoint
-      const existingVenues = response.data;
-
-      // Log the user selected venue and the saved venues from the database
-      console.log('User Selected Venue:', venue);
-      console.log('Saved Venues in Database:', existingVenues);
-
-      // Check if the selected venue exists in the database by comparing names
-      const venueExists = existingVenues.some((existingVenue) => existingVenue.venue === venue);
-
-      // Log the result
-      console.log('Venue Exists:', venueExists);
-
-      return venueExists;  // Return true if the venue exists, false if not
-    } catch (error) {
-      console.error('Error checking venue existence:', error);
-      return false;  // Return false if there's an error
-    }
-  };
-
-
-
-
-
-
-
-
-
-  //testing end 
 
 
 
@@ -296,7 +154,7 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
           </div>
 
           <div className={styles.formGroup}>
-            <label>From Date:</label>
+            <label>Start Date:</label>
             <input
               type="date"
               name="fromDate"
@@ -310,7 +168,7 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
           </div>
 
           <div className={styles.formGroup}>
-            <label>To Date</label>
+            <label>End Date</label>
             <input
               type="date"
               name="toDate"
@@ -329,83 +187,86 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
           <div className={styles.formGroup}>
             {/* <label>Time Duration:</label> */}
             <div className={styles.timeGroup}>
-              <span>From:</span>
-              <div className={styles.timeFromGroup}>
-                <select
-                  name="fromHour"
-                  value={eventData.fromHour}
-                  onChange={handleInputChange}
-                  className={styles.timeInput}
-                >
-                  <option value="">Select Hour</option>
-                  {[...Array(12).keys()].map((i) => (
-                    <option key={i} value={i + 1}>
-                      {i + 1}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="fromMinute"
-                  value={eventData.fromMinute}
-                  onChange={handleInputChange}
-                  className={styles.timeInput}
-                >
-                  {[...Array(60).keys()].map((i) => (
-                    <option key={i} value={String(i).padStart(2, '0')}>
-                      {String(i).padStart(2, '0')}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="fromAmPm"
-                  value={eventData.fromAmPm}
-                  onChange={handleInputChange}
-                  className={styles.timeInput}
-                >
-                  <option value="">Select AM/PM</option>
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
+              <div className={styles.fromGroup}>
+                <label>Start Time:</label>
+                <div className={styles.timeFromGroup}>
+                  <select
+                    name="fromHour"
+                    value={eventData.fromHour}
+                    onChange={handleInputChange}
+                    className={styles.timeInput}
+                  >
+                    <option value="">Select Hour</option>
+                    {[...Array(12).keys()].map((i) => (
+                      <option key={i} value={i + 1}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="fromMinute"
+                    value={eventData.fromMinute}
+                    onChange={handleInputChange}
+                    className={styles.timeInput}
+                  >
+                    {[...Array(60).keys()].map((i) => (
+                      <option key={i} value={String(i).padStart(2, '0')}>
+                        {String(i).padStart(2, '0')}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="fromAmPm"
+                    value={eventData.fromAmPm}
+                    onChange={handleInputChange}
+                    className={styles.timeInput}
+                  >
+                    <option value="">AM / PM</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
               </div>
 
-              <span>to:</span>
-
-              <div className={styles.timeToGroup}>
-                <select
-                  name="toHour"
-                  value={eventData.toHour}
-                  onChange={handleInputChange}
-                  className={styles.timeInput}
-                >
-                  <option value="">Select Hour</option>
-                  {[...Array(12).keys()].map((i) => (
-                    <option key={i} value={i + 1}>
-                      {i + 1}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="toMinute"
-                  value={eventData.toMinute}
-                  onChange={handleInputChange}
-                  className={styles.timeInput}
-                >
-                  {[...Array(60).keys()].map((i) => (
-                    <option key={i} value={String(i).padStart(2, '0')}>
-                      {String(i).padStart(2, '0')}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="toAmPm"
-                  value={eventData.toAmPm}
-                  onChange={handleInputChange}
-                  className={styles.timeInput}
-                >
-                  <option value="">Select AM/PM</option>
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
+              <div className={styles.toGroup}>
+                <label>End Time:</label>
+                <div className={styles.timeToGroup}>
+                  <select
+                    name="toHour"
+                    value={eventData.toHour}
+                    onChange={handleInputChange}
+                    className={styles.timeInput}
+                  >
+                    <option value="">Select Hour</option>
+                    {[...Array(12).keys()].map((i) => (
+                      <option key={i} value={i + 1}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="toMinute"
+                    value={eventData.toMinute}
+                    onChange={handleInputChange}
+                    className={styles.timeInput}
+                  >
+                    {[...Array(60).keys()].map((i) => (
+                      <option key={i} value={String(i).padStart(2, '0')}>
+                        {String(i).padStart(2, '0')}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="toAmPm"
+                    value={eventData.toAmPm}
+                    onChange={handleInputChange}
+                    className={styles.timeInput}
+                  >
+                    <option value="">AM / PM</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -442,7 +303,9 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
 
           <div className={styles.modalFooter}>
             <button
-              onClick={() => setModalOpen(false)}
+              onClick={() => {
+                setModalOpen(false);
+              }}
               className={styles.cancelButton}
             >
               Cancel

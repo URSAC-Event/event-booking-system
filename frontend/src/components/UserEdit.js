@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import styles from "./UserEdit.module.css"; // Adjust the import based on your file structure
+import axios from "axios";
+import { toast } from "sonner";
 
-const UserEdit = ({ isOpen, closeModal, userData }) => {
+const UserEdit = ({ isOpen, closeModal, userData, setRefreshUser }) => {
   const [editedUser, setEditedUser] = useState({
+    id: userData.id || "",
     name: userData.name || "",
     username: userData.username || "",
-    email: userData.email || "",
-    password: userData.password || "",
+    email: userData.email || ""
   });
+  const [Error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,12 +20,31 @@ const UserEdit = ({ isOpen, closeModal, userData }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Implement save functionality (e.g., call API to update user data)
-    console.log("User data updated:", editedUser);
-    closeModal(); // Close modal after save
+  const validateInputs = () => {
+    const { username, email } = editedUser;
+    if (!email.includes("@") || !email.includes(".")) {
+      setError("Invalid email format");
+      return false;
+    }
+    return true;
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!validateInputs()) return;
+
+    try {
+      const response = await axios.put(`http://localhost:5000/api/users/${editedUser.id}`, editedUser);
+      toast.success("User updated successfully:", { duration: 4000 })
+      console.log("User updated successfully:", response.data);
+      setRefreshUser((prev) => !prev);
+      closeModal();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update user", { duration: 4000 });
+    }
+  };
+
 
   if (!isOpen) return null;
 
@@ -30,10 +52,8 @@ const UserEdit = ({ isOpen, closeModal, userData }) => {
     <div className={styles.modal}>
       <div className={styles.modalContent}>
         <h2>Edit User</h2>
-        <button className={styles.closeButton} onClick={closeModal}>X</button>
-
         <form onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label htmlFor="name">Name</label>
             <input
               type="text"
@@ -42,7 +62,7 @@ const UserEdit = ({ isOpen, closeModal, userData }) => {
               value={editedUser.name}
               onChange={handleInputChange}
             />
-          </div>
+          </div> */}
 
           <div className={styles.inputGroup}>
             <label htmlFor="username">Username</label>
@@ -66,20 +86,14 @@ const UserEdit = ({ isOpen, closeModal, userData }) => {
             />
           </div>
 
-          <div className={styles.inputGroup}>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={editedUser.password}
-              onChange={handleInputChange}
-            />
+          <div className={styles.buttonFlex}>
+            <button type="button" onClick={closeModal}>
+              Cancel
+            </button>
+            <button type="submit" className={styles.submitButton}>
+              Save
+            </button>
           </div>
-
-          <button type="submit" className={styles.submitButton}>
-            Save Changes
-          </button>
         </form>
       </div>
     </div>

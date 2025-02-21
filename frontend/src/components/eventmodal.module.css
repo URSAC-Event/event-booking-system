@@ -1,0 +1,163 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: #fff;
+    padding: 36px 28px;
+    border-radius: 8px;
+    max-width: 90%;
+    width: 500px;
+    max-height: 80vh;
+    overflow-y: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.2s ease-out;
+    scrollbar-gutter: stable;
+}
+
+.modal:hover {
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.modal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 8px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Header */
+.modalHeader {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Form Layout */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.formGroup label {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.input,
+select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border 0.2s ease-in-out;
+}
+
+.input:focus,
+.timeInput:focus,
+select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Time Selection Group */
+.timeGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timeFromGroup,
+.timeToGroup {
+    display: flex;
+    gap: 5px;
+}
+
+.timeFromGroup select
+
+/* File Upload Inputs */
+input[type="file"] {
+    padding: 8px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+/* File Input Hover */
+input[type="file"]:hover {
+    border-color: #007bff;
+}
+
+/* Modal Footer */
+.modalFooter {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modalFooter button:hover {
+    opacity: 0.6;
+}
+
+.submitButton,
+.cancelButton {
+    padding: 8px 36px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.submitButton {
+    background-color: #0e4296;
+    color: white;
+}
+
+/* Responsive Two-Column Layout for Large Screens */
+@media screen and (min-width: 768px) {
+    .modal {
+        width: 600px;
+        overflow-y: auto;
+    }
+
+    .formGroup {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .formGroup label {
+        grid-column: span 2;
+    }
+
+    .input,
+    .timeInput,
+    select {
+        grid-column: span 2;
+    }
+}

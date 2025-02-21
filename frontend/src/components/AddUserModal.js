@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Addusermodal.module.css';  // Assuming you have styles for the modal
 import { toast } from "sonner";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const [name, setName] = useState('');
@@ -10,17 +11,17 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const [organizationz, setOrganizationz] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [emailError, setEmailError] = useState('');
-    const [usernameError, setUsernameError] = useState('');  // To handle username errors
-    const [organizations, setOrganizations] = useState([]);  // To store fetched organizations
+    const [usernameError, setUsernameError] = useState('');
+    const [organizations, setOrganizations] = useState([]);
+    const [showPassword, setShowPassword] = useState(false);
 
-    // Fetch organizations from the backend
     useEffect(() => {
         const fetchOrganizations = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/organizations');
                 const data = await response.json();
                 if (response.ok) {
-                    setOrganizations(data);  // Set organizations to state
+                    setOrganizations(data);
                 } else {
                     console.error('Failed to fetch organizations:', data.message);
                 }
@@ -32,11 +33,26 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
         fetchOrganizations();
     }, []);
 
+    const resetForm = () => {
+        setName('');
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setOrganizationz('');
+        setPasswordError('');
+        setEmailError('');
+        setUsernameError('');
+    };
+
+    const handleCancel = () => {
+        resetForm();
+        closeModal();
+    };
+
     const handlePasswordChange = (e) => {
         const value = e.target.value;
         setPassword(value);
 
-        // Password validation
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
         if (!passwordRegex.test(value)) {
             setPasswordError('Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, and a number.');
@@ -49,7 +65,6 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
         const value = e.target.value;
         setEmail(value);
 
-        // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
             setEmailError('Please enter a valid email address.');
@@ -61,15 +76,13 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const handleUsernameChange = (e) => {
         const value = e.target.value;
         setUsername(value);
-        setUsernameError('');  // Clear the username error when the user types
+        setUsernameError('');
 
-        // Check if username exists
         if (value) {
             checkUsernameExistence(value);
         }
     };
 
-    // Function to check if the username exists in the database
     const checkUsernameExistence = async (username) => {
         try {
             const response = await fetch(`http://localhost:5000/api/check-username?username=${username}`);
@@ -87,61 +100,45 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // If password is valid and username doesn't exist
         if (!passwordError && !usernameError) {
             const user = { name, username, email, password, organizationz };
 
             try {
                 const response = await fetch('http://localhost:5000/api/users', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(user),
                 });
 
                 const data = await response.json();
                 if (response.ok) {
-                    addUser(data);  // Add the user to the state in Admin.js
-                    toast.success("User added successfully", {
-                        duration: 4000, // Time before it disappears
-                    })
-                    closeModal();  // Close the modal after successful addition
+                    addUser(data);
+                    toast.success("User added successfully", { duration: 4000 });
+                    resetForm();
+                    closeModal();
                 } else {
-                    console.error('Failed to add user:', data.message);
-                    toast.error(`Failed to add user: ${data.message}`, {
-                        duration: 4000, // Time before it disappears
-                    });  // Show the error message
+                    // This toast will now also handle the "one account per organization" error
+                    toast.error(`Failed to add user: ${data.message}`, { duration: 4000 });
                 }
             } catch (error) {
-                console.error('Error adding user:', error);
-                toast.error(`Error adding user: ${error.message}`, {
-                    duration: 4000, // Time before it disappears
-                });  // Show the error message
+                toast.error(`Error adding user: ${error.message}`, { duration: 4000 });
             }
         }
     };
-
 
     return (
         isOpen && (
             <div className={styles.modal}>
                 <div className={styles.modalContent}>
-                    <span className={styles.close} onClick={closeModal}>×</span>
                     <h2>Add User</h2>
                     <form onSubmit={handleSubmit} className={styles.form}>
-                        <div className={styles.inputGroup}>
+                        {/* <div className={styles.inputGroup}>
                             <label>Name</label>
                             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-                        </div>
+                        </div> */}
                         <div className={styles.inputGroup}>
                             <label>Username</label>
-                            <input
-                                type="text"
-                                value={username}
-                                onChange={handleUsernameChange}
-                                required
-                            />
+                            <input type="text" value={username} onChange={handleUsernameChange} required />
                             {usernameError && <span className={styles.error}>{usernameError}</span>}
                         </div>
                         <div className={styles.inputGroup}>
@@ -151,7 +148,22 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Password</label>
-                            <input type="password" value={password} onChange={handlePasswordChange} required />
+                            <div className={styles.passwordContainer}>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.eyeButton}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                </button>
+                            </div>
                             {passwordError && <span className={styles.error}>{passwordError}</span>}
                         </div>
                         <div className={styles.inputGroup}>
@@ -159,13 +171,14 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                             <select value={organizationz} onChange={(e) => setOrganizationz(e.target.value)} required>
                                 <option value="">Select Organization</option>
                                 {organizations.map((org, index) => (
-                                    <option key={index} value={org.organization}>
-                                        {org.organization}
-                                    </option>
+                                    <option key={index} value={org.organization}>{org.organization}</option>
                                 ))}
                             </select>
                         </div>
-                        <button type="submit" className={styles.submitButton} disabled={passwordError || usernameError}>Add User</button>
+                        <div className={styles.buttonFlex}>
+                            <button type="button" onClick={handleCancel}>Cancel</button>
+                            <button type="submit" className={styles.submitButton} disabled={passwordError || usernameError}>Add User</button>
+                        </div>
                     </form>
                 </div>
             </div>
