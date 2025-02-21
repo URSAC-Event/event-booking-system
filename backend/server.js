@@ -390,7 +390,7 @@ app.get('/api/councils', (req, res) => {
 
 // GET route to fetch all user
 app.get('/api/users', (req, res) => {
-  const query = 'SELECT name, username, email, password, organizationz FROM users';
+  const query = 'SELECT id, name, username, email, password, organizationz FROM users';
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -419,6 +419,38 @@ app.post('/api/users', (req, res) => {
       return res.status(500).json({ message: 'Username already exist' });
     }
     res.status(201).json({ id: results.insertId, name, email, username, organizationz });
+  });
+});
+
+app.put('/api/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, username, email } = req.body;
+
+  // Validate email format
+  if (!email.includes('@') || !email.includes('.')) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  // Check if the username already exists (excluding the current user)
+  const checkUsernameQuery = 'SELECT id FROM users WHERE username = ? AND id != ?';
+  connection.query(checkUsernameQuery, [username, id], (err, results) => {
+    if (err) {
+      console.error('Error checking username:', err);
+      return res.status(500).json({ message: 'Error checking username' });
+    }
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
+    // Update user details
+    const updateQuery = 'UPDATE users SET name = ?, username = ?, email = ? WHERE id = ?';
+    connection.query(updateQuery, [name, username, email, id], (err, updateResults) => {
+      if (err) {
+        console.error('Error updating user:', err);
+        return res.status(500).json({ message: 'Error updating user' });
+      }
+      res.status(200).json({ message: 'User updated successfully' });
+    });
   });
 });
 

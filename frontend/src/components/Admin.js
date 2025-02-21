@@ -50,6 +50,7 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobile, setMobile] = useState("")
   const navigate = useNavigate();
+  const [refreshUser, setRefreshUser] = useState(false)
 
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -84,6 +85,28 @@ const Admin = () => {
       fetchEvents();
     }
   }, [activeComponent]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/users");
+        const data = await response.json();
+
+        if (response.ok) {
+          setUsers(data); // Set Users state with fetched data
+        } else {
+          console.error("Failed to fetch users:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    if (activeComponent === "Users") {
+      fetchUsers();
+    }
+  }, [refreshUser])
+
   // Fetch councils from the backend API when 'councils' is selected
   useEffect(() => {
     const fetchCouncils = async () => {
@@ -529,7 +552,9 @@ const Admin = () => {
               <UserEdit
                 isOpen={isEditModalOpen}
                 closeModal={() => setIsEditModalOpen(false)}
-                userData={currentUser} />
+                userData={currentUser}
+                setRefreshUser={setRefreshUser}
+              />
             )}
 
             <div className={styles.sectionBox}>
