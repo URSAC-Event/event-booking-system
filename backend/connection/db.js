@@ -1,21 +1,15 @@
-// connection/db.js
 const mysql = require('mysql2');
 
-// Create a connection to the database
-const connection = mysql.createConnection({
+// Create a connection pool
+const pool = mysql.createPool({
   host: 'localhost',
-  user: 'root',  // default user for XAMPP
-  password: '',   // default password is empty
-  database: 'school_event_management',  // your database name
+  user: 'root',
+  password: '',
+  database: 'school_event_management',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// Connect to the database
-connection.connect(err => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-    return;
-  }
-  console.log('Connected to the database');
-});
-
-module.exports = connection;
+// ✅ Export the pool itself (NO `.promise()` here)
+module.exports = pool;
