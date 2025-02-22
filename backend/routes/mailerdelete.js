@@ -5,15 +5,15 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'testemailmailtest45@gmail.com', // Your email
-    pass: 'panjiaetywoabppp', // Your Gmail app password (not your regular email password)
+    user: 'ursacevents.management@gmail.com', // Your email
+    pass: 'dfww zekg urnn rfxk', // Your Gmail app password (not your regular email password)
   },
 });
 
 // Function to send an event deletion email
 const sendEventDeletionEmail = (email, eventName, organization) => {
   const mailOptions = {
-    from: 'testemailmailtest45@gmail.com', // Sender's email
+    from: 'ursacevents.management@gmail.com', // Sender's email
     to: email, // Recipient's email
     subject: 'Event Deletion Notification',
     text: `Dear ${organization},\n\nThe event "${eventName}" has been deleted from the system. If this was not intentional or you have any questions, please contact us.\n\nBest regards,\nEvent Management Team`,

@@ -4,15 +4,15 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'testemailmailtest45@gmail.com', // Your email
-    pass: 'panjiaetywoabppp', // Your Gmail app password (not your regular email password)
+    user: 'ursacevents.management@gmail.com', // Your email
+    pass: 'dfww zekg urnn rfxk', // Your Gmail app password (not your regular email password)
   },
 });
 
 // Function to send a verification code email
 const sendVerificationCode = (email, code) => {
   const mailOptions = {
-    from: 'testemailmailtest45@gmail.com', // Sender's email
+    from: 'ursacevents.management@gmail.com', // Sender's email
     to: email, // Recipient's email
     subject: 'Your Verification Code',
     text: `Your 6-digit verification code is: ${code}`,
