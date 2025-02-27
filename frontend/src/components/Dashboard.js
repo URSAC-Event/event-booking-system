@@ -129,13 +129,13 @@ const Dashboard = () => {
     const { types, maxSize } = fileRules[name] || {};
 
     if (types && !types.includes(file.type)) {
-      toast.error(`Invalid file type.`, { position: "top-right", autoClose: 3000 });
+      toast.error(`Invalid file type.`, { duration: 4000 });
       e.target.value = ""; // Reset input
       return;
     }
 
     if (file.size > maxSize) {
-      toast.error(`File size must be less than 10MB!`, { position: "top-right", autoClose: 3000 });
+      toast.error(`File size must be less than 10MB!`, { duration: 3000 });
       e.target.value = ""; // Reset input
       return;
     }
@@ -146,7 +146,6 @@ const Dashboard = () => {
       [name]: file,
     }));
 
-    toast.success("File uploaded successfully!", { position: "top-right", autoClose: 3000 });
   };
 
 
