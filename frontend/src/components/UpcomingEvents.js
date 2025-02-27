@@ -41,10 +41,10 @@ const UpcomingEvents = () => {
           currentUpcomingEvents.map((item) => (
             <div key={item.id} className={styles.newsItem}>
               <div className={styles.imgCont}>
-                <a className={styles.imgCont} href={`https://event-booking-system-ckik.onrender.com/uploads/${item.photo}`}
+                <a className={styles.imgCont} href={item.photo}
                   target="_blank"
                   rel="noopener noreferrer"><img
-                    src={`https://event-booking-system-ckik.onrender.com/uploads/${item.photo}`}
+                    src={item.photo}
                     alt={item.name}
                     className={styles.newsImage}
                   /></a>

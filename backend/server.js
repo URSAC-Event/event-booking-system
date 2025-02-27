@@ -273,32 +273,26 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //FOR SLIDESHOW
 // Endpoint to fetch the list of images from the 'uploads' folder
 app.get("/api/slideshow-images", (req, res) => {
-  const uploadsPath = path.join(__dirname, "uploads");
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
 
-  fs.readdir(uploadsPath, (err, files) => {
-    if (err) {
-      return res.status(500).json({ message: "Error reading uploads folder" });
-    }
-
-    const imageFiles = files.filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
-
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split("T")[0];
-
-    // Fetch approved images with a future or current date
-    connection.query("SELECT photo FROM approved WHERE datefrom >= ?", [today], (err, results) => {
+  // Fetch approved images with a future or current date
+  connection.query(
+    "SELECT photo FROM approved WHERE datefrom >= ?",
+    [today],
+    (err, results) => {
       if (err) {
         console.error("Error fetching images from database:", err);
         return res.status(500).json({ message: "Database query failed" });
       }
 
-      const dbImages = results.map((row) => row.photo);
-      const validImages = imageFiles.filter((file) => dbImages.includes(file));
-
-      res.json(validImages); // Send only valid images
-    });
-  });
+      // Directly return Cloudinary image URLs from the database
+      const imageUrls = results.map((row) => row.photo);
+      res.json(imageUrls);
+    }
+  );
 });
+
 
 // Define the path for the 'uploads' folder
 const uploadFolder = path.join(__dirname, 'uploads');
