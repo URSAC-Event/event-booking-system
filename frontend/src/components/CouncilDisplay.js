@@ -146,7 +146,7 @@ const CouncilDisplay = () => {
                     rel="noopener noreferrer"
                   >
                     <img
-                      src={`https://event-booking-system-ckik.onrender.com/api/adviserpic/${selectedCouncil.adviserPIC}`}
+                      src={selectedCouncil.adviserPIC}
                       alt="Adviser"
                       className={styles.adviserImage}
                     />
