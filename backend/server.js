@@ -21,12 +21,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 
-//report 
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+require('dotenv').config();
 
-
-
-
-//delete event send email for reason 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 
 
@@ -301,24 +304,18 @@ app.get("/api/slideshow-images", (req, res) => {
 const uploadFolder = path.join(__dirname, 'uploads');
 
 // Setup file storage for multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadFolder);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "event-booking", // Cloudinary folder where failes will be stored
+      public_id: Date.now() + "-" + file.originalname, // Unique filename
+      resource_type: file.mimetype === "application/pdf" ? "raw" : "image", // Use 'raw' for PDFs, 'image' for images
+    };
   },
 });
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file type'), false);
-  }
-};
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage });
 
 
 
@@ -333,15 +330,14 @@ app.get('/api/organizations', (req, res) => {
   });
 });
 
-// POST route to add an event
 app.post('/api/events', upload.fields([{ name: 'document' }, { name: 'poster' }]), (req, res) => {
   if (req.files && (!req.files.document || !req.files.poster)) {
     return res.status(400).json({ message: 'Missing required files.' });
   }
 
   const { venue, name, organization, date, datefrom, duration } = req.body;
-  const document = req.files.document ? req.files.document[0].filename : null;
-  const poster = req.files.poster ? req.files.poster[0].filename : null;
+  const document = req.files.document ? req.files.document[0].path : null; // Store Cloudinary URL
+  const poster = req.files.poster ? req.files.poster[0].path : null; // Store Cloudinary URL
 
   const query = 'INSERT INTO events (name, organization, date, datefrom, duration, documents, photo, venue) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [name, organization, date, datefrom, duration, document, poster, venue], (err, results) => {
@@ -352,6 +348,7 @@ app.post('/api/events', upload.fields([{ name: 'document' }, { name: 'poster' }]
     res.status(200).json({ message: 'Event added successfully', eventId: results.insertId });
   });
 });
+
 
 
 
