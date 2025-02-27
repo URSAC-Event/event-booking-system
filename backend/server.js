@@ -791,8 +791,7 @@ const uploadForAdviserPic = multer({ storage: storageForAdviserPic }).single('ad
 
 
 
-// POST route to add councils
-app.post('/api/councils-add', uploadForAdviserPic, (req, res) => {
+app.post('/api/councils-add', upload.single('adviserPIC'), async (req, res) => {
   const {
     organization,
     adviser,
@@ -808,47 +807,63 @@ app.post('/api/councils-add', uploadForAdviserPic, (req, res) => {
     thirdRepresentative, // New field
     fourthRepresentative // New field
   } = req.body;
-  const adviserPicture = req.file ? req.file.filename : null;
 
-  // Validate required fields
-  if (!organization || !adviser || !link || !rep) {
-    return res.status(400).json({ message: 'Organization, Link, Adviser, and Rep are required fields.' });
-  }
+  let adviserPicture = null;
 
-  const query = `
-    INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    organization,
-    adviser,
-    adviserPicture,
-    link,
-    president,
-    vicePresident,
-    secretary,
-    treasurer,
-    auditor,
-    pro,
-    rep,
-    representative,
-    thirdRepresentative, // New value
-    fourthRepresentative // New value
-  ];
-
-  connection.query(query, values, (err, results) => {
-    if (err) {
-      console.error('Error saving data to the database:', err.sqlMessage || err.message);
-      return res.status(500).json({ message: 'Error saving data to the database', error: err.sqlMessage || err.message });
+  try {
+    if (req.file) {
+      // Upload image to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'event-booking',
+      });
+      adviserPicture = result.secure_url; // Cloudinary URL
     }
 
-    res.status(200).json({
-      message: 'Council data saved successfully!',
-      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, thirdRepresentative, fourthRepresentative },
+    // Validate required fields
+    if (!organization || !adviser || !link || !rep) {
+      return res.status(400).json({ message: 'Organization, Link, Adviser, and Rep are required fields.' });
+    }
+
+    const query = `
+      INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      organization,
+      adviser,
+      adviserPicture,
+      link,
+      president,
+      vicePresident,
+      secretary,
+      treasurer,
+      auditor,
+      pro,
+      rep,
+      representative,
+      thirdRepresentative, // New value
+      fourthRepresentative // New value
+    ];
+
+    connection.query(query, values, (err, results) => {
+      if (err) {
+        console.error('Error saving data to the database:', err.sqlMessage || err.message);
+        return res.status(500).json({ message: 'Error saving data to the database', error: err.sqlMessage || err.message });
+      }
+
+      res.status(200).json({
+        message: 'Council data saved successfully!',
+        data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, thirdRepresentative, fourthRepresentative },
+      });
     });
-  });
+
+  } catch (error) {
+    console.error('Error uploading file to Cloudinary:', error);
+    res.status(500).json({ message: 'Error uploading file to Cloudinary', error: error.message });
+  }
 });
+
 
 
 
