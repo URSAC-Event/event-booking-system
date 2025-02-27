@@ -135,7 +135,7 @@ const Dashboard = () => {
     }
 
     if (file.size > maxSize) {
-      toast.error(`File size must be less than 10MB!`, { duration: 4000 });
+      toast.error(`File size must be less than 10MB!`, { duration: 3000 });
       e.target.value = ""; // Reset input
       return;
     }
@@ -144,6 +144,8 @@ const Dashboard = () => {
     setEventData((prevData) => ({
       ...prevData,
       [name]: file,
+    }));
+
   };
 
 
@@ -204,7 +206,7 @@ const Dashboard = () => {
           if (currentDate.getDay() === 6) { // 6 = Saturday
             // Allow only if it's a single-day event on Saturday
             if (!(userFromDate.getTime() === userToDate.getTime())) {
-              toast.error("Long events should only be within Monday to Thursday.", { duration: 4000 });
+              toast.error("Events cannot span across a Saturday.", { duration: 4000 });
               return;
             }
           }
