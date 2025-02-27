@@ -120,7 +120,7 @@ const Dashboard = () => {
 
     if (!file) return;
 
-    // File validation rules
+    // File validation rules, 10 MB limit and file size check
     const fileRules = {
       document: { types: ["application/pdf"], maxSize: 10 * 1024 * 1024 }, // 10MB
       poster: { types: ["image/png", "image/jpeg", "image/jpg", "image/gif"], maxSize: 10 * 1024 * 1024 }, // 10MB
