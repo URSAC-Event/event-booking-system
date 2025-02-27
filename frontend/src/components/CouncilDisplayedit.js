@@ -54,37 +54,42 @@ const CouncilDisplayedit = () => {
   const handleEditCouncil = async (e) => {
     e.preventDefault();
 
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+
     try {
-      const response = await axios.put(`https://event-booking-system-ckik.onrender.com/api/councilsedit/${formData.id}`, formData);
+      const response = await axios.put(
+        `https://event-booking-system-ckik.onrender.com/api/councilsedit/${formData.id}`,
+        formDataToSend,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
       if (response.status === 200) {
-        // Update the councils list with the edited data
         setCouncilsAndOrganizations((prevCouncils) =>
           prevCouncils.map((council) =>
             council.id === formData.id ? { ...council, ...formData } : council
           )
         );
 
-        // Refresh the selected council
         setSelectedCouncil((prevCouncil) =>
           prevCouncil && prevCouncil.id === formData.id ? { ...prevCouncil, ...formData } : prevCouncil
         );
 
-        toast.success("Council details updated successfully!", {
-          duration: 4000,
-        });
+        toast.success("Council details updated successfully!", { duration: 4000 });
         setIsEditModalOpen(false);
       } else {
-        toast.error("Failed to update council details.", {
-          duration: 4000,
-        });
+        toast.error("Failed to update council details.", { duration: 4000 });
       }
     } catch (error) {
       console.error("Error updating council:", error);
-      toast.error("An error occurred while updating council details.", {
-        duration: 4000,
-      });
+      toast.error("An error occurred while updating council details.", { duration: 4000 });
     }
   };
+
 
 
   return (
@@ -216,8 +221,20 @@ const CouncilDisplayedit = () => {
             <h3 className={styles.modalHeader}>Edit Council Details</h3>
             <form onSubmit={handleEditCouncil} className={styles.form}>
 
+              {/* Logo */}
+              <div className={styles.formGroup1}>
+                <label>Logo:</label>
+                <input
+                  type="file"
+                  name="adviserPIC"
+                  accept="image/*"
+                  onChange={(e) => setFormData({ ...formData, adviserPIC: e.target.files[0] })}
+                  className={styles.input}
+                />
+              </div>
+
               {/* Adviser */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Adviser:</label>
                 <input
                   type="text"
@@ -229,7 +246,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* President */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>President:</label>
                 <input
                   type="text"
@@ -241,7 +258,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* Vice President */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Vice President:</label>
                 <input
                   type="text"
@@ -253,7 +270,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* Secretary */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Secretary:</label>
                 <input
                   type="text"
@@ -265,7 +282,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* Treasurer */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Treasurer:</label>
                 <input
                   type="text"
@@ -277,7 +294,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* Auditor */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Auditor:</label>
                 <input
                   type="text"
@@ -289,7 +306,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* PRO */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Public Relations Officer (PRO):</label>
                 <input
                   type="text"
@@ -301,7 +318,7 @@ const CouncilDisplayedit = () => {
               </div>
 
               {/* Representatives */}
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>First Year Representative:</label>
                 <input
                   type="text"
@@ -312,7 +329,7 @@ const CouncilDisplayedit = () => {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Second Year Representative:</label>
                 <input
                   type="text"
@@ -323,7 +340,7 @@ const CouncilDisplayedit = () => {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Third Year Representative:</label>
                 <input
                   type="text"
@@ -334,7 +351,7 @@ const CouncilDisplayedit = () => {
                 />
               </div>
 
-              <div className={styles.formGroup}>
+              <div className={styles.formGroup1}>
                 <label>Fourth Year Representative:</label>
                 <input
                   type="text"
