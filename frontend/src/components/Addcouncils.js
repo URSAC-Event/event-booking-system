@@ -26,7 +26,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
     const formData = new FormData();
     Object.keys(councilFormData).forEach((key) => {
       if (key === 'adviserPicture' && councilFormData[key]) {
-        formData.append(key, councilFormData[key]);
+        formData.append('adviserPIC', councilFormData[key]); // Change 'adviserPicture' to 'adviserPIC'
       } else {
         formData.append(key, councilFormData[key]);
       }

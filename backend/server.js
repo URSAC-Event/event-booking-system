@@ -695,7 +695,7 @@ const getNextEventImageName = (uploadsDir) => {
 
 app.post('/api/events/approve/:id', (req, res) => {
   const { id } = req.params;
-  console.log(`Received request to approve event with ID: ${id}`); // Log received ID
+  console.log(`Received request to approve event with ID: ${id}`);
 
   const query = 'SELECT * FROM events WHERE id = ?';
   connection.query(query, [id], (err, results) => {
@@ -706,53 +706,29 @@ app.post('/api/events/approve/:id', (req, res) => {
 
     if (results.length > 0) {
       const event = results[0];
-      const uploadsDir = path.join(__dirname, 'uploads');
 
-      // Get the next available image name
-      const newImageName = getNextEventImageName(uploadsDir);
-      const oldImagePath = path.join(uploadsDir, event.photo);
-      const newImagePath = path.join(uploadsDir, newImageName);
+      // Directly use the Cloudinary image URL
+      const insertQuery = `
+        INSERT INTO approved (id, name, organization, date, datefrom, duration, documents, photo, venue)
+        SELECT id, name, organization, date, datefrom, duration, documents, photo, venue
+        FROM events
+        WHERE id = ?;
+      `;
 
-      // Check if the old file exists
-      fs.access(oldImagePath, fs.constants.F_OK, (err) => {
+      connection.query(insertQuery, [id], (err, result) => {
         if (err) {
-          console.error('File not found:', oldImagePath);
-          return res.status(404).json({ message: 'File not found for renaming' });
+          console.error('Error approving event:', err);
+          return res.status(500).json({ message: 'Error approving event', error: err });
         }
 
-        // Rename the file
-        fs.rename(oldImagePath, newImagePath, (err) => {
+        const deleteQuery = 'DELETE FROM events WHERE id = ?';
+        connection.query(deleteQuery, [id], (err, deleteResult) => {
           if (err) {
-            console.error('Error renaming file:', err);
-            return res.status(500).json({ message: 'Error renaming file', error: err });
+            console.error('Error deleting event after approval:', err);
+            return res.status(500).json({ message: 'Error cleaning up original event', error: err });
           }
 
-          console.log(`File renamed successfully to ${newImageName}`);
-
-          // Continue with the rest of the process (approving the event)
-          const insertQuery = `
-          INSERT INTO approved (id, name, organization, date, datefrom, duration, documents, photo, venue)
-          SELECT id, name, organization, date, datefrom, duration, documents, ?, venue
-          FROM events
-          WHERE id = ?;
-        `;
-
-          connection.query(insertQuery, [newImageName, id], (err, result) => {
-            if (err) {
-              console.error('Error approving event:', err);
-              return res.status(500).json({ message: 'Error approving event', error: err });
-            }
-
-            const deleteQuery = 'DELETE FROM events WHERE id = ?';
-            connection.query(deleteQuery, [id], (err, deleteResult) => {
-              if (err) {
-                console.error('Error deleting event after approval:', err);
-                return res.status(500).json({ message: 'Error cleaning up original event', error: err });
-              }
-
-              res.status(200).json({ message: 'Event approved successfully!' });
-            });
-          });
+          res.status(200).json({ message: 'Event approved successfully!' });
         });
       });
     } else {
@@ -760,11 +736,6 @@ app.post('/api/events/approve/:id', (req, res) => {
     }
   });
 });
-
-
-
-
-
 
 
 //COUNCILSS SLIDEBAR SELECTION and display
@@ -820,8 +791,7 @@ const uploadForAdviserPic = multer({ storage: storageForAdviserPic }).single('ad
 
 
 
-// POST route to add councils
-app.post('/api/councils-add', uploadForAdviserPic, (req, res) => {
+app.post('/api/councils-add', upload.single('adviserPIC'), async (req, res) => {
   const {
     organization,
     adviser,
@@ -837,47 +807,63 @@ app.post('/api/councils-add', uploadForAdviserPic, (req, res) => {
     thirdRepresentative, // New field
     fourthRepresentative // New field
   } = req.body;
-  const adviserPicture = req.file ? req.file.filename : null;
 
-  // Validate required fields
-  if (!organization || !adviser || !link || !rep) {
-    return res.status(400).json({ message: 'Organization, Link, Adviser, and Rep are required fields.' });
-  }
+  let adviserPicture = null;
 
-  const query = `
-    INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    organization,
-    adviser,
-    adviserPicture,
-    link,
-    president,
-    vicePresident,
-    secretary,
-    treasurer,
-    auditor,
-    pro,
-    rep,
-    representative,
-    thirdRepresentative, // New value
-    fourthRepresentative // New value
-  ];
-
-  connection.query(query, values, (err, results) => {
-    if (err) {
-      console.error('Error saving data to the database:', err.sqlMessage || err.message);
-      return res.status(500).json({ message: 'Error saving data to the database', error: err.sqlMessage || err.message });
+  try {
+    if (req.file) {
+      // Upload image to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'event-booking',
+      });
+      adviserPicture = result.secure_url; // Cloudinary URL
     }
 
-    res.status(200).json({
-      message: 'Council data saved successfully!',
-      data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, thirdRepresentative, fourthRepresentative },
+    // Validate required fields
+    if (!organization || !adviser || !link || !rep) {
+      return res.status(400).json({ message: 'Organization, Link, Adviser, and Rep are required fields.' });
+    }
+
+    const query = `
+      INSERT INTO councils (organization, adviser, adviserPIC, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      organization,
+      adviser,
+      adviserPicture,
+      link,
+      president,
+      vicePresident,
+      secretary,
+      treasurer,
+      auditor,
+      pro,
+      rep,
+      representative,
+      thirdRepresentative, // New value
+      fourthRepresentative // New value
+    ];
+
+    connection.query(query, values, (err, results) => {
+      if (err) {
+        console.error('Error saving data to the database:', err.sqlMessage || err.message);
+        return res.status(500).json({ message: 'Error saving data to the database', error: err.sqlMessage || err.message });
+      }
+
+      res.status(200).json({
+        message: 'Council data saved successfully!',
+        data: { organization, adviser, adviserPicture, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, thirdRepresentative, fourthRepresentative },
+      });
     });
-  });
+
+  } catch (error) {
+    console.error('Error uploading file to Cloudinary:', error);
+    res.status(500).json({ message: 'Error uploading file to Cloudinary', error: error.message });
+  }
 });
+
 
 
 
