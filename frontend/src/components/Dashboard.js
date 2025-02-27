@@ -116,11 +116,39 @@ const Dashboard = () => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
+    const file = files[0];
+
+    if (!file) return;
+
+    // File validation rules, 10 MB limit and file size check
+    const fileRules = {
+      document: { types: ["application/pdf"], maxSize: 10 * 1024 * 1024 }, // 10MB
+      poster: { types: ["image/png", "image/jpeg", "image/jpg", "image/gif"], maxSize: 10 * 1024 * 1024 }, // 10MB
+    };
+
+    const { types, maxSize } = fileRules[name] || {};
+
+    if (types && !types.includes(file.type)) {
+      toast.error(`Invalid file type.`, { position: "top-right", autoClose: 3000 });
+      e.target.value = ""; // Reset input
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error(`File size must be less than 10MB!`, { position: "top-right", autoClose: 3000 });
+      e.target.value = ""; // Reset input
+      return;
+    }
+
+    // If valid, update state
     setEventData((prevData) => ({
       ...prevData,
-      [name]: files[0],
+      [name]: file,
     }));
+
+    toast.success("File uploaded successfully!", { position: "top-right", autoClose: 3000 });
   };
+
 
   const convertTo24Hour = (time, ampm) => {
     let [hours, minutes] = time.split(":");
