@@ -739,41 +739,94 @@ app.post('/api/events/approve/:id', (req, res) => {
 
 
 //COUNCILSS SLIDEBAR SELECTION and display
-app.put('/api/councilsedit/:id', (req, res) => {
-  const councilId = req.params.id; // ID from the URL
-  const { adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative } = req.body;
+app.put('/api/councilsedit/:id', upload.single('adviserPIC'), async (req, res) => {
+  const councilId = req.params.id;
+  const {
+    adviser,
+    link,
+    president,
+    vicePresident,
+    secretary,
+    treasurer,
+    auditor,
+    pro,
+    rep,
+    representative,
+    trdrepresentative,
+    frthrepresentative
+  } = req.body;
 
-  // Ensure created_at is never included
-  const updateQuery = `
-    UPDATE councils
-    SET adviser = ?, 
-        link = ?,
-        president = ?, 
-        vicePresident = ?, 
-        secretary = ?, 
-        treasurer = ?, 
-        auditor = ?, 
-        pro = ?, 
-        rep = ?, 
-        representative = ?,
-        trdrepresentative = ?,
-        frthrepresentative = ?
-    WHERE id = ?
-  `;
+  try {
+    let adviserPicture = null;
 
-  const values = [adviser, link, president, vicePresident, secretary, treasurer, auditor, pro, rep, representative, trdrepresentative, frthrepresentative, councilId];
-
-  connection.query(updateQuery, values, (err, result) => {
-    if (err) {
-      console.error('Error updating council details:', err);
-      return res.status(500).json({ error: 'An error occurred while updating council details' });
+    // Check if a new file is uploaded
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, { folder: 'event-booking' });
+      adviserPicture = result.secure_url; // Get Cloudinary URL
     }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Council not found' });
-    }
-    res.status(200).json({ message: 'Council updated successfully' });
-  });
+
+    // Fetch existing adviserPIC if no new file is uploaded
+    connection.query('SELECT adviserPIC FROM councils WHERE id = ?', [councilId], (err, rows) => {
+      if (err) {
+        console.error('Error fetching existing council:', err);
+        return res.status(500).json({ error: 'Error fetching existing council' });
+      }
+      const existingAdviserPIC = rows.length > 0 ? rows[0].adviserPIC : null;
+      adviserPicture = adviserPicture || existingAdviserPIC; // Use existing if no new file
+
+      const updateQuery = `
+        UPDATE councils
+        SET adviser = ?, 
+            link = ?,
+            president = ?, 
+            vicePresident = ?, 
+            secretary = ?, 
+            treasurer = ?, 
+            auditor = ?, 
+            pro = ?, 
+            rep = ?, 
+            representative = ?,
+            trdrepresentative = ?,
+            frthrepresentative = ?,
+            adviserPIC = ?
+        WHERE id = ?
+      `;
+
+      const values = [
+        adviser || null,
+        link || null,
+        president || null,
+        vicePresident || null,
+        secretary || null,
+        treasurer || null,
+        auditor || null,
+        pro || null,
+        rep || null,
+        representative || null,
+        trdrepresentative || null,
+        frthrepresentative || null,
+        adviserPicture,
+        councilId
+      ];
+
+      connection.query(updateQuery, values, (err, result) => {
+        if (err) {
+          console.error('Error updating council details:', err);
+          return res.status(500).json({ error: 'An error occurred while updating council details' });
+        }
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Council not found' });
+        }
+        res.status(200).json({ message: 'Council updated successfully' });
+      });
+    });
+  } catch (error) {
+    console.error('Error updating council:', error);
+    res.status(500).json({ error: 'An error occurred while updating council details' });
+  }
 });
+
+
 
 
 

@@ -12,11 +12,9 @@ const CouncilDisplayedit = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
   const [organization, setOrganization] = useState('');
+  const [refresh, setRefresh] = useState(false); // Add a refresh state
 
-  // Fetch all councils data on component mount
   useEffect(() => {
-
-
     const storedOrganization = localStorage.getItem('userOrganization');
     if (storedOrganization) {
       setOrganization(storedOrganization);
@@ -32,7 +30,13 @@ const CouncilDisplayedit = () => {
     };
 
     fetchCouncils();
-  }, []);
+  }, [refresh]); // Add refresh state as dependency
+
+  // Call this function after a successful edit
+  const handleEditSuccess = () => {
+    setRefresh(prev => !prev); // Toggle refresh to trigger useEffect
+  };
+
 
   // Open edit modal and populate form with selected council data
   const openEditModal = () => {
@@ -81,6 +85,7 @@ const CouncilDisplayedit = () => {
 
         toast.success("Council details updated successfully!", { duration: 4000 });
         setIsEditModalOpen(false);
+        handleEditSuccess();
       } else {
         toast.error("Failed to update council details.", { duration: 4000 });
       }
