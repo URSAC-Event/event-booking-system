@@ -23,12 +23,12 @@ app.use("/uploads", express.static("uploads"));
 
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-require('dotenv').config();
+// require('dotenv').config();
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: "dgqu5rdof",
+  api_key: "934136579321956",
+  api_secret: "R6jXXcHIoXw-uRsCf4YLPhJBupw",
 });
 
 
