@@ -144,7 +144,6 @@ const Dashboard = () => {
     setEventData((prevData) => ({
       ...prevData,
       [name]: file,
-    }));
   };
 
 
