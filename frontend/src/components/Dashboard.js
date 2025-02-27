@@ -145,8 +145,6 @@ const Dashboard = () => {
       ...prevData,
       [name]: file,
     }));
-
-    toast.success("File uploaded successfully!", { position: "top-right", autoClose: 3000 });
   };
 
 
