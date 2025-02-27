@@ -232,9 +232,32 @@ const CouncilDisplayedit = () => {
                 <input
                   type="file"
                   name="adviserPIC"
-                  accept="image/*"
-                  onChange={(e) => setFormData({ ...formData, adviserPIC: e.target.files[0] })}
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      // Check file type
+                      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+                      if (!allowedTypes.includes(file.type)) {
+                        toast.error("Only JPG, JPEG, and PNG files are allowed!", { duration: 4000 });
+                        e.target.value = ""; // Reset input
+                        return;
+                      }
+
+                      // Check file size (max 10MB)
+                      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+                      if (file.size > maxSize) {
+                        toast.error("File size must be less than 10MB!", { duration: 4000 });
+                        e.target.value = ""; // Reset input
+                        return;
+                      }
+
+                      // If all checks pass, update the state
+                      setFormData({ ...formData, adviserPIC: file });
+                    }
+                  }}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -247,6 +270,7 @@ const CouncilDisplayedit = () => {
                   value={formData.adviser || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -259,6 +283,7 @@ const CouncilDisplayedit = () => {
                   value={formData.president || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -271,6 +296,7 @@ const CouncilDisplayedit = () => {
                   value={formData.vicePresident || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -283,6 +309,7 @@ const CouncilDisplayedit = () => {
                   value={formData.secretary || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -295,6 +322,7 @@ const CouncilDisplayedit = () => {
                   value={formData.treasurer || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -307,6 +335,7 @@ const CouncilDisplayedit = () => {
                   value={formData.auditor || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -319,6 +348,7 @@ const CouncilDisplayedit = () => {
                   value={formData.pro || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -331,6 +361,7 @@ const CouncilDisplayedit = () => {
                   value={formData.rep || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -342,6 +373,7 @@ const CouncilDisplayedit = () => {
                   value={formData.representative || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -353,6 +385,7 @@ const CouncilDisplayedit = () => {
                   value={formData.trdrepresentative || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
@@ -364,6 +397,7 @@ const CouncilDisplayedit = () => {
                   value={formData.frthrepresentative || ""}
                   onChange={handleInputChange}
                   className={styles.input}
+                  required
                 />
               </div>
 
