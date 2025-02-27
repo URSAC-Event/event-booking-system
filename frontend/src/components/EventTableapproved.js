@@ -147,7 +147,7 @@ const EventTableApproved = () => {
                   <td className={styles.tableCell}>{event.duration}</td>
                   <td className={styles.tableCell}>
                     {event.documents && (
-                      <a className={styles.viewDocs} href={`https://event-booking-system-ckik.onrender.com/uploads/${event.documents}`}
+                      <a className={styles.viewDocs} href={event.documents}
                         target="_blank"
                         rel="noopener noreferrer">
                         View Document
@@ -156,7 +156,7 @@ const EventTableApproved = () => {
                   </td>
                   <td className={styles.tableCell}>
                     {event.photo && (
-                      <a className={styles.viewDocs} href={`https://event-booking-system-ckik.onrender.com/uploads/${event.photo}`}
+                      <a className={styles.viewDocs} href={event.photo}
                         target="_blank"
                         rel="noopener noreferrer">
                         View Image

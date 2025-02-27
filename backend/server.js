@@ -21,12 +21,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 
-//report 
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+// require('dotenv').config();
 
-
-
-
-//delete event send email for reason 
+cloudinary.config({
+  cloud_name: "dgqu5rdof",
+  api_key: "934136579321956",
+  api_secret: "R6jXXcHIoXw-uRsCf4YLPhJBupw",
+});
 
 
 
@@ -270,55 +273,43 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //FOR SLIDESHOW
 // Endpoint to fetch the list of images from the 'uploads' folder
 app.get("/api/slideshow-images", (req, res) => {
-  const uploadsPath = path.join(__dirname, "uploads");
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
 
-  fs.readdir(uploadsPath, (err, files) => {
-    if (err) {
-      return res.status(500).json({ message: "Error reading uploads folder" });
-    }
-
-    const imageFiles = files.filter((file) => /\.(jpg|jpeg|png|gif)$/i.test(file));
-
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split("T")[0];
-
-    // Fetch approved images with a future or current date
-    connection.query("SELECT photo FROM approved WHERE datefrom >= ?", [today], (err, results) => {
+  // Fetch approved images with a future or current date
+  connection.query(
+    "SELECT photo FROM approved WHERE datefrom >= ?",
+    [today],
+    (err, results) => {
       if (err) {
         console.error("Error fetching images from database:", err);
         return res.status(500).json({ message: "Database query failed" });
       }
 
-      const dbImages = results.map((row) => row.photo);
-      const validImages = imageFiles.filter((file) => dbImages.includes(file));
-
-      res.json(validImages); // Send only valid images
-    });
-  });
+      // Directly return Cloudinary image URLs from the database
+      const imageUrls = results.map((row) => row.photo);
+      res.json(imageUrls);
+    }
+  );
 });
+
 
 // Define the path for the 'uploads' folder
 const uploadFolder = path.join(__dirname, 'uploads');
 
 // Setup file storage for multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadFolder);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "event-booking", // Cloudinary folder where failes will be stored
+      public_id: Date.now() + "-" + file.originalname, // Unique filename
+      resource_type: file.mimetype === "application/pdf" ? "raw" : "image", // Use 'raw' for PDFs, 'image' for images
+    };
   },
 });
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file type'), false);
-  }
-};
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage });
 
 
 
@@ -333,15 +324,14 @@ app.get('/api/organizations', (req, res) => {
   });
 });
 
-// POST route to add an event
 app.post('/api/events', upload.fields([{ name: 'document' }, { name: 'poster' }]), (req, res) => {
   if (req.files && (!req.files.document || !req.files.poster)) {
     return res.status(400).json({ message: 'Missing required files.' });
   }
 
   const { venue, name, organization, date, datefrom, duration } = req.body;
-  const document = req.files.document ? req.files.document[0].filename : null;
-  const poster = req.files.poster ? req.files.poster[0].filename : null;
+  const document = req.files.document ? req.files.document[0].path : null; // Store Cloudinary URL
+  const poster = req.files.poster ? req.files.poster[0].path : null; // Store Cloudinary URL
 
   const query = 'INSERT INTO events (name, organization, date, datefrom, duration, documents, photo, venue) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [name, organization, date, datefrom, duration, document, poster, venue], (err, results) => {
@@ -352,6 +342,7 @@ app.post('/api/events', upload.fields([{ name: 'document' }, { name: 'poster' }]
     res.status(200).json({ message: 'Event added successfully', eventId: results.insertId });
   });
 });
+
 
 
 
