@@ -182,11 +182,6 @@ const Dashboard = () => {
     e.preventDefault();
 
     console.log(eventData.toDate);
-    console.log(convertTo24Hour("02:00 PM")); // Should return { hours: 14, minutes: 0 }
-    console.log(convertTo24Hour("12:00 AM")); // Should return { hours: 0, minutes: 0 }
-    console.log(convertTo24Hour("11:30 AM")); // Should return { hours: 11, minutes: 30 }
-
-
 
     // Ensure all time values are selected before proceeding
     if (
