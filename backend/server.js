@@ -1092,11 +1092,10 @@ app.post('/api/events/check-overlap', async (req, res) => {
         const graceAfter = existingEnd + 60; // No event should start before this time
 
         const isTimeOverlap =
-          (newStart >= graceBefore && newStart < existingEnd) || // Starts within grace period
-          (newEnd > existingStart && newEnd <= graceAfter) || // Ends within grace period
-          (newStart <= existingStart && newEnd >= existingEnd); // Fully contains an existing event
+          (newStart < existingEnd + 60 && newEnd > existingStart - 60) ||  // Overlaps main event or grace period
+          (newStart <= existingStart && newEnd >= existingEnd);            // Fully contains an existing event
 
-        const isDateOverlap = !(endDate < approvedStartDate || startDate > approvedEndDate);
+        const isDateOverlap = (startDate <= approvedEndDate && endDate >= approvedStartDate);
 
         if (isDateOverlap && isTimeOverlap) {
           console.log("❌ Overlap detected! Rejecting event.");
