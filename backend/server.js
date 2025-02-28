@@ -1063,40 +1063,38 @@ app.post('/api/events/check-overlap', async (req, res) => {
 
       console.log(`Found ${results.length} approved events.`);
 
-      const normalizedStartDate = new Date(startDate).toISOString().split("T")[0];
-      const normalizedEndDate = new Date(endDate).toISOString().split("T")[0];
+      const normalizedStartDate = startDate;
+      const normalizedEndDate = endDate;
+
+      const parseTime = (timeStr, grace = 0) => {
+        const [time, modifier] = timeStr.split(" ");
+        let [hours, minutes] = time.split(":").map(Number);
+
+        if (modifier === "PM" && hours !== 12) hours += 12;
+        if (modifier === "AM" && hours === 12) hours = 0;
+
+        let totalMinutes = hours * 60 + minutes + grace;
+
+        if (totalMinutes < 0) totalMinutes = 0;
+        if (totalMinutes > 1440) totalMinutes = 1440;
+
+        return totalMinutes;
+      };
+
+      const newStart = parseTime(newStartTime);
+      const newEnd = parseTime(newEndTime);
 
       for (let event of results) {
         let [existingStartTime, existingEndTime] = event.duration.split(" to ");
 
-        // Convert approved event dates
-        const approvedStartDate = new Date(event.date).toISOString().split("T")[0];
-        const approvedEndDate = new Date(event.datefrom).toISOString().split("T")[0];
+        const approvedStartDate = event.date;
+        const approvedEndDate = event.datefrom;
 
         console.log(`Checking against approved event: ${approvedStartDate} to ${approvedEndDate} (${existingStartTime} - ${existingEndTime})`);
 
-        // Convert times to minutes for easier calculations
-        const timeToMinutes = (timeStr) => {
-          const [hours, minutes] = timeStr.split(":").map(Number);
-          return hours * 60 + minutes;
-        };
+        const existingStart = parseTime(existingStartTime, -59);  // Apply grace period
+        const existingEnd = parseTime(existingEndTime, 59);
 
-        let existingStart = timeToMinutes(existingStartTime);
-        let existingEnd = timeToMinutes(existingEndTime);
-
-        // **Apply 59-minute grace period**
-        const GRACE_PERIOD = 59;
-        existingStart -= GRACE_PERIOD;
-        existingEnd += GRACE_PERIOD;
-
-        if (existingStart < 0) existingStart = 0; // Prevent negative time
-        if (existingEnd > 1440) existingEnd = 1440; // Prevent exceeding 24h (1440 mins)
-
-        // Convert new event times
-        let newStart = timeToMinutes(newStartTime);
-        let newEnd = timeToMinutes(newEndTime);
-
-        // **Check if new event overlaps within the grace period**
         const isTimeOverlap =
           (newStart >= existingStart && newStart < existingEnd) ||
           (newEnd > existingStart && newEnd <= existingEnd) ||
@@ -1105,7 +1103,7 @@ app.post('/api/events/check-overlap', async (req, res) => {
         const isDateOverlap = !(normalizedEndDate < approvedStartDate || normalizedStartDate > approvedEndDate);
 
         if (isDateOverlap && isTimeOverlap) {
-          console.log("❌ Overlap detected with grace period! Rejecting event.");
+          console.log("❌ Overlap detected! Rejecting event.");
           return res.status(400).json({
             message: 'An event is already approved in this time range (including setup time).',
           });
@@ -1120,6 +1118,7 @@ app.post('/api/events/check-overlap', async (req, res) => {
     res.status(500).json({ message: "Error checking event overlap." });
   }
 });
+
 
 
 
