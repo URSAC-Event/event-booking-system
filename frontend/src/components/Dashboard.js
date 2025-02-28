@@ -150,18 +150,25 @@ const Dashboard = () => {
 
 
   const convertTo24Hour = (time, ampm) => {
-    let [hours, minutes] = time.split(":");
-    hours = parseInt(hours);
-    minutes = parseInt(minutes);
+    // If ampm isn't provided, assume time includes both parts (e.g., "02:00 PM")
+    if (ampm === undefined) {
+      const parts = time.split(" ");
+      time = parts[0];
+      ampm = parts[1];
+    }
 
-    if (ampm === "PM" && hours !== 12) {
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (ampm.toUpperCase() === "PM" && hours !== 12) {
       hours += 12;
-    } else if (ampm === "AM" && hours === 12) {
+    } else if (ampm.toUpperCase() === "AM" && hours === 12) {
       hours = 0;
     }
 
     return { hours, minutes };
   };
+
+
 
   const convertDatabaseDateToFormattedDate = (date) => {
     const newDate = new Date(date); // Convert to JavaScript Date object
@@ -173,6 +180,13 @@ const Dashboard = () => {
 
   const handleModalSubmit = async (e) => {
     e.preventDefault();
+
+    console.log(eventData.toDate);
+    console.log(convertTo24Hour("02:00 PM")); // Should return { hours: 14, minutes: 0 }
+    console.log(convertTo24Hour("12:00 AM")); // Should return { hours: 0, minutes: 0 }
+    console.log(convertTo24Hour("11:30 AM")); // Should return { hours: 11, minutes: 30 }
+
+
 
     // Ensure all time values are selected before proceeding
     if (
@@ -267,6 +281,19 @@ const Dashboard = () => {
       const duration = `${fromTime} to ${toTime}`;
       console.log("Event Duration:", duration);
 
+      // Convert 12-hour format to 24-hour format
+      const convert24Hour = (hour, period) => {
+        hour = parseInt(hour, 10);
+        if (period.toUpperCase() === "PM" && hour !== 12) {
+          hour += 12;
+        }
+        if (period.toUpperCase() === "AM" && hour === 12) {
+          hour = 0;
+        }
+        return hour;
+      };
+
+
       try {
         console.log("Checking for overlapping events...");
         const response = await axios.get("https://event-booking-system-ckik.onrender.com/api/approved");
@@ -281,30 +308,11 @@ const Dashboard = () => {
           if (event.venue === eventData.venue) {
             if (userFromDate <= savedEndDate && (!userToDate || userToDate >= savedStartDate)) {
               console.log("Date conflict found with event:", event);
-
               console.log("Event Duration from DB:", event.duration);
 
-              // Handle both "to" and "-" as separators
               const [savedFrom, savedTo] = event.duration.includes(" to ")
                 ? event.duration.split(" to ")
                 : event.duration.split(" - ");
-
-              const convertTo24Hour = (timeStr) => {
-                const regex = /(\d{1,2}):?(\d{2})?\s?(AM|PM)/i;
-                const match = timeStr.match(regex);
-                if (!match) {
-                  console.error("Invalid time format:", timeStr);
-                  return null;
-                }
-                let [_, hour, minute, period] = match;
-                hour = parseInt(hour, 10);
-                minute = minute ? parseInt(minute, 10) : 0;
-
-                if (period.toUpperCase() === "PM" && hour !== 12) hour += 12;
-                if (period.toUpperCase() === "AM" && hour === 12) hour = 0;
-
-                return { hours: hour, minutes: minute };
-              };
 
               const savedFromTime = convertTo24Hour(savedFrom);
               const savedToTime = convertTo24Hour(savedTo);
@@ -324,25 +332,32 @@ const Dashboard = () => {
               adjustedToTime.setHours(savedToTime.hours + 1, savedToTime.minutes, 0);
 
               console.log("Adjusted Event Time:", adjustedFromTime, adjustedToTime);
+              console.log("eventData.toDate:", eventData.toDate);
 
-              // Convert user input event time to Date objects
-              const userFromTime = new Date(userFromDate);
-              userFromTime.setHours(eventData.fromTime.hours, eventData.fromTime.minutes, 0);
+              // ---- Parse both dates manually to avoid inconsistencies ----
 
-              const userToTime = userToDate ? new Date(userToDate) : userFromTime;
-              userToTime.setHours(eventData.toTime.hours, eventData.toTime.minutes, 0);
+              // Parse userFromTime from eventData.fromDate
+              const [fromYear, fromMonth, fromDay] = eventData.fromDate.split("-").map(Number);
+              const userFromTime = new Date(fromYear, fromMonth - 1, fromDay);
+              const fromHour24 = convert24Hour(eventData.fromHour, eventData.fromAmPm);
+              userFromTime.setHours(fromHour24, eventData.fromMinute, 0);
 
-              console.log("User Event Time:", userFromTime, userToTime);
+              // Parse userToTime from eventData.toDate
+              const [toYear, toMonth, toDay] = eventData.toDate.split("-").map(Number);
+              const toHour24 = convert24Hour(eventData.toHour, eventData.toAmPm);
+              const userToTime = new Date(toYear, toMonth - 1, toDay, toHour24, eventData.toMinute, 0);
+
+              console.log("User Event Time (24-hour format):", userFromTime, userToTime);
+              console.log("eventData.toDate after setting userToTime:", eventData.toDate);
 
               // Check for conflicts
               if (
-                (userFromTime >= adjustedFromTime && userFromTime < adjustedToTime) || // Starts inside grace period
-                (userToTime > adjustedFromTime && userToTime <= adjustedToTime) || // Ends inside grace period
-                (userFromTime <= adjustedFromTime && userToTime >= adjustedToTime) // Fully covers grace period
+                (userFromTime < adjustedToTime && userToTime > adjustedFromTime) || // Overlaps with grace period
+                (userFromTime <= adjustedFromTime && userToTime >= adjustedToTime)    // Fully encompasses grace period
               ) {
                 toast.error("Time conflict detected! The event overlaps with an existing booking.", { duration: 4000 });
                 hasConflict = true;
-                break;
+                return;
               }
             }
           }
