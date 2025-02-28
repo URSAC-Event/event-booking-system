@@ -269,78 +269,71 @@ const Dashboard = () => {
 
       try {
         console.log("Checking for overlapping events...");
-
-        // Fetch all approved events from the server
         const response = await axios.get("https://event-booking-system-ckik.onrender.com/api/approved");
         const approvedEvents = response.data;
 
-        // Validate for conflicts
+        let hasConflict = false;
+
         for (let event of approvedEvents) {
           const savedStartDate = new Date(event.date);
           const savedEndDate = event.datefrom ? new Date(event.datefrom) : savedStartDate;
 
           if (event.venue === eventData.venue) {
-            if (
-              userFromDate <= savedEndDate &&
-              (!userToDate || userToDate >= savedStartDate)
-            ) {
+            if (userFromDate <= savedEndDate && (!userToDate || userToDate >= savedStartDate)) {
               console.log("Date conflict found with event:", event);
 
-              const [savedFrom, savedTo] = event.duration.split(' to ');
-              // Define grace period in minutes
-              const GRACE_PERIOD = 59;
+              console.log("Event Duration from DB:", event.duration);
 
-              // Convert existing event times to 24-hour format
-              let savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[2]);
-              let savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[2]);
+              // Extract event start and end times (manually convert to 24-hour format)
+              const [savedFrom, savedTo] = event.duration.split(" to ");
 
-              // Apply grace period
-              savedFromTime.minutes -= GRACE_PERIOD;
-              savedToTime.minutes += GRACE_PERIOD;
+              const convertTo24Hour = (timeStr) => {
+                const [hourStr, period] = timeStr.split(" ");
+                let [hour, minute] = hourStr.split(":").map(Number);
 
-              // Adjust hours if minutes go out of bounds
-              if (savedFromTime.minutes < 0) {
-                savedFromTime.hours -= 1;
-                savedFromTime.minutes += 60;
-              }
-              if (savedToTime.minutes >= 60) {
-                savedToTime.hours += 1;
-                savedToTime.minutes -= 60;
-              }
+                if (period === "PM" && hour !== 12) hour += 12;
+                if (period === "AM" && hour === 12) hour = 0;
 
-              // Now check against the user's selected time range
+                return { hours: hour, minutes: minute || 0 };
+              };
+
+              const savedFromTime = convertTo24Hour(savedFrom);
+              const savedToTime = convertTo24Hour(savedTo);
+
+              console.log("Saved Event Time:", savedFrom, savedTo, savedFromTime, savedToTime);
+
+              // Apply a strict 1-hour grace period (60 minutes before and after)
+              const adjustedFromTime = new Date(savedStartDate);
+              adjustedFromTime.setHours(savedFromTime.hours - 1, savedFromTime.minutes, 0);
+
+              const adjustedToTime = new Date(savedEndDate);
+              adjustedToTime.setHours(savedToTime.hours + 1, savedToTime.minutes, 0);
+
+              console.log("Adjusted Event Time:", adjustedFromTime, adjustedToTime);
+
+              // Convert user input event time to Date objects
+              const userFromTime = new Date(userFromDate);
+              const userToTime = userToDate ? new Date(userToDate) : userFromTime;
+
+              console.log("User Event Time:", userFromTime, userToTime);
+
+              // Check for conflicts with exact timestamps
               if (
-                (userFrom.hours < savedToTime.hours ||
-                  (userFrom.hours === savedToTime.hours &&
-                    userFrom.minutes < savedToTime.minutes)) &&
-                (userTo.hours > savedFromTime.hours ||
-                  (userTo.hours === savedFromTime.hours &&
-                    userTo.minutes > savedFromTime.minutes))
+                (userFromTime >= adjustedFromTime && userFromTime < adjustedToTime) || // Starts inside grace period
+                (userToTime > adjustedFromTime && userToTime <= adjustedToTime) || // Ends inside grace period
+                (userFromTime <= adjustedFromTime && userToTime >= adjustedToTime) // Fully covers grace period
               ) {
-                const errorMessage =
-                  "The selected time is too close to an existing event. 1 hour transition time is advised.";
-                console.error(errorMessage, event);
-                toast.error(errorMessage, { duration: 4000 });
-                return;
-              }
-
-
-              if (
-                (userFrom.hours < savedToTime.hours ||
-                  (userFrom.hours === savedToTime.hours &&
-                    userFrom.minutes < savedToTime.minutes)) &&
-                (userTo.hours > savedFromTime.hours ||
-                  (userTo.hours === savedFromTime.hours &&
-                    userTo.minutes > savedFromTime.minutes))
-              ) {
-                const errorMessage =
-                  "The selected time overlaps with an existing event at the same venue.";
-                console.error(errorMessage, event);
-                toast.error(errorMessage, { duration: 4000 });
-                return;
+                toast.error("Time conflict detected! The event overlaps with an existing booking.", { duration: 4000 });
+                hasConflict = true;
+                break;
               }
             }
           }
+        }
+
+        if (hasConflict) {
+          console.log("Conflict detected. Stopping execution.");
+          return;
         }
 
         console.log("No conflicts found. Proceeding to save event...");
@@ -380,6 +373,10 @@ const Dashboard = () => {
         console.error("Error during validation:", fetchError);
         toast.error("Failed to validate event details", { duration: 4000 });
       }
+
+
+
+
     } else {
       console.warn("Incomplete time fields provided by the user.");
       toast.error("Please fill in all time fields correctly", { duration: 4000 });
