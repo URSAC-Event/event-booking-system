@@ -275,57 +275,76 @@ const Dashboard = () => {
         let hasConflict = false;
 
         for (let event of approvedEvents) {
-          if (event.venue !== eventData.venue) continue; // Skip events with different venues
-
           const savedStartDate = new Date(event.date);
           const savedEndDate = event.datefrom ? new Date(event.datefrom) : savedStartDate;
 
-          if (userFromDate > savedEndDate || (userToDate && userToDate < savedStartDate)) {
-            continue; // Skip non-overlapping dates
-          }
+          if (event.venue === eventData.venue) {
+            if (userFromDate <= savedEndDate && (!userToDate || userToDate >= savedStartDate)) {
+              console.log("Date conflict found with event:", event);
 
-          console.log("Potential date conflict found with event:", event);
+              console.log("Event Duration from DB:", event.duration);
 
-          // Extract and convert event times to 24-hour format
-          const [savedFrom, savedTo] = event.duration.split(" to ");
+              // Handle both "to" and "-" as separators
+              const [savedFrom, savedTo] = event.duration.includes(" to ")
+                ? event.duration.split(" to ")
+                : event.duration.split(" - ");
 
-          const convertTo24Hour = (timeStr) => {
-            const [hourStr, period] = timeStr.split(" ");
-            let [hour, minute] = hourStr.split(":").map(Number);
-            if (period === "PM" && hour !== 12) hour += 12;
-            if (period === "AM" && hour === 12) hour = 0;
-            return { hours: hour, minutes: minute || 0 };
-          };
+              const convertTo24Hour = (timeStr) => {
+                const regex = /(\d{1,2}):?(\d{2})?\s?(AM|PM)/i;
+                const match = timeStr.match(regex);
+                if (!match) {
+                  console.error("Invalid time format:", timeStr);
+                  return null;
+                }
+                let [_, hour, minute, period] = match;
+                hour = parseInt(hour, 10);
+                minute = minute ? parseInt(minute, 10) : 0;
 
-          const savedFromTime = convertTo24Hour(savedFrom);
-          const savedToTime = convertTo24Hour(savedTo);
+                if (period.toUpperCase() === "PM" && hour !== 12) hour += 12;
+                if (period.toUpperCase() === "AM" && hour === 12) hour = 0;
 
-          console.log("Saved Event Time:", savedFromTime, savedToTime);
+                return { hours: hour, minutes: minute };
+              };
 
-          // Apply strict 59-minute grace period to match backend
-          const adjustedFromTime = new Date(savedStartDate);
-          adjustedFromTime.setHours(savedFromTime.hours, savedFromTime.minutes - 59, 0);
+              const savedFromTime = convertTo24Hour(savedFrom);
+              const savedToTime = convertTo24Hour(savedTo);
 
-          const adjustedToTime = new Date(savedEndDate);
-          adjustedToTime.setHours(savedToTime.hours, savedToTime.minutes + 59, 0);
+              if (!savedFromTime || !savedToTime) {
+                console.error("Skipping event due to invalid time format.");
+                continue;
+              }
 
-          console.log("Adjusted Event Time:", adjustedFromTime, adjustedToTime);
+              console.log("Saved Event Time:", savedFrom, savedTo, savedFromTime, savedToTime);
 
-          // Convert user input time to Date objects
-          const userFromTime = new Date(userFromDate);
-          const userToTime = userToDate ? new Date(userToDate) : userFromTime;
+              // Apply a strict 1-hour grace period
+              const adjustedFromTime = new Date(savedStartDate);
+              adjustedFromTime.setHours(savedFromTime.hours - 1, savedFromTime.minutes, 0);
 
-          console.log("User Event Time:", userFromTime, userToTime);
+              const adjustedToTime = new Date(savedEndDate);
+              adjustedToTime.setHours(savedToTime.hours + 1, savedToTime.minutes, 0);
 
-          // Conflict check
-          if (
-            (userFromTime >= adjustedFromTime && userFromTime < adjustedToTime) ||
-            (userToTime > adjustedFromTime && userToTime <= adjustedToTime) ||
-            (userFromTime <= adjustedFromTime && userToTime >= adjustedToTime)
-          ) {
-            toast.error("Time conflict detected! The event overlaps with an existing booking.", { duration: 4000 });
-            hasConflict = true;
-            break;
+              console.log("Adjusted Event Time:", adjustedFromTime, adjustedToTime);
+
+              // Convert user input event time to Date objects
+              const userFromTime = new Date(userFromDate);
+              userFromTime.setHours(eventData.fromTime.hours, eventData.fromTime.minutes, 0);
+
+              const userToTime = userToDate ? new Date(userToDate) : userFromTime;
+              userToTime.setHours(eventData.toTime.hours, eventData.toTime.minutes, 0);
+
+              console.log("User Event Time:", userFromTime, userToTime);
+
+              // Check for conflicts
+              if (
+                (userFromTime >= adjustedFromTime && userFromTime < adjustedToTime) || // Starts inside grace period
+                (userToTime > adjustedFromTime && userToTime <= adjustedToTime) || // Ends inside grace period
+                (userFromTime <= adjustedFromTime && userToTime >= adjustedToTime) // Fully covers grace period
+              ) {
+                toast.error("Time conflict detected! The event overlaps with an existing booking.", { duration: 4000 });
+                hasConflict = true;
+                break;
+              }
+            }
           }
         }
 
