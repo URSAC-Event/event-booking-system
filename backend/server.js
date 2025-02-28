@@ -1053,7 +1053,7 @@ app.post('/api/events/check-overlap', async (req, res) => {
   console.log(`Checking overlap for event: ${startDate} to ${endDate} (${newStartTime} - ${newEndTime})`);
 
   try {
-    const query = `SELECT date, datefrom, duration FROM approved;`;
+    const query = `SELECT date, datefrom, duration FROM approved`;
 
     connection.query(query, [], (error, results) => {
       if (error) {
@@ -1063,28 +1063,45 @@ app.post('/api/events/check-overlap', async (req, res) => {
 
       console.log(`Found ${results.length} approved events.`);
 
-      // Convert input dates into Date objects
-      const newStartDateTime = new Date(`${startDate} ${newStartTime}`);
-      const newEndDateTime = new Date(`${endDate} ${newEndTime}`);
+      const parseTime = (timeStr) => {
+        const [time, modifier] = timeStr.split(" ");
+        let [hours, minutes] = time.split(":").map(Number);
+
+        if (modifier === "PM" && hours !== 12) hours += 12;
+        if (modifier === "AM" && hours === 12) hours = 0;
+
+        return hours * 60 + minutes; // Convert to minutes for easier comparison
+      };
+
+      const newStart = parseTime(newStartTime);
+      const newEnd = parseTime(newEndTime);
 
       for (let event of results) {
         let [existingStartTime, existingEndTime] = event.duration.split(" to ");
 
-        const approvedStartDateTime = new Date(`${event.date} ${existingStartTime}`);
-        const approvedEndDateTime = new Date(`${event.datefrom} ${existingEndTime}`);
+        const approvedStartDate = event.date;
+        const approvedEndDate = event.datefrom;
 
-        console.log(`Checking against approved event: ${approvedStartDateTime} to ${approvedEndDateTime}`);
+        console.log(`Checking against approved event: ${approvedStartDate} to ${approvedEndDate} (${existingStartTime} - ${existingEndTime})`);
 
-        // Check for **datetime overlap** (date + time together)
-        const isOverlap =
-          (newStartDateTime >= approvedStartDateTime && newStartDateTime < approvedEndDateTime) ||
-          (newEndDateTime > approvedStartDateTime && newEndDateTime <= approvedEndDateTime) ||
-          (newStartDateTime <= approvedStartDateTime && newEndDateTime >= approvedEndDateTime);
+        const existingStart = parseTime(existingStartTime);
+        const existingEnd = parseTime(existingEndTime);
 
-        if (isOverlap) {
+        // 1-hour grace period before and after the event
+        const graceBefore = existingStart - 60; // No event should end past this time
+        const graceAfter = existingEnd + 60; // No event should start before this time
+
+        const isTimeOverlap =
+          (newStart >= graceBefore && newStart < existingEnd) || // Starts within grace period
+          (newEnd > existingStart && newEnd <= graceAfter) || // Ends within grace period
+          (newStart <= existingStart && newEnd >= existingEnd); // Fully contains an existing event
+
+        const isDateOverlap = !(endDate < approvedStartDate || startDate > approvedEndDate);
+
+        if (isDateOverlap && isTimeOverlap) {
           console.log("❌ Overlap detected! Rejecting event.");
           return res.status(400).json({
-            message: 'An event is already approved in this time range (including setup time).',
+            message: 'An event is already approved in this time range (including grace period).',
           });
         }
       }
@@ -1097,6 +1114,7 @@ app.post('/api/events/check-overlap', async (req, res) => {
     res.status(500).json({ message: "Error checking event overlap." });
   }
 });
+
 
 
 
