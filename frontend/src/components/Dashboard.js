@@ -78,33 +78,33 @@ const Dashboard = () => {
     navigate("/login", { replace: true });
   };
 
-  const renderSidebarContent = () => {
-    switch (selectedSidebar) {
-      case "New Booking":
-        return <p>Form to create a new booking.</p>;
-      case "Events":
-        return (
-          <div>
-            <p>Upcoming events information.</p>
-            <button
-              className={styles.addEventButton}
-              onClick={() => setModalOpen(true)}
-            >
-              Add Event
-            </button>
-          </div>
-        );
-      case "Report":
-        return (
-          <div>
-            <ReportForm userId={loggedInUser.id} />{" "}
-            {/* Pass userId to the ReportForm */}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+  // const renderSidebarContent = () => {
+  //   switch (selectedSidebar) {
+  //     case "New Booking":
+  //       return <p>Form to create a new booking.</p>;
+  //     case "Events":
+  //       return (
+  //         <div>
+  //           <p>Upcoming events information.</p>
+  //           <button
+  //             className={styles.addEventButton}
+  //             onClick={() => setModalOpen(true)}
+  //           >
+  //             Add Event
+  //           </button>
+  //         </div>
+  //       );
+  //     case "Report":
+  //       return (
+  //         <div>
+  //           <ReportForm userId={loggedInUser.id} />{" "}
+  //           {/* Pass userId to the ReportForm */}
+  //         </div>
+  //       );
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -170,13 +170,13 @@ const Dashboard = () => {
 
 
 
-  const convertDatabaseDateToFormattedDate = (date) => {
-    const newDate = new Date(date); // Convert to JavaScript Date object
-    const day = String(newDate.getDate()).padStart(2, "0");
-    const month = String(newDate.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const year = newDate.getFullYear();
-    return `${year}/${month}/${day}`;
-  };
+  // const convertDatabaseDateToFormattedDate = (date) => {
+  //   const newDate = new Date(date); // Convert to JavaScript Date object
+  //   const day = String(newDate.getDate()).padStart(2, "0");
+  //   const month = String(newDate.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  //   const year = newDate.getFullYear();
+  //   return `${year}/${month}/${day}`;
+  // };
 
   const handleModalSubmit = async (e) => {
     e.preventDefault();
