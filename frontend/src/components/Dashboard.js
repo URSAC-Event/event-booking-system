@@ -287,8 +287,43 @@ const Dashboard = () => {
               console.log("Date conflict found with event:", event);
 
               const [savedFrom, savedTo] = event.duration.split(' to ');
-              const savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[2]);
-              const savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[2]);
+              // Define grace period in minutes
+              const GRACE_PERIOD = 59;
+
+              // Convert existing event times to 24-hour format
+              let savedFromTime = convertTo24Hour(savedFrom.split(' ')[0] + ":" + savedFrom.split(' ')[1], savedFrom.split(' ')[2]);
+              let savedToTime = convertTo24Hour(savedTo.split(' ')[0] + ":" + savedTo.split(' ')[1], savedTo.split(' ')[2]);
+
+              // Apply grace period
+              savedFromTime.minutes -= GRACE_PERIOD;
+              savedToTime.minutes += GRACE_PERIOD;
+
+              // Adjust hours if minutes go out of bounds
+              if (savedFromTime.minutes < 0) {
+                savedFromTime.hours -= 1;
+                savedFromTime.minutes += 60;
+              }
+              if (savedToTime.minutes >= 60) {
+                savedToTime.hours += 1;
+                savedToTime.minutes -= 60;
+              }
+
+              // Now check against the user's selected time range
+              if (
+                (userFrom.hours < savedToTime.hours ||
+                  (userFrom.hours === savedToTime.hours &&
+                    userFrom.minutes < savedToTime.minutes)) &&
+                (userTo.hours > savedFromTime.hours ||
+                  (userTo.hours === savedFromTime.hours &&
+                    userTo.minutes > savedFromTime.minutes))
+              ) {
+                const errorMessage =
+                  "The selected time is too close to an existing event. 1 hour transition time is advised.";
+                console.error(errorMessage, event);
+                toast.error(errorMessage, { duration: 4000 });
+                return;
+              }
+
 
               if (
                 (userFrom.hours < savedToTime.hours ||
