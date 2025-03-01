@@ -472,9 +472,22 @@ app.get('/api/councilsdisplay', (req, res) => {
   });
 });
 
-// Login route for users
+const failedAttempts = {}; // Store failed attempts { username: { count, lockUntil } }
+
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
+
+  if (!failedAttempts[username]) {
+    failedAttempts[username] = { count: 0, lockUntil: null };
+  }
+
+  const userAttempts = failedAttempts[username];
+
+  // Check if user is locked out
+  if (userAttempts.lockUntil && Date.now() < userAttempts.lockUntil) {
+    return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
+  }
+
   const query = 'SELECT * FROM users WHERE username = ?';
 
   connection.query(query, [username], (err, results) => {
@@ -482,17 +495,27 @@ app.post('/api/login', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ success: false, message: 'Database error' });
     }
+
     if (results.length > 0) {
       if (results[0].password === password) {
-        console.log('Login Response:', results[0]); // Debugging: See what is fetched from DB
+        // Reset failed attempts on successful login
+        delete failedAttempts[username];
+
         return res.json({
           success: true,
           message: 'Login successful',
           userId: results[0].id,
           role: results[0].role,
-          organization: results[0].organizationz // Ensure this is correct
+          organization: results[0].organization // Ensure correct field name
         });
       } else {
+        userAttempts.count += 1;
+
+        if (userAttempts.count >= 5) {
+          userAttempts.lockUntil = Date.now() + 10 * 60 * 1000; // Lock for 10 mins
+          return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
+        }
+
         return res.status(401).json({ success: false, message: 'Incorrect password' });
       }
     } else {
@@ -502,10 +525,25 @@ app.post('/api/login', (req, res) => {
 });
 
 
+
 // Login route for admin
+const failedAdminAttempts = {}; // Store failed attempts { username: { count, lockUntil } }
+
 app.post('/api/adminlogin', (req, res) => {
   const { username, password } = req.body;
-  console.log('Login attempt with username:', username); // Debugging line
+  console.log('Admin login attempt with username:', username); // Debugging line
+
+  // Initialize tracking if the admin user isn't in the failed attempts object
+  if (!failedAdminAttempts[username]) {
+    failedAdminAttempts[username] = { count: 0, lockUntil: null };
+  }
+
+  const adminAttempts = failedAdminAttempts[username];
+
+  // Check if the admin account is locked
+  if (adminAttempts.lockUntil && Date.now() < adminAttempts.lockUntil) {
+    return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
+  }
 
   const query = 'SELECT * FROM admin WHERE adminuser = ?';
   connection.query(query, [username], (err, results) => {
@@ -513,11 +551,24 @@ app.post('/api/adminlogin', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ success: false, message: 'Database error' });
     }
-    console.log('Query results:', results); // Debugging line
+
+    console.log('Admin Query results:', results); // Debugging line
+
     if (results.length > 0 && results[0].adminpassword === password) {
+      // Reset failed attempts on successful login
+      delete failedAdminAttempts[username];
+
       return res.json({ success: true, message: 'Admin login successful' });
+    } else {
+      adminAttempts.count += 1;
+
+      if (adminAttempts.count >= 5) {
+        adminAttempts.lockUntil = Date.now() + 10 * 60 * 1000; // Lock for 10 minutes
+        return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
+      }
+
+      return res.status(401).json({ success: false, message: 'Invalid admin username or password' });
     }
-    res.status(401).json({ success: false, message: 'Invalid admin username or password' });
   });
 });
 

@@ -5,6 +5,7 @@ import styles from "./AdminLogin.module.css";
 import logo from "../assets/urslogo.png";
 import back from "../assets/close-outline.svg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "sonner";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
@@ -28,18 +29,39 @@ const AdminLogin = () => {
       });
 
       if (response.data.success) {
-        // If login is successful, redirect to the admin dashboard
+        // If login is successful, show success toast and redirect to the admin dashboard
+        toast.success("Admin login successful!", { duration: 4000 });
         localStorage.setItem("adminUsername", username); // Store admin session
         navigate("/admin");
       } else {
-        // Display an error message if login failed
+        toast.error(response.data.message, { duration: 4000 });
         setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setErrorMessage("Login failed. Please try again.");
+
+      if (error.response) {
+        const { status, data } = error.response;
+
+        if (status === 403) {
+          toast.error("Too many failed attempts. Try again later.", { duration: 4000 });
+        } else if (status === 401 && data.attempts !== undefined) {
+          // Display exact remaining attempts based on backend count
+          const remainingAttempts = 5 - data.attempts;
+          if (remainingAttempts > 0) {
+            toast.error(`Invalid credentials. ${remainingAttempts} attempts remaining.`, { duration: 4000 });
+          } else {
+            toast.error("Too many failed attempts. Try again later.", { duration: 4000 });
+          }
+        } else {
+          toast.error("Login failed. Please try again.", { duration: 4000 });
+        }
+      } else {
+        toast.error("Login failed. Please try again.", { duration: 4000 });
+      }
     }
   };
+
 
   // Function to handle Sign Up button click
   const handleSignUpClick = () => {
