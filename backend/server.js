@@ -506,7 +506,7 @@ app.post('/api/login', (req, res) => {
           message: "Login successful",
           userId: results[0].id,
           role: results[0].role,
-          organization: results[0].organization, // Ensure correct field name
+          organization: results[0].organizationz, // Ensure correct field name
         });
       } else {
         userAttempts.count += 1;

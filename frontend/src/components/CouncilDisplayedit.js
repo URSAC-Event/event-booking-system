@@ -5,6 +5,7 @@ import styles from "./Dashboard.module.css"; // For dashboard styles
 import { FaAngleDown } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { toast } from "sonner";
+import { FaUsers } from "react-icons/fa";
 
 const CouncilDisplayedit = () => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
@@ -144,9 +145,10 @@ const CouncilDisplayedit = () => {
         </div>
 
         <div className={styles.sidebarContent}>
-          <h3 className={styles.councilSubheader}>
-            {selectedCouncil ? "" : "Select a Council/Organization"}
-          </h3>
+          {selectedCouncil ? "" : <div className={styles.placeholderCont}>
+            <FaUsers className={styles.placholderIcon} />
+            <p>Select a Council/Organization</p>
+          </div>}
           {selectedCouncil && (
             <div className={styles.details}>
               <div className={styles.profileCont}>
@@ -155,6 +157,7 @@ const CouncilDisplayedit = () => {
                     href={selectedCouncil.link}
                     target="_blank"
                     rel="noopener noreferrer"
+                    title="Click to visit page"
                   >
                     <img
                       src={selectedCouncil.adviserPIC}
@@ -162,12 +165,25 @@ const CouncilDisplayedit = () => {
                       className={styles.adviserImage}
                     />
                   </a>
-                  <h3 className={styles.councilSubheader}>
-                    {selectedCouncil ? selectedCouncil.organization : ""}
-                  </h3>
-                  <h3 className={styles.councilSubheaderMobile}>
-                    {selectedCouncil ? selectedCouncil.organization : ""}
-                  </h3>
+                  <a
+                    href={selectedCouncil.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <h3 className={styles.councilSubheader}>
+                      {selectedCouncil ? selectedCouncil.organization : ""}
+                    </h3>
+                  </a>
+                  <a
+                    href={selectedCouncil.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <h3 className={styles.councilSubheaderMobile}>
+                      {selectedCouncil ? selectedCouncil.organization : ""}
+                    </h3>
+                  </a>
+
                 </div>
                 {selectedCouncil.organization === organization && (<div className={styles.iconCont}>
                   <FaPen className={styles.editIcon} onClick={openEditModal} />
@@ -175,42 +191,42 @@ const CouncilDisplayedit = () => {
               </div>
               <div className={styles.membersCont}>
                 <p>
-                  <strong>Adviser:</strong> {selectedCouncil.adviser}
+                  <strong>Adviser:</strong> <span>{selectedCouncil.adviser}</span>
                 </p>
                 <p>
-                  <strong>President:</strong> {selectedCouncil.president}
+                  <strong>President:</strong> <span>{selectedCouncil.president}</span>
                 </p>
                 <p>
                   <strong>Vice President:</strong>{" "}
-                  {selectedCouncil.vicePresident}
+                  <span>{selectedCouncil.vicePresident}</span>
                 </p>
                 <p>
-                  <strong>Secretary:</strong> {selectedCouncil.secretary}
+                  <strong>Secretary:</strong> <span>{selectedCouncil.secretary}</span>
                 </p>
                 <p>
-                  <strong>Treasurer:</strong> {selectedCouncil.treasurer}
+                  <strong>Treasurer:</strong> <span>{selectedCouncil.treasurer}</span>
                 </p>
                 <p>
-                  <strong>Auditor:</strong> {selectedCouncil.auditor}
+                  <strong>Auditor:</strong> <span>{selectedCouncil.auditor}</span>
                 </p>
                 <p>
-                  <strong>PRO:</strong> {selectedCouncil.pro}
+                  <strong>PRO:</strong> <span>{selectedCouncil.pro}</span>
                 </p>
                 <p>
                   <strong>First Year Representative:</strong>{" "}
-                  {selectedCouncil.rep}
+                  <span>{selectedCouncil.rep}</span>
                 </p>
                 <p>
                   <strong>Second Year Representative:</strong>{" "}
-                  {selectedCouncil.representative}
+                  <span>{selectedCouncil.representative}</span>
                 </p>
                 <p>
                   <strong>Third Year Representative:</strong>{" "}
-                  {selectedCouncil.trdrepresentative}
+                  <span>{selectedCouncil.trdrepresentative}</span>
                 </p>
                 <p>
                   <strong>Fourth Year Representative:</strong>{" "}
-                  {selectedCouncil.frthrepresentative}
+                  <span>{selectedCouncil.frthrepresentative}</span>
                 </p>
               </div>
             </div>
