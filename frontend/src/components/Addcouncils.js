@@ -87,9 +87,21 @@ const AddCouncils = ({ setRefresh, showAddCouncilForm, setShowAddCouncilForm }) 
                   <input
                     type="file"
                     accept="image/png, image/jpeg, image/jpg"
-                    onChange={(e) =>
-                      setCouncilFormData({ ...councilFormData, adviserPicture: e.target.files[0] })
-                    }
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+
+                      if (file) {
+                        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                          toast.error("File size must not exceed 10MB");
+
+                          // Clear the file input so the name disappears
+                          e.target.value = "";
+                          return;
+                        }
+
+                        setCouncilFormData({ ...councilFormData, adviserPicture: file });
+                      }
+                    }}
                     className={styles.fileInput}
                   />
 
