@@ -485,15 +485,15 @@ app.post('/api/login', (req, res) => {
 
   // Check if user is locked out
   if (userAttempts.lockUntil && Date.now() < userAttempts.lockUntil) {
-    return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
+    return res.status(403).json({ success: false, message: "Too many failed attempts. Try again later." });
   }
 
-  const query = 'SELECT * FROM users WHERE username = ?';
+  const query = "SELECT * FROM users WHERE username = ?";
 
   connection.query(query, [username], (err, results) => {
     if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ success: false, message: 'Database error' });
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
     }
 
     if (results.length > 0) {
@@ -503,72 +503,74 @@ app.post('/api/login', (req, res) => {
 
         return res.json({
           success: true,
-          message: 'Login successful',
+          message: "Login successful",
           userId: results[0].id,
           role: results[0].role,
-          organization: results[0].organization // Ensure correct field name
+          organization: results[0].organization, // Ensure correct field name
         });
       } else {
         userAttempts.count += 1;
 
         if (userAttempts.count >= 5) {
           userAttempts.lockUntil = Date.now() + 10 * 60 * 1000; // Lock for 10 mins
-          return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
+          return res.status(403).json({ success: false, message: "Too many failed attempts. Try again later." });
         }
 
-        return res.status(401).json({ success: false, message: 'Incorrect password' });
+        return res.status(401).json({
+          success: false,
+          message: "Incorrect password",
+          attempts: userAttempts.count, // Send the exact failed attempt count
+        });
       }
     } else {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
   });
 });
 
 
 
+
 // Login route for admin
-const failedAdminAttempts = {}; // Store failed attempts { username: { count, lockUntil } }
+// Store failed login attempts
+const failedAdminAttempts = {}; // { username: { count, lockUntil } }
 
 app.post('/api/adminlogin', (req, res) => {
   const { username, password } = req.body;
-  console.log('Admin login attempt with username:', username); // Debugging line
 
-  // Initialize tracking if the admin user isn't in the failed attempts object
-  if (!failedAdminAttempts[username]) {
-    failedAdminAttempts[username] = { count: 0, lockUntil: null };
+  // Check if user is locked out
+  if (failedAdminAttempts[username] && failedAdminAttempts[username].lockUntil > Date.now()) {
+    return res.status(403).json({ success: false, message: "Too many failed attempts. Try again later." });
   }
 
-  const adminAttempts = failedAdminAttempts[username];
-
-  // Check if the admin account is locked
-  if (adminAttempts.lockUntil && Date.now() < adminAttempts.lockUntil) {
-    return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
-  }
-
-  const query = 'SELECT * FROM admin WHERE adminuser = ?';
+  const query = "SELECT * FROM admin WHERE adminuser = ?";
   connection.query(query, [username], (err, results) => {
     if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ success: false, message: 'Database error' });
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
     }
-
-    console.log('Admin Query results:', results); // Debugging line
 
     if (results.length > 0 && results[0].adminpassword === password) {
       // Reset failed attempts on successful login
       delete failedAdminAttempts[username];
 
-      return res.json({ success: true, message: 'Admin login successful' });
-    } else {
-      adminAttempts.count += 1;
-
-      if (adminAttempts.count >= 5) {
-        adminAttempts.lockUntil = Date.now() + 10 * 60 * 1000; // Lock for 10 minutes
-        return res.status(403).json({ success: false, message: 'Too many failed attempts. Try again later.' });
-      }
-
-      return res.status(401).json({ success: false, message: 'Invalid admin username or password' });
+      return res.json({ success: true, message: "Admin login successful" });
     }
+
+    // Track failed attempts
+    if (!failedAdminAttempts[username]) {
+      failedAdminAttempts[username] = { count: 1, lockUntil: 0 };
+    } else {
+      failedAdminAttempts[username].count++;
+    }
+
+    // Lock out user after 5 failed attempts
+    if (failedAdminAttempts[username].count >= 5) {
+      failedAdminAttempts[username].lockUntil = Date.now() + 10 * 60 * 1000; // Lock for 10 mins
+      return res.status(403).json({ success: false, message: "Too many failed attempts. Try again later." });
+    }
+
+    return res.status(401).json({ success: false, message: "Invalid credentials", attempts: failedAdminAttempts[username].count });
   });
 });
 
