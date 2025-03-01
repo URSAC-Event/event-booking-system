@@ -488,7 +488,7 @@ app.post('/api/login', (req, res) => {
     return res.status(403).json({ success: false, message: "Too many failed attempts. Try again later." });
   }
 
-  const query = "SELECT * FROM users WHERE username = ?";
+  const query = "SELECT * FROM users WHERE BINARY username = ?";
 
   connection.query(query, [username], (err, results) => {
     if (err) {
@@ -543,7 +543,7 @@ app.post('/api/adminlogin', (req, res) => {
     return res.status(403).json({ success: false, message: "Too many failed attempts. Try again later." });
   }
 
-  const query = "SELECT * FROM admin WHERE adminuser = ?";
+  const query = "SELECT * FROM admin WHERE BINARY adminuser = ?";
   connection.query(query, [username], (err, results) => {
     if (err) {
       console.error("Database error:", err);
