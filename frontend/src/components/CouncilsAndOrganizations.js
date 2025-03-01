@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import EditCouncilModal from "./EditCouncilModal";
 import Addcouncils from "./Addcouncils";
 import styles from "./Admin.module.css";
@@ -11,6 +11,26 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
   const [searchQuery, setSearchQuery] = useState("");
   const [councilToDelete, setCouncilToDelete] = useState(null); // State to store the council ID to delete
   const dialogRef = useRef(null); // Ref for the confirmation modal
+  const [refresh, setRefresh] = useState(false);
+
+  useEffect(() => {
+    const fetchCouncils = async () => {
+      try {
+        const response = await fetch("https://event-booking-system-ckik.onrender.com/api/councils");
+        const data = await response.json();
+
+        if (response.ok) {
+          setCouncils(data); // Set councils state with fetched data
+        } else {
+          console.error("Failed to fetch councils:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching councils:", error);
+      }
+    }
+
+    fetchCouncils();
+  }, [refresh])
 
   const handleDelete = async (id) => {
     setCouncilToDelete(id); // Store the council ID to delete
@@ -181,6 +201,7 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
       />
 
       <Addcouncils
+        setRefresh={setRefresh}
         showAddCouncilForm={showAddCouncilForm}
         setShowAddCouncilForm={setShowAddCouncilForm}
         handleAddCouncil={handleAddCouncil}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./Addcouncils.module.css"; // Import the styles
 import { toast } from "sonner";
 
-const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
+const AddCouncils = ({ setRefresh, showAddCouncilForm, setShowAddCouncilForm }) => {
   const [councilFormData, setCouncilFormData] = useState({
     organization: "",
     adviser: "",
@@ -43,6 +43,7 @@ const AddCouncils = ({ showAddCouncilForm, setShowAddCouncilForm }) => {
         toast.success("Council added successfully", {
           duration: 4000, // Time before it disappears
         });
+        setRefresh((prev) => !prev);
         setShowAddCouncilForm(false);
       } else {
         toast.error('Error saving council data: ' + data.message, {

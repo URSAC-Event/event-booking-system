@@ -84,7 +84,7 @@ const Admin = () => {
 
       fetchEvents();
     }
-  }, [activeComponent]);
+  }, [activeComponent, showAddCouncilForm]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -124,9 +124,7 @@ const Admin = () => {
       }
     };
 
-    if (activeComponent === "Councils") {
-      fetchCouncils();
-    }
+    fetchCouncils();
   }, [activeComponent]);
   // Fetch users from the backend API when 'users' is selected
   useEffect(() => {
