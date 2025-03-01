@@ -5,6 +5,7 @@ import styles from './Login.module.css';
 import logo from '../assets/urslogo.png'
 import back from '../assets/close-outline.svg'
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { toast } from "sonner";
 
 
 const Login = () => {
@@ -20,27 +21,49 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
         try {
-            const response = await axios.post('https://event-booking-system-ckik.onrender.com/api/login', {
+            const response = await axios.post("https://event-booking-system-ckik.onrender.com/api/login", {
                 username,
                 password,
             });
 
             if (response.data.success) {
-                // Store user details in localStorage
-                localStorage.setItem('userId', response.data.userId);
-                localStorage.setItem('userRole', response.data.role);
-                localStorage.setItem('userOrganization', response.data.organization); // Store organization
+                localStorage.setItem("userId", response.data.userId);
+                localStorage.setItem("userRole", response.data.role);
+                localStorage.setItem("userOrganization", response.data.organization);
 
-                navigate('/dashboard');
+                toast.success("Login successful!", { duration: 4000 });
+                navigate("/dashboard");
             } else {
-                setErrorMessage(response.data.message);
+                toast.error(response.data.message, { duration: 4000 });
             }
         } catch (error) {
-            console.error('Error during login:', error);
-            setErrorMessage('Login failed. Please try again.');
+            console.error("Error during login:", error);
+
+            if (error.response) {
+                const { status, data } = error.response;
+
+                if (status === 403) {
+                    toast.error("Too many failed attempts. Try again later.", { duration: 4000 });
+                } else if (status === 401 && data.attempts !== undefined) {
+                    // Calculate remaining attempts based on backend count
+                    const remainingAttempts = 5 - data.attempts;
+                    if (remainingAttempts > 0) {
+                        toast.error(`Incorrect password. ${remainingAttempts} attempts remaining.`, { duration: 4000 });
+                    } else {
+                        toast.error("Too many failed attempts. Try again later.", { duration: 4000 });
+                    }
+                } else {
+                    toast.error("Login failed. Please try again.", { duration: 4000 });
+                }
+            } else {
+                toast.error("Login failed. Please try again.", { duration: 4000 });
+            }
         }
     };
+
+
 
 
 
