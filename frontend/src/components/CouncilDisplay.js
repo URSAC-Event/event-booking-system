@@ -144,6 +144,7 @@ const CouncilDisplay = () => {
                     href={selectedCouncil.link}
                     target="_blank"
                     rel="noopener noreferrer"
+                    title="Click to visit page"
                   >
                     <img
                       src={selectedCouncil.adviserPIC}
@@ -151,54 +152,65 @@ const CouncilDisplay = () => {
                       className={styles.adviserImage}
                     />
                   </a>
-                  <h3 className={styles.councilSubheader}>
-                    {selectedCouncil
-                      ? selectedCouncil.organization
-                      : ""}
-                  </h3>
-                  <h3 className={styles.councilSubheaderMobile}>
-                    {selectedCouncil ? selectedCouncil.organization : ""}
-                  </h3>
+                  <a
+                    href={selectedCouncil.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <h3 className={styles.councilSubheader}>
+                      {selectedCouncil ? selectedCouncil.organization : ""}
+                    </h3>
+                  </a>
+                  <a
+                    href={selectedCouncil.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <h3 className={styles.councilSubheaderMobile}>
+                      {selectedCouncil ? selectedCouncil.organization : ""}
+                    </h3>
+                  </a>
 
                 </div>
               </div>
               <div className={styles.membersCont}>
                 <p>
-                  <strong>Adviser:</strong> {selectedCouncil.adviser}
+                  <strong>Adviser:</strong> <span>{selectedCouncil.adviser}</span>
                 </p>
                 <p>
-                  <strong>President:</strong> {selectedCouncil.president}
+                  <strong>President:</strong> <span>{selectedCouncil.president}</span>
                 </p>
                 <p>
-                  <strong>Vice President:</strong> {selectedCouncil.vicePresident}
+                  <strong>Vice President:</strong>{" "}
+                  <span>{selectedCouncil.vicePresident}</span>
                 </p>
                 <p>
-                  <strong>Secretary:</strong> {selectedCouncil.secretary}
+                  <strong>Secretary:</strong> <span>{selectedCouncil.secretary}</span>
                 </p>
                 <p>
-                  <strong>Treasurer:</strong> {selectedCouncil.treasurer}
+                  <strong>Treasurer:</strong> <span>{selectedCouncil.treasurer}</span>
                 </p>
                 <p>
-                  <strong>Auditor:</strong> {selectedCouncil.auditor}
+                  <strong>Auditor:</strong> <span>{selectedCouncil.auditor}</span>
                 </p>
                 <p>
-                  <strong>PRO:</strong> {selectedCouncil.pro}
+                  <strong>PRO:</strong> <span>{selectedCouncil.pro}</span>
                 </p>
                 <p>
                   <strong>First Year Representative:</strong>{" "}
-                  {selectedCouncil.rep}
+                  <span>{selectedCouncil.rep}</span>
                 </p>
                 <p>
                   <strong>Second Year Representative:</strong>{" "}
-                  {selectedCouncil.representative}
+                  <span>{selectedCouncil.representative}</span>
                 </p>
                 <p>
                   <strong>Third Year Representative:</strong>{" "}
-                  {selectedCouncil.trdrepresentative}
+                  <span>{selectedCouncil.trdrepresentative}</span>
                 </p>
                 <p>
                   <strong>Fourth Year Representative:</strong>{" "}
-                  {selectedCouncil.frthrepresentative}
+                  <span>{selectedCouncil.frthrepresentative}</span>
                 </p>
               </div>
             </div>
