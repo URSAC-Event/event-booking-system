@@ -180,6 +180,31 @@ const Dashboard = () => {
   //   return `${year}/${month}/${day}`;
   // };
 
+  const clearForm = () => {
+    setEventData({
+      fromHour: "",
+      fromMinute: "00",
+      fromAmPm: "",
+      toHour: "",
+      toMinute: "00",
+      toAmPm: "",
+      venue: "",
+      name: "",
+      organization: "",
+      fromDate: "",
+      toDate: "",
+      duration: "",
+      document: null,
+      poster: null,
+    });
+
+    // Reset file input manually since React does not fully control file inputs
+    document.querySelectorAll('input[type="file"]').forEach((input) => {
+      input.value = "";
+    });
+  };
+
+
   const handleModalSubmit = async (e) => {
     setLoading((prev) => (!prev));
     e.preventDefault();
@@ -273,6 +298,23 @@ const Dashboard = () => {
         });
         return;
       }
+
+      // Ensure event duration is at least 1 hour
+      const eventStart = userFrom.hours * 60 + userFrom.minutes; // Convert start time to minutes
+      const eventEnd = userTo.hours * 60 + userTo.minutes; // Convert end time to minutes
+      const eventDuration = eventEnd - eventStart;
+
+      // If it's not a two-day event, enforce the 1-hour minimum rule
+      if (!isTwoDayEvent && eventDuration < 60) {
+        setLoading((prev) => (!prev));
+        toast.error("Event duration must be at least 1 hour.", { duration: 4000 });
+        console.log("Validation Failed: Event duration is less than 1 hour.");
+        return;
+      } else {
+        console.log("Validation Passed: Event duration is valid.");
+      }
+
+
 
       // Format the start and end times into a readable string
       const fromTime = `${String(eventData.fromHour).padStart(2, "0")}:${String(
@@ -403,6 +445,7 @@ const Dashboard = () => {
             setLoading((prev) => (!prev));
             setError(null);
             setModalOpen(false);
+            clearForm();
           }
         } catch (postError) {
           setLoading((prev) => (!prev));
