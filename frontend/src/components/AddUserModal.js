@@ -3,7 +3,7 @@ import styles from './Addusermodal.module.css';  // Assuming you have styles for
 import { toast } from "sonner";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-const AddUserModal = ({ isOpen, closeModal, addUser }) => {
+const AddUserModal = ({ loading, setLoading, isOpen, closeModal, addUser }) => {
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -99,6 +99,9 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        closeModal();
+        setLoading((prev) => (!prev));
+
 
         if (!passwordError && !usernameError) {
             const user = { name, username, email, password, organizationz };
@@ -115,12 +118,14 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
                     addUser(data);
                     toast.success("User added successfully", { duration: 4000 });
                     resetForm();
-                    closeModal();
+                    setLoading((prev) => (!prev));
                 } else {
+                    setLoading((prev) => (!prev));
                     // This toast will now also handle the "one account per organization" error
                     toast.error(`Failed to add user: ${data.message}`, { duration: 4000 });
                 }
             } catch (error) {
+                setLoading((prev) => (!prev));
                 toast.error(`Error adding user: ${error.message}`, { duration: 4000 });
             }
         }

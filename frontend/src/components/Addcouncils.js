@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./Addcouncils.module.css"; // Import the styles
 import { toast } from "sonner";
 
-const AddCouncils = ({ setRefresh, showAddCouncilForm, setShowAddCouncilForm }) => {
+const AddCouncils = ({ setLoading, loading, setRefresh, showAddCouncilForm, setShowAddCouncilForm }) => {
   const [councilFormData, setCouncilFormData] = useState({
     organization: "",
     adviser: "",
@@ -22,6 +22,8 @@ const AddCouncils = ({ setRefresh, showAddCouncilForm, setShowAddCouncilForm }) 
 
   const handleAddCouncil = async (e) => {
     e.preventDefault();
+    setShowAddCouncilForm(false);
+    setLoading((prev) => (!prev));
 
     const formData = new FormData();
     Object.keys(councilFormData).forEach((key) => {
@@ -44,13 +46,15 @@ const AddCouncils = ({ setRefresh, showAddCouncilForm, setShowAddCouncilForm }) 
           duration: 4000, // Time before it disappears
         });
         setRefresh((prev) => !prev);
-        setShowAddCouncilForm(false);
+        setLoading((prev) => (!prev));
       } else {
+        setLoading((prev) => (!prev));
         toast.error('Error saving council data: ' + data.message, {
           duration: 4000, // Time before it disappears
         });
       }
     } catch (error) {
+      setLoading((prev) => (!prev));
       console.error('Error submitting form:', error);
       toast.error('Error submitting form', {
         duration: 4000, // Time before it disappears

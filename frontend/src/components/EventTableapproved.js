@@ -5,6 +5,7 @@ import { FaSearch } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
 import { toast } from "sonner";
+import Loading from "./loading"
 
 const EventTableApproved = () => {
   const [events, setEvents] = useState([]);
@@ -14,6 +15,7 @@ const EventTableApproved = () => {
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
   const dialogRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   // Fetch events function
   const fetchEvents = async () => {
@@ -75,6 +77,9 @@ const EventTableApproved = () => {
 
 
   const confirmDelete = async () => {
+    dialogRef.current.close();
+    setLoading((prev) => (!prev));
+
     try {
       const response = await axios.delete(`https://event-booking-system-ckik.onrender.com/api/approved-table/${eventToDelete}`);
       if (response.status === 200) {
@@ -82,6 +87,7 @@ const EventTableApproved = () => {
         const eventCanceled = events.find((event) => event.id === eventToDelete);
 
         setEvents((prevEvents) => prevEvents.filter(event => event.id !== eventToDelete));
+        setLoading((prev) => (!prev));
         toast.success('Event deleted successfully', {
           duration: 4000, // Time before it disappears
         });
@@ -92,12 +98,15 @@ const EventTableApproved = () => {
         }
       }
     } catch (error) {
+      setLoading((prev) => (!prev));
       console.error("Error deleting event:", error.response?.data || error);
       toast.error('Failed to delete event', {
         duration: 4000, // Time before it disappears
       });
+
     } finally {
-      dialogRef.current.close();
+      console.log("Goods!");
+
     }
   };
 
@@ -202,6 +211,7 @@ const EventTableApproved = () => {
           </div>
         </div>
       </dialog>
+      <Loading loading={loading} />
     </div>
   );
 };

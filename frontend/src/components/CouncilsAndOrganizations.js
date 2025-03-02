@@ -4,6 +4,7 @@ import Addcouncils from "./Addcouncils";
 import styles from "./Admin.module.css";
 import { FaSearch, FaPlus, FaPen, FaTrash, FaRegTimesCircle } from "react-icons/fa";
 import { toast } from "sonner";
+import Loading from "./loading";
 
 const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, setShowAddCouncilForm, handleAddCouncil }) => {
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -12,6 +13,7 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
   const [councilToDelete, setCouncilToDelete] = useState(null); // State to store the council ID to delete
   const dialogRef = useRef(null); // Ref for the confirmation modal
   const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCouncils = async () => {
@@ -38,6 +40,8 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
   };
 
   const confirmDelete = async () => {
+    dialogRef.current.close(); // Close the modal
+    setLoading((prev) => (!prev));
     try {
       const response = await fetch(`https://event-booking-system-ckik.onrender.com/api/delete-council/${councilToDelete}`, {
         method: "DELETE",
@@ -45,19 +49,24 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
 
       if (response.ok) {
         setCouncils(councils.filter((council) => council.id !== councilToDelete));
+        setLoading((prev) => (!prev));
         toast.success("Council deleted successfully", {
           duration: 4000, // Time before it disappears
         });
       } else {
+        setLoading((prev) => (!prev));
         console.error("Failed to delete council");
       }
     } catch (error) {
+      setLoading((prev) => (!prev));
       toast.error("Error deleting council", {
         duration: 4000, // Time before it disappears
       })
       console.error("Error deleting council:", error);
     } finally {
-      dialogRef.current.close(); // Close the modal
+      // dialogRef.current.close(); // Close the modal
+      console.log("Council Deleted.");
+
     }
   };
 
@@ -67,6 +76,8 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
   };
 
   const handleUpdateCouncil = async (updatedCouncilData) => {
+    setShowEditModal(false);
+    setLoading((prev) => (!prev));
     try {
       const response = await fetch(`https://event-booking-system-ckik.onrender.com/api/update-council/${selectedCouncil.id}`, {
         method: "PUT",
@@ -80,17 +91,19 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
             council.id === selectedCouncil.id ? { ...council, ...updatedCouncilData } : council
           )
         );
-        setShowEditModal(false);
+        setLoading((prev) => (!prev));
         toast.success("Council updated successfully", {
           duration: 4000, // Time before it disappears
         });
       } else {
+        setLoading((prev) => (!prev));
         toast.error("Error updating council", {
           duration: 4000, // Time before it disappears
         });
         console.error("Failed to update council");
       }
     } catch (error) {
+      setLoading((prev) => (!prev));
       toast.error("Error updating council", {
         duration: 4000, // Time before it disappears
       });
@@ -193,6 +206,8 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
         </div>
       </dialog>
 
+      <Loading loading={loading} />
+
       <EditCouncilModal
         showModal={showEditModal}
         setShowModal={setShowEditModal}
@@ -201,6 +216,8 @@ const CouncilsAndOrganizations = ({ councils, setCouncils, showAddCouncilForm, s
       />
 
       <Addcouncils
+        setLoading={setLoading}
+        loading={loading}
         setRefresh={setRefresh}
         showAddCouncilForm={showAddCouncilForm}
         setShowAddCouncilForm={setShowAddCouncilForm}
