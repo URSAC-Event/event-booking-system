@@ -7,7 +7,7 @@ import { FaPen } from "react-icons/fa";
 import { toast } from "sonner";
 import { FaUsers } from "react-icons/fa";
 
-const CouncilDisplayedit = () => {
+const CouncilDisplayedit = ({ setLoading }) => {
   const [councilsAndOrganizations, setCouncilsAndOrganizations] = useState([]);
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -58,6 +58,8 @@ const CouncilDisplayedit = () => {
   // Handle form submission for editing
   const handleEditCouncil = async (e) => {
     e.preventDefault();
+    setIsEditModalOpen(false);
+    setLoading((prev) => (!prev));
 
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
@@ -83,14 +85,15 @@ const CouncilDisplayedit = () => {
         setSelectedCouncil((prevCouncil) =>
           prevCouncil && prevCouncil.id === formData.id ? { ...prevCouncil, ...formData } : prevCouncil
         );
-
+        setLoading((prev) => (!prev));
         toast.success("Council details updated successfully!", { duration: 4000 });
-        setIsEditModalOpen(false);
         handleEditSuccess();
       } else {
+        setLoading((prev) => (!prev));
         toast.error("Failed to update council details.", { duration: 4000 });
       }
     } catch (error) {
+      setLoading((prev) => (!prev));
       console.error("Error updating council:", error);
       toast.error("An error occurred while updating council details.", { duration: 4000 });
     }
@@ -273,7 +276,6 @@ const CouncilDisplayedit = () => {
                     }
                   }}
                   className={styles.input}
-                  required
                 />
               </div>
 

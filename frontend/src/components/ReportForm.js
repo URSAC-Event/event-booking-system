@@ -3,7 +3,7 @@ import axios from "axios";
 import styles from "./Addcouncils.module.css"; // Adjust the path if necessary
 import { toast } from "sonner";
 
-const ReportForm = () => {
+const ReportForm = ({ setLoading }) => {
   const [message, setMessage] = useState("");
   const [org, setOrg] = useState("");
   const [organization, setOrganization] = useState('');
@@ -30,12 +30,15 @@ const ReportForm = () => {
     // Log the data before sending it to the backend
     console.log("Sending data:", { userId, message, org });
 
+    setLoading((prev) => (!prev));
+
     try {
       await axios.post("https://event-booking-system-ckik.onrender.com/api/submitReport", {
         userId,
         message,
         org,
       });
+      setLoading((prev) => (!prev));
       toast.success("Report submitted successfully", {
         duration: 4000, // Time before it disappears
       });
@@ -43,6 +46,7 @@ const ReportForm = () => {
       setMessage(""); // Reset the message field after submission
       setOrg(""); // Reset the organization field after submission
     } catch (error) {
+      setLoading((prev) => (!prev));
       console.error("Error submitting report:", error);
       toast.error("Failed to submit report", { duration: 4000 });
     }

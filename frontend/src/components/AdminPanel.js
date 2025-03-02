@@ -48,7 +48,6 @@ const AdminPanel = () => {
       console.error("Error deleting report:", error);
     } finally {
       console.log("Report");
-
     }
   };
 
