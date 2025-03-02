@@ -3,7 +3,7 @@ import styles from "./UserEdit.module.css"; // Adjust the import based on your f
 import axios from "axios";
 import { toast } from "sonner";
 
-const UserEdit = ({ isOpen, closeModal, userData, setRefreshUser }) => {
+const UserEdit = ({ setLoading, isOpen, closeModal, userData, setRefreshUser }) => {
   const [editedUser, setEditedUser] = useState({
     id: userData.id || "",
     name: userData.name || "",
@@ -33,14 +33,17 @@ const UserEdit = ({ isOpen, closeModal, userData, setRefreshUser }) => {
     e.preventDefault();
     setError("");
     if (!validateInputs()) return;
+    setLoading((prev) => (!prev));
+    closeModal();
 
     try {
       const response = await axios.put(`https://event-booking-system-ckik.onrender.com/api/users/${editedUser.id}`, editedUser);
-      toast.success("User updated successfully:", { duration: 4000 })
+      setLoading((prev) => (!prev));
+      toast.success("User updated successfully", { duration: 4000 })
       console.log("User updated successfully:", response.data);
       setRefreshUser((prev) => !prev);
-      closeModal();
     } catch (error) {
+      setLoading((prev) => (!prev));
       toast.error(error.response?.data?.message || "Failed to update user", { duration: 4000 });
     }
   };

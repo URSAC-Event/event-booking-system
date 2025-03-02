@@ -3,11 +3,14 @@ import axios from "axios";
 import styles from "./AdminPanel.module.css"; // Adjust the path if necessary
 import { FaTrash, FaRegTimesCircle } from "react-icons/fa";
 import { toast } from "sonner";
+import Loading from "./loading";
 
 const AdminPanel = () => {
   const [reports, setReports] = useState([]);
   const [reportToDelete, setReportToDelete] = useState(null); // State to store the report ID to delete
   const deleteSingleRef = useRef(null); // Ref for the single delete confirmation modal
+  const [loading, setLoading] = useState(false);
+
   // const deleteAllRef = useRef(null); // Ref for the delete all confirmation modal
 
   // Fetch reports for admin to review
@@ -32,14 +35,19 @@ const AdminPanel = () => {
 
   // Confirm single report deletion
   const confirmDelete = async () => {
+    setLoading((prev) => (!prev));
+    deleteSingleRef.current.close(); // Close the modal
+
     try {
       await axios.delete(`https://event-booking-system-ckik.onrender.com/api/reports/${reportToDelete}`);
       setReports(reports.filter((report) => report.id !== reportToDelete)); // Remove deleted report from the UI
+      setLoading((prev) => (!prev));
       toast.success("Report deleted successfully", { duration: 4000 });
     } catch (error) {
+      setLoading((prev) => (!prev));
       console.error("Error deleting report:", error);
     } finally {
-      deleteSingleRef.current.close(); // Close the modal
+      console.log("Report");
     }
   };
 
@@ -100,6 +108,8 @@ const AdminPanel = () => {
           </div>
         </div>
       </dialog>
+
+      <Loading loading={loading} />
 
       {/* Delete All Confirmation Modal */}
       {/* <dialog ref={deleteAllRef} className={styles.modal}>

@@ -51,6 +51,7 @@ const PublicPage = () => {
         </button>
       </nav>
 
+
       <div className={styles.container}>
         <div className={styles.SecondContainer}>
           <div className={styles.heroSection}>

@@ -15,6 +15,7 @@ import ReportForm from "./ReportForm";
 import eventsVector from "../assets/Events-pana.svg";
 import reportVector from "../assets/report.svg";
 import { toast } from "sonner";
+import Loading from "./loading"
 
 const Dashboard = () => {
   const loggedInUser = { id: 1 };
@@ -46,6 +47,7 @@ const Dashboard = () => {
     document: null,
     poster: null,
   });
+  const [loading, setLoading] = useState(false);
 
 
 
@@ -179,6 +181,7 @@ const Dashboard = () => {
   // };
 
   const handleModalSubmit = async (e) => {
+    setLoading((prev) => (!prev));
     e.preventDefault();
 
     console.log(eventData.toDate);
@@ -215,6 +218,7 @@ const Dashboard = () => {
           if (currentDate.getDay() === 6) { // 6 = Saturday
             // Allow only if it's a single-day event on Saturday
             if (!(userFromDate.getTime() === userToDate.getTime())) {
+              setLoading((prev) => (!prev));
               toast.error("Events cannot span across a Saturday.", { duration: 4000 });
               return;
             }
@@ -226,6 +230,7 @@ const Dashboard = () => {
       // **New Validation: If event starts on a Saturday, it must end on the same Saturday**
       if (userFromDate.getDay() === 6) { // 6 = Saturday
         if (!userToDate || userToDate.getTime() !== userFromDate.getTime()) {
+          setLoading((prev) => (!prev));
           toast.error("Events starting on Saturday must also end on Saturday.", { duration: 4000 });
           return;
         }
@@ -233,6 +238,7 @@ const Dashboard = () => {
 
       // Validation: Ensure `toDate` is not earlier than `fromDate`
       if (userToDate && userToDate < userFromDate) {
+        setLoading((prev) => (!prev));
         toast.error("`To Date` cannot be earlier than `From Date`.", { duration: 4000 });
         return;
       }
@@ -242,6 +248,7 @@ const Dashboard = () => {
         userFrom.hours < minTime.hours ||
         (userFrom.hours === minTime.hours && userFrom.minutes < minTime.minutes)
       ) {
+        setLoading((prev) => (!prev));
         toast.error("Start time must be 7:00 AM or later.", { duration: 4000 });
         return;
       }
@@ -250,6 +257,7 @@ const Dashboard = () => {
         userTo.hours > maxTime.hours ||
         (userTo.hours === maxTime.hours && userTo.minutes > maxTime.minutes)
       ) {
+        setLoading((prev) => (!prev));
         toast.error("End time must be 5:00 PM or earlier.", { duration: 4000 });
         return;
       }
@@ -259,6 +267,7 @@ const Dashboard = () => {
         (userTo.hours < userFrom.hours ||
           (userTo.hours === userFrom.hours && userTo.minutes < userFrom.minutes))
       ) {
+        setLoading((prev) => (!prev));
         toast.error("End time cannot be earlier than start time unless it's a two-day event.", {
           duration: 4000,
         });
@@ -350,6 +359,7 @@ const Dashboard = () => {
                 (userFromTime < adjustedToTime && userToTime > adjustedFromTime) || // Overlaps with grace period
                 (userFromTime <= adjustedFromTime && userToTime >= adjustedToTime)    // Fully encompasses grace period
               ) {
+                setLoading((prev) => (!prev));
                 toast.error("Time conflict detected! The event overlaps with an existing booking.", { duration: 4000 });
                 hasConflict = true;
                 return;
@@ -360,6 +370,7 @@ const Dashboard = () => {
 
         if (hasConflict) {
           console.log("Conflict detected. Stopping execution.");
+          setLoading((prev) => (!prev));
           return;
         }
 
@@ -389,14 +400,17 @@ const Dashboard = () => {
           if (postResponse.status === 200) {
             console.log("Event successfully saved to the database:", postResponse.data);
             toast.success("Event successfully added", { duration: 4000 });
+            setLoading((prev) => (!prev));
             setError(null);
             setModalOpen(false);
           }
         } catch (postError) {
+          setLoading((prev) => (!prev));
           console.error("Error saving event to database:", postError);
           toast.error("Error saving event.", { duration: 4000 });
         }
       } catch (fetchError) {
+        setLoading((prev) => (!prev));
         console.error("Error during validation:", fetchError);
         toast.error("Failed to validate event details", { duration: 4000 });
       }
@@ -497,7 +511,7 @@ const Dashboard = () => {
               <p className={styles.bookingSubhead}>
                 Send us a message including your organization name and we'll respond through your email.
               </p>
-              <ReportForm userId={loggedInUser.id} />
+              <ReportForm userId={loggedInUser.id} setLoading={setLoading} />
             </div>
           </div>
           {/* <div className={styles.venueBooklistContainer}>
@@ -533,7 +547,7 @@ const Dashboard = () => {
 
           {/* News and Information Section (on the right) */}
           <div className={styles.layoutContainer}>
-            <CouncilDisplayedit />
+            <CouncilDisplayedit setLoading={setLoading} />
           </div>
 
           {/* Merged Vision and Mission Section */}
@@ -584,6 +598,7 @@ const Dashboard = () => {
         handleFileChange={handleFileChange}
         handleModalSubmit={handleModalSubmit}
       />
+      <Loading loading={loading} />
     </div>
   );
 };

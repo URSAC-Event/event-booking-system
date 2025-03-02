@@ -33,7 +33,7 @@ import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
 import UserEdit from "./UserEdit";
 import { toast } from "sonner";
-
+import Loading from "./loading"
 
 
 
@@ -62,6 +62,7 @@ const Admin = () => {
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleOpenMenu = () => {
     setMobile("mobile")
@@ -185,7 +186,8 @@ const Admin = () => {
 
   //user delete button
   const handleDeleteUser = () => {
-
+    deleteRef.current?.close();
+    setLoading((prev) => (!prev));
     console.log("User to be deleted:", selectedUser.username);
 
     // Send DELETE request to the backend with the username
@@ -195,6 +197,7 @@ const Admin = () => {
       .then((response) => {
         if (response.ok) {
           console.log(`User ${selectedUser.username} deleted successfully`);
+          setLoading((prev) => (!prev));
           // Remove the deleted user from the UI by filtering it out from the users array
           setUsers((prevUsers) =>
             prevUsers.filter((u) => u.username !== selectedUser.username)
@@ -203,14 +206,15 @@ const Admin = () => {
             duration: 4000, // Time before it disappears
           })
           setSelectedUser(null);
-          deleteRef.current?.close();
         } else {
+          setLoading((prev) => (!prev));
           toast.error("Failed to delete user", {
             duration: 4000, // Time before it disappears
           });
         }
       })
       .catch((error) => {
+        setLoading((prev) => (!prev));
         console.error("Error deleting user:", error);
         toast.error("An error occurred while deleting the user", {
           duration: 4000, // Time before it disappears
@@ -229,6 +233,7 @@ const Admin = () => {
   // para sa delete button
   const handleDelete = async () => {
     if (!selectedEvent) return;
+    setLoading((prev) => (!prev));
 
     const { eventId, organization, name } = selectedEvent;
     dialogRef.current.close();
@@ -253,17 +258,21 @@ const Admin = () => {
         });
 
         setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+
+        setLoading((prev) => (!prev));
       } else {
         console.error("Delete failed:", responseBody);
         toast.error(`Failed to delete event: ${responseBody.message || "Unknown error"}`, {
           duration: 4000, // Time before it disappears
         });
+        setLoading((prev) => (!prev));
       }
     } catch (error) {
       console.error("Error deleting event:", error);
       toast.error("Error deleting event", {
         duration: 4000, // Time before it disappears
       });
+      setLoading((prev) => (!prev));
     }
   };
 
@@ -320,6 +329,8 @@ const Admin = () => {
 
   const handleConfirm = async () => {
     if (!selectedEventId) return;
+    setLoading((prev) => (!prev));
+    closeApproveModal();
 
     const eventToApprove = events.find((event) => event.id === selectedEventId.eventId);
     const { date, datefrom, duration } = eventToApprove;
@@ -367,18 +378,21 @@ const Admin = () => {
           setEvents((prevEvents) =>
             prevEvents.filter((event) => event.id !== selectedEventId.eventId)
           );
-          closeApproveModal();
+          setLoading((prev) => (!prev));
         } else {
           toast.error(
             `Failed to approve event: ${responseBodyApprove.message || "Unknown error"}`,
             { duration: 4000 }
           );
+          setLoading((prev) => (!prev));
         }
       } else {
         toast.error(responseBody.message, { duration: 4000 });
-        closeApproveModal();
+
+        setLoading((prev) => (!prev));
       }
     } catch (error) {
+      setLoading((prev) => (!prev));
       toast.error("Error approving event", { duration: 4000 });
       console.error("Error approving event:", error);
     }
@@ -446,40 +460,6 @@ const Admin = () => {
                 handleButtonHover={handleButtonHover}
               />
             </div>
-            {/* Document Modal */}
-            {showDocumentModal && (
-              <div
-                className={styles.modalBackdrop}
-                onClick={handleCloseDocumentModal}
-              >
-                <div
-                  className={styles.modalContent}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h3>{selectedDocumentName}</h3>{" "}
-                  {/* Display the document name */}
-                  {selectedDocumentName?.endsWith(".pdf") ? (
-                    <Worker
-                      workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
-                    >
-                      <Viewer fileUrl={selectedDocument} />
-                    </Worker>
-                  ) : (
-                    <img
-                      src={selectedDocument}
-                      alt={selectedDocumentName}
-                      className={{ width: "100%", height: "auto" }}
-                    />
-                  )}
-                  <button
-                    className={styles.closeButton}
-                    onClick={handleCloseDocumentModal}
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
             <dialog ref={modalRef} className={styles.modal}>
               <div className={styles.modalBox}>
                 <FaRegCheckCircle className={styles.modalIcon} />
@@ -540,6 +520,8 @@ const Admin = () => {
 
             <div>
               <AddUserModal
+                loading={loading}
+                setLoading={setLoading}
                 isOpen={isModalOpen}
                 closeModal={() => setIsModalOpen(false)}
                 addUser={handleAddUser} />
@@ -548,6 +530,8 @@ const Admin = () => {
             {/* User Edit Modal */}
             {isEditModalOpen && (
               <UserEdit
+                loading={loading}
+                setLoading={setLoading}
                 isOpen={isEditModalOpen}
                 closeModal={() => setIsEditModalOpen(false)}
                 userData={currentUser}
@@ -774,6 +758,7 @@ const Admin = () => {
         {/* Main Content Area */}
         <main className={styles.content}>{renderContent()}</main>
       </div>
+      <Loading loading={loading} />
     </div>
   );
 };
