@@ -24,7 +24,7 @@ const Dashboard = () => {
     username: "exampleUser",
     loggedInTime: new Date().toLocaleString(),
   };
-
+  const [forbiddenDays, setForbiddenDays] = useState([]); // Default: Sunday & Friday
   const [error, setError] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedSidebar, setSelectedSidebar] = useState("New Booking");
@@ -49,7 +49,19 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      axios.get('https://event-booking-system-ckik.onrender.com/api/forbidden-days')
+        .then(response => {
+          // If response.data is an object with forbiddenDays as a property
+          setForbiddenDays(response.data.forbiddenDays || []); // Access forbiddenDays if it's inside an object
+        })
+        .catch(error => {
+          console.error('Error fetching forbidden days:', error);
+        });
 
+    }
+  }, [isModalOpen]);
 
   useEffect(() => {
     const storedOrganization = localStorage.getItem("userOrganization");
@@ -107,6 +119,31 @@ const Dashboard = () => {
   //       return null;
   //   }
   // };
+
+  function validateEvent(userFromDate, userToDate) {
+    // If an end date is provided (i.e., it's a multi-day event)
+    if (userToDate) {
+      // Start checking from the event's start date.
+      let currentDate = new Date(userFromDate);
+
+      // Loop through every day from the start to the end date.
+      while (currentDate <= userToDate) {
+        // If the current date is one of the restricted days...
+        if (forbiddenDays.includes(currentDate.getDay())) {
+          setLoading((prev) => !prev);  // Toggle loading state (update UI accordingly)
+          toast.error("Events cannot span restricted days.", { duration: 4000 });  // Show error message
+          return false;  // Return false to indicate validation failure.
+        }
+
+        // Move to the next day.
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    // If no restricted day is encountered, the event is valid.
+    return true;
+  }
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -241,28 +278,33 @@ const Dashboard = () => {
 
       const isTwoDayEvent = userToDate && (userToDate.getDate() === userFromDate.getDate() + 1);
 
-      if (userToDate) {
-        let currentDate = new Date(userFromDate);
-        while (currentDate <= userToDate) {
-          if (currentDate.getDay() === 6) { // 6 = Saturday
-            // Allow only if it's a single-day event on Saturday
-            if (!(userFromDate.getTime() === userToDate.getTime())) {
-              setLoading((prev) => (!prev));
-              toast.error("Events cannot span across a Saturday.", { duration: 4000 });
-              return;
-            }
-          }
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-      }
+      // if (userToDate) {
+      //   let currentDate = new Date(userFromDate);
+      //   while (currentDate <= userToDate) {
+      //     if (currentDate.getDay() === 6) { // 6 = Saturday
+      //       // Allow only if it's a single-day event on Saturday
+      //       if (!(userFromDate.getTime() === userToDate.getTime())) {
+      //         setLoading((prev) => (!prev));
+      //         toast.error("Events cannot span across a Saturday.", { duration: 4000 });
+      //         return;
+      //       }
+      //     }
+      //     currentDate.setDate(currentDate.getDate() + 1);
+      //   }
+      // }
 
-      // **New Validation: If event starts on a Saturday, it must end on the same Saturday**
-      if (userFromDate.getDay() === 6) { // 6 = Saturday
-        if (!userToDate || userToDate.getTime() !== userFromDate.getTime()) {
-          setLoading((prev) => (!prev));
-          toast.error("Saturday is for a single-day event only.", { duration: 4000 });
-          return;
-        }
+      // // **New Validation: If event starts on a Saturday, it must end on the same Saturday**
+      // if (userFromDate.getDay() === 6) { // 6 = Saturday
+      //   if (!userToDate || userToDate.getTime() !== userFromDate.getTime()) {
+      //     setLoading((prev) => (!prev));
+      //     toast.error("Saturday is for a single-day event only.", { duration: 4000 });
+      //     return;
+      //   }
+      // }
+
+      // Validate the event's date range before submitting
+      if (!validateEvent(userFromDate, userToDate)) {
+        return; // Stop submission if validation fails
       }
 
       // Validation: Ensure `toDate` is not earlier than `fromDate`

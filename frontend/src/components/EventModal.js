@@ -8,6 +8,7 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
   const [error, setError] = useState(''); // For fromDate validation
   const [toDateError, setToDateError] = useState(''); // For toDate validation
   const [organization, setOrganization] = useState('');
+  const [forbiddenDays, setForbiddenDays] = useState([]); // Default: Sunday & Friday
 
 
   useEffect(() => {
@@ -36,6 +37,25 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
     }
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      axios.get('https://event-booking-system-ckik.onrender.com/api/forbidden-days')
+        .then(response => {
+          // If response.data is an object with forbiddenDays as a property
+          setForbiddenDays(response.data.forbiddenDays || []); // Access forbiddenDays if it's inside an object
+        })
+        .catch(error => {
+          console.error('Error fetching forbidden days:', error);
+        });
+
+    }
+  }, [isModalOpen]);
+
+  const isForbiddenDay = (date) => {
+    const dayOfWeek = new Date(date).getDay();
+    return forbiddenDays.includes(dayOfWeek);
+  };
+
   const twoWeeksAhead = new Date();
   twoWeeksAhead.setDate(twoWeeksAhead.getDate() + 14);
   const minDate = twoWeeksAhead.toISOString().split('T')[0];
@@ -60,8 +80,8 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
 
   const handleFromDateValidation = (e) => {
     const selectedDate = e.target.value;
-    if (isFridayOrSunday(selectedDate)) {
-      toast.error("Fridays and Sundays are not allowed.", { duration: 4000 });
+    if (isForbiddenDay(selectedDate)) {
+      toast.error("This day is not allowed.", { duration: 4000 });
 
       // Reset the input value by updating the state via handleInputChange
       handleInputChange({
@@ -75,8 +95,8 @@ const EventModal = ({ isModalOpen, setModalOpen, eventData, handleInputChange, h
 
   const handleToDateValidation = (e) => {
     const selectedDate = e.target.value;
-    if (isFridayOrSunday(selectedDate)) {
-      toast.error("Fridays and Sundays are not allowed.", { duration: 4000 });
+    if (isForbiddenDay(selectedDate)) {
+      toast.error("This day is not allowed.", { duration: 4000 });
 
       // Reset the input value by updating the state via handleInputChange
       handleInputChange({
