@@ -4,11 +4,14 @@ import styles from './Admin.module.css';
 import { FaSearch } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
+import { FaCog } from "react-icons/fa";
+import SettingsModal from "./SettingsModal";
 
 
 
 const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocument, handleViewImage, handleConfirm, handleDelete, handleButtonHover }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Function to format the date as YYYY-MM-DD
   const formatDate = (date) => {
@@ -29,15 +32,20 @@ const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocum
 
       <h2>Event Requests</h2>
       <p>Managing Event Requests – Review, Approve, and Decline Submissions</p>
-      <div className={styles.searchWrap}>
-        <input
-          type="text"
-          placeholder="Search events..."
-          className={styles.searchBar}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <FaSearch className={styles.searchIcon} />
+      <div className={styles.searchContainer}>
+        <div className={styles.searchWrap}>
+          <input
+            type="text"
+            placeholder="Search events..."
+            className={styles.searchBar}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <FaSearch className={styles.searchIcon} />
+        </div>
+        <button className={styles.settings} onClick={() => setShowSettingsModal(true)}>
+          <FaCog size={20} color="#fff" />
+        </button>
       </div>
       <div className={styles.sectionBox}>
         <table className={styles.table}>
@@ -118,6 +126,10 @@ const EventTable = ({ events, openApproveModal, openDeleteModal, handleViewDocum
           </tbody>
         </table>
       </div>
+      <SettingsModal
+        showSettingsModal={showSettingsModal}
+        setShowSettingsModal={setShowSettingsModal}
+      />
 
     </div>
   );

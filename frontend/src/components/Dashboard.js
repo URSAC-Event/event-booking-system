@@ -235,6 +235,10 @@ const Dashboard = () => {
       const userFromDate = new Date(eventData.fromDate);
       const userToDate = eventData.toDate ? new Date(eventData.toDate) : null;
 
+      console.log(userFromDate);
+      console.log(userToDate);
+
+
       const isTwoDayEvent = userToDate && (userToDate.getDate() === userFromDate.getDate() + 1);
 
       if (userToDate) {
@@ -256,7 +260,7 @@ const Dashboard = () => {
       if (userFromDate.getDay() === 6) { // 6 = Saturday
         if (!userToDate || userToDate.getTime() !== userFromDate.getTime()) {
           setLoading((prev) => (!prev));
-          toast.error("Events starting on Saturday must also end on Saturday.", { duration: 4000 });
+          toast.error("Saturday is for a single-day event only.", { duration: 4000 });
           return;
         }
       }
