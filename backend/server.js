@@ -1105,22 +1105,13 @@ app.get('/api/forbidden-days', (req, res) => {
       return res.status(500).json({ message: 'Database query error' });
     }
     if (results.length > 0) {
-      let forbiddenDays = results[0].forbiddenDays;
+      const forbiddenDays = results[0].forbiddenDays;
 
-      // Remove any extra whitespace
-      forbiddenDays = forbiddenDays.trim();
+      // Log the value directly
+      console.log("Forbidden days from database:", forbiddenDays);
 
-      // Log the value
-      console.log("Trimmed forbiddenDays:", forbiddenDays);
-
-      try {
-        // Try parsing the data as JSON
-        const parsedForbiddenDays = JSON.parse(forbiddenDays);
-        res.json({ forbiddenDays: parsedForbiddenDays });
-      } catch (e) {
-        console.error('Error parsing forbiddenDays:', e);
-        res.status(500).json({ message: 'Invalid data format for forbiddenDays' });
-      }
+      // Respond with the forbiddenDays as they are (no need for parsing)
+      res.json({ forbiddenDays });
     } else {
       res.json({ forbiddenDays: [] });
     }
