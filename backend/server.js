@@ -1099,20 +1099,26 @@ app.get('/api/getApprovedData', async (req, res) => {
 
 // GET endpoint to fetch forbidden days from the settings table
 app.get('/api/forbidden-days', (req, res) => {
-  console.log("GET /api/forbidden-days");
   connection.query('SELECT forbiddenDays FROM settings WHERE id = 1', (err, results) => {
     if (err) {
       console.error('Error querying forbiddenDays:', err);
       return res.status(500).json({ message: 'Database query error' });
     }
     if (results.length > 0) {
+      let forbiddenDays = results[0].forbiddenDays;
+
+      // Remove any extra whitespace
+      forbiddenDays = forbiddenDays.trim();
+
+      // Log the value
+      console.log("Trimmed forbiddenDays:", forbiddenDays);
+
       try {
-        // Attempt to parse the forbiddenDays JSON string
-        const forbiddenDays = JSON.parse(results[0].forbiddenDays);
-        res.json({ forbiddenDays });
+        // Try parsing the data as JSON
+        const parsedForbiddenDays = JSON.parse(forbiddenDays);
+        res.json({ forbiddenDays: parsedForbiddenDays });
       } catch (e) {
         console.error('Error parsing forbiddenDays:', e);
-        // Handle the case where data is not valid JSON
         res.status(500).json({ message: 'Invalid data format for forbiddenDays' });
       }
     } else {
@@ -1120,6 +1126,7 @@ app.get('/api/forbidden-days', (req, res) => {
     }
   });
 });
+
 
 
 
