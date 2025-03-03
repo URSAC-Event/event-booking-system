@@ -1099,19 +1099,22 @@ app.get('/api/getApprovedData', async (req, res) => {
 
 // GET endpoint to fetch forbidden days from the settings table
 app.get('/api/forbidden-days', (req, res) => {
-  // Query the settings table for the forbiddenDays where id = 1
   console.log("GET /api/forbidden-days");
-
-
   connection.query('SELECT forbiddenDays FROM settings WHERE id = 1', (err, results) => {
     if (err) {
       console.error('Error querying forbiddenDays:', err);
-      // Send a 500 status if there's a database error
       return res.status(500).json({ message: 'Database query error' });
     }
-    // If a record is found, parse the JSON and send it back; if not, return an empty array
     if (results.length > 0) {
-      res.json({ forbiddenDays: JSON.parse(results[0].forbiddenDays) });
+      try {
+        // Attempt to parse the forbiddenDays JSON string
+        const forbiddenDays = JSON.parse(results[0].forbiddenDays);
+        res.json({ forbiddenDays });
+      } catch (e) {
+        console.error('Error parsing forbiddenDays:', e);
+        // Handle the case where data is not valid JSON
+        res.status(500).json({ message: 'Invalid data format for forbiddenDays' });
+      }
     } else {
       res.json({ forbiddenDays: [] });
     }
@@ -1119,10 +1122,16 @@ app.get('/api/forbidden-days', (req, res) => {
 });
 
 
-// PUT endpoint to update the forbiddenDays in the settings table
+
 app.put('/api/forbidden-days', (req, res) => {
   // Destructure the forbiddenDays array from the request body
   const { forbiddenDays } = req.body;
+
+  // Validate that forbiddenDays is an array
+  if (!Array.isArray(forbiddenDays)) {
+    return res.status(400).json({ message: 'Invalid data format, forbiddenDays must be an array' });
+  }
+
   // Convert the array to a JSON string for storage in the JSON column
   const forbiddenDaysStr = JSON.stringify(forbiddenDays);
   console.log("PUT /api/forbidden-days");
