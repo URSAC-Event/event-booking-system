@@ -11,11 +11,7 @@ const PORT = 5000;
 const routes = require('./routes/route');
 const fs = require('fs');
 // Middleware
-app.use(cors({
-  origin: '*', // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
-}));
+app.use(cors());
 app.use('/api', routes);
 app.use(express.json());
 app.use(verificationRoutes);
@@ -1170,45 +1166,6 @@ app.post('/api/events/check-overlap', async (req, res) => {
     res.status(500).json({ message: "Error checking event overlap." });
   }
 });
-
-// GET endpoint to fetch forbidden days from the settings table
-app.get('/api/forbidden-days', (req, res) => {
-  // Query the settings table for the forbiddenDays where id = 1
-  connection.query('SELECT forbiddenDays FROM settings WHERE id = 1', (err, results) => {
-    if (err) {
-      console.error('Error querying forbiddenDays:', err);
-      // Send a 500 status if there's a database error
-      return res.status(500).json({ message: 'Database query error' });
-    }
-    // If a record is found, parse the JSON and send it back; if not, return an empty array
-    if (results.length > 0) {
-      res.json({ forbiddenDays: JSON.parse(results[0].forbiddenDays) });
-    } else {
-      res.json({ forbiddenDays: [] });
-    }
-  });
-});
-
-
-// PUT endpoint to update the forbiddenDays in the settings table
-app.put('/api/forbidden-days', (req, res) => {
-  // Destructure the forbiddenDays array from the request body
-  const { forbiddenDays } = req.body;
-  // Convert the array to a JSON string for storage in the JSON column
-  const forbiddenDaysStr = JSON.stringify(forbiddenDays);
-
-  // Update the settings record (assuming id = 1)
-  connection.query('UPDATE settings SET forbiddenDays = ? WHERE id = 1', [forbiddenDaysStr], (err, results) => {
-    if (err) {
-      console.error('Error updating forbiddenDays:', err);
-      // Send a 500 status if there's an error during update
-      return res.status(500).json({ message: 'Database update error' });
-    }
-    // Respond with a success message if update is successful
-    res.json({ message: 'Forbidden days updated successfully.' });
-  });
-});
-
 
 
 
