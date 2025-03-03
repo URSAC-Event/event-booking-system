@@ -1100,6 +1100,9 @@ app.get('/api/getApprovedData', async (req, res) => {
 // GET endpoint to fetch forbidden days from the settings table
 app.get('/api/forbidden-days', (req, res) => {
   // Query the settings table for the forbiddenDays where id = 1
+  console.log("GET /api/forbidden-days");
+
+
   connection.query('SELECT forbiddenDays FROM settings WHERE id = 1', (err, results) => {
     if (err) {
       console.error('Error querying forbiddenDays:', err);
@@ -1122,6 +1125,7 @@ app.put('/api/forbidden-days', (req, res) => {
   const { forbiddenDays } = req.body;
   // Convert the array to a JSON string for storage in the JSON column
   const forbiddenDaysStr = JSON.stringify(forbiddenDays);
+  console.log("PUT /api/forbidden-days");
 
   // Update the settings record (assuming id = 1)
   connection.query('UPDATE settings SET forbiddenDays = ? WHERE id = 1', [forbiddenDaysStr], (err, results) => {
