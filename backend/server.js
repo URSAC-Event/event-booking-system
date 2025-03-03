@@ -11,7 +11,11 @@ const PORT = 5000;
 const routes = require('./routes/route');
 const fs = require('fs');
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these methods
+  allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
+}));
 app.use('/api', routes);
 app.use(express.json());
 app.use(verificationRoutes);
