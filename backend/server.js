@@ -1097,6 +1097,64 @@ app.get('/api/getApprovedData', async (req, res) => {
   }
 });
 
+// GET endpoint to fetch forbidden days from the settings table
+app.get('/api/forbidden-days', (req, res) => {
+
+  console.log("pls work");
+
+
+  connection.query('SELECT forbiddenDays FROM settings WHERE id = 1', (err, results) => {
+    if (err) {
+      console.error('Error querying forbiddenDays:', err);
+      return res.status(500).json({ message: 'Database query error' });
+    }
+    if (results.length > 0) {
+      const forbiddenDays = results[0].forbiddenDays;
+
+      // Log the value directly
+      console.log("Forbidden days from database:", forbiddenDays);
+
+      // Respond with the forbiddenDays as they are (no need for parsing)
+      res.json({ forbiddenDays });
+    } else {
+      res.json({ forbiddenDays: [] });
+    }
+  });
+});
+
+
+
+
+app.put('/api/forbidden-days', (req, res) => {
+  // Destructure the forbiddenDays array from the request body
+  const { forbiddenDays } = req.body;
+
+  // Validate that forbiddenDays is an array
+  if (!Array.isArray(forbiddenDays)) {
+    return res.status(400).json({ message: 'Invalid data format, forbiddenDays must be an array' });
+  }
+
+  // Convert the array to a JSON string for storage in the JSON column
+  const forbiddenDaysStr = JSON.stringify(forbiddenDays);
+  console.log("PUT /api/forbidden-days");
+
+  // Update the settings record (assuming id = 1)
+  connection.query('UPDATE settings SET forbiddenDays = ? WHERE id = 1', [forbiddenDaysStr], (err, results) => {
+    if (err) {
+      console.error('Error updating forbiddenDays:', err);
+      // Send a 500 status if there's an error during update
+      return res.status(500).json({ message: 'Database update error' });
+    }
+    // Respond with a success message if update is successful
+    res.json({ message: 'Forbidden days updated successfully.' });
+  });
+});
+
+
+
+
+
+
 
 //Validation sa admin
 app.post('/api/events/check-overlap', async (req, res) => {
