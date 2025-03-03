@@ -1099,6 +1099,10 @@ app.get('/api/getApprovedData', async (req, res) => {
 
 // GET endpoint to fetch forbidden days from the settings table
 app.get('/api/forbidden-days', (req, res) => {
+
+  console.log("pls work");
+
+
   connection.query('SELECT forbiddenDays FROM settings WHERE id = 1', (err, results) => {
     if (err) {
       console.error('Error querying forbiddenDays:', err);
